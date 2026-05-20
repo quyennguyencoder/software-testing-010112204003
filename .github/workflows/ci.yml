@@ -18,6 +18,7 @@ jobs:
   postman-api-tests:
     name: Run Postman collections
     runs-on: ubuntu-latest
+    environment: secret
 
     defaults:
       run:
