@@ -283,31 +283,34 @@ jobs:
           }
           NODE
 
-#          for payload in jira-payload-*.json; do
-#            curl --fail --show-error --silent \
-#              --request POST \
-#              --url "${JIRA_BASE_URL%/}/rest/api/3/issue" \
-#              --user "${JIRA_EMAIL}:${JIRA_API_TOKEN}" \
-#              --header "Accept: application/json" \
-#              --header "Content-Type: application/json" \
-#              --data @"$payload"
-#          done
           for payload in jira-payload-*.json; do
-            echo "Đang gửi payload:"
-            cat "$payload"
-            RESPONSE=$(curl --write-out "%{http_code}" --silent --output response.txt \
-              --request POST \
-              --url "${JIRA_BASE_URL%/}/rest/api/3/issue" \
-              --user "${JIRA_EMAIL}:${JIRA_API_TOKEN}" \
-              --header "Accept: application/json" \
-              --header "Content-Type: application/json" \
-              --data @"$payload")
-          
-            if [ "$RESPONSE" -ne 201 ]; then
-              echo "Lỗi khi tạo issue (HTTP $RESPONSE):"
-              cat response.txt
-              exit 1
+            response_file="${payload%.json}-response.json"
+            http_status="$(
+              curl --show-error --silent \
+                --request POST \
+                --url "${JIRA_BASE_URL%/}/rest/api/3/issue" \
+                --user "${JIRA_EMAIL}:${JIRA_API_TOKEN}" \
+                --header "Accept: application/json" \
+                --header "Content-Type: application/json" \
+                --data @"$payload" \
+                --output "$response_file" \
+                --write-out "%{http_code}"
+            )"
+
+            if [ "$http_status" -ge 200 ] && [ "$http_status" -lt 300 ]; then
+              echo "Created Jira issue from $payload"
+              cat "$response_file"
+              continue
             fi
+
+            echo "Jira issue creation failed for $payload with HTTP $http_status"
+            cat "$response_file"
+
+            if grep -qi '"assignee"' "$response_file"; then
+              echo "Jira rejected the assignee field. Check that JIRA_DEFAULT_ASSIGNEE_ACCOUNT_ID and JIRA_ASSIGNEE_MAP_JSON contain valid Jira Cloud accountId values, and that the user can be assigned in this project."
+            fi
+
+            exit 1
           done
 
       - name: Fail workflow when Postman failed
@@ -317,5 +320,3 @@ jobs:
       - name: Show backend logs on failure
         if: failure()
         run: tail -n 200 backend.log || true
-
-
