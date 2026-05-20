@@ -1,0 +1,105 @@
+spring:
+  application:
+    name: ute-phonehub-backend
+  
+  profiles:
+    active: dev
+  datasource:
+    # Mặc định để localhost để chạy được trên IntelliJ
+    url: jdbc:postgresql://${DB_HOST}:5434/${POSTGRES_DB}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: 6379
+
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+  
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false  # false for development, true for production
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: openid,profile,email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+        provider:
+          google:
+            issuer-uri: https://accounts.google.com
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+
+# VNPay Configuration
+vnpay:
+  url: ${VNPAY_URL}
+  tmn-code: ${VNPAY_TMN_CODE}
+  hash-secret: ${VNPAY_HASH_SECRET}
+  return-url: ${VNPAY_RETURN_URL}
+  version: 2.1.0
+  command: pay
+  order-type: other
+
+# Frontend Configuration
+frontend:
+  url: ${FRONTEND_URL}
+
+server:
+  port: 8081
+
+gemini:
+  api:
+    # Lấy từ https://ai.google.dev/
+    key: ${GEMINI_API_KEY}
+    url: ${GEMINI_API_URL:https://generativelanguage.googleapis.com/v1beta/models}
+  # Có sẵn: gemini-2.0-flash, gemini-2.0-flash-lite, gemini-1.5-pro, gemini-1.5-flash
+  model: ${GEMINI_MODEL:gemini-2.0-flash}
+  embedding:
+    model: ${GEMINI_EMBEDDING_MODEL:text-embedding-004}
+
+api:
+  product:
+    base-url: ${API_PRODUCT_BASE_URL:http://localhost:8081/api/v1/products}
