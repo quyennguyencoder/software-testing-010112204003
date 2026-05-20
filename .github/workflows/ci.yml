@@ -105,9 +105,7 @@ jobs:
 
       - name: Build backend
         working-directory: backend
-        run: |
-          chmod +x ./mvnw
-          ./mvnw -B -DskipTests package
+        run: mvn clean package -B -DskipTests
 
       - name: Start backend
         working-directory: backend
