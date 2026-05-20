@@ -292,7 +292,6 @@ jobs:
 #              --header "Content-Type: application/json" \
 #              --data @"$payload"
 #          done
-
           for payload in jira-payload-*.json; do
             echo "Đang gửi payload:"
             cat "$payload"
