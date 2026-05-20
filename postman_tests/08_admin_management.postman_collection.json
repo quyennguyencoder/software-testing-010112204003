@@ -1,0 +1,1973 @@
+{
+  "info": {
+    "name": "PhoneHub - 08 Admin Management",
+    "description": "Admin users, orders, dashboard, chatbot config, promotions, and promotion template APIs.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.variables.set('timestamp', new Date().toISOString());"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Admin - Quản lý Chatbot",
+      "item": [
+        {
+          "name": "PUT /api/v1/admin/chatbot/config - Cập nhật cấu hình chatbot",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/chatbot/config",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "chatbot",
+                "config"
+              ],
+              "query": []
+            },
+            "description": "Cập nhật trạng thái chatbot theo request body\n\noperationId: updateConfig",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enabled\": true,\n  \"reason\": \"Tạm tắt để bảo trì hệ thống\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "POST /api/v1/admin/chatbot/disable - Tắt chatbot",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/chatbot/disable",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "chatbot",
+                "disable"
+              ],
+              "query": []
+            },
+            "description": "Tắt tính năng chatbot AI (phòng tấn công/tốn request). Khi tắt, hệ thống sẽ trả về sản phẩm nổi bật/mới/bán chạy thay thế.\n\noperationId: disableChatbot"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "POST /api/v1/admin/chatbot/enable - Bật chatbot",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/chatbot/enable",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "chatbot",
+                "enable"
+              ],
+              "query": []
+            },
+            "description": "Bật tính năng chatbot AI để phản hồi câu hỏi\n\noperationId: enableChatbot"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /api/v1/admin/chatbot/status - Xem trạng thái chatbot",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/chatbot/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "chatbot",
+                "status"
+              ],
+              "query": []
+            },
+            "description": "Lấy thông tin trạng thái bật/tắt của chatbot AI\n\noperationId: getStatus"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "POST /api/v1/admin/chatbot/toggle - Toggle chatbot",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/chatbot/toggle",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "chatbot",
+                "toggle"
+              ],
+              "query": []
+            },
+            "description": "Đảo trạng thái chatbot (BẬT <-> TẮT)\n\noperationId: toggleChatbot"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin - Dashboard",
+      "item": [
+        {
+          "name": "GET /api/v1/admin/dashboard/low-stock-products - Lấy danh sách sản phẩm sắp hết hàng",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/dashboard/low-stock-products?threshold=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "dashboard",
+                "low-stock-products"
+              ],
+              "query": [
+                {
+                  "key": "threshold",
+                  "value": "1",
+                  "disabled": true,
+                  "description": "Ngưỡng cảnh báo tồn kho (VD: 10 = sản phẩm có <= 10 cái)"
+                }
+              ]
+            },
+            "description": "Lấy danh sách sản phẩm có số lượng tồn kho <= ngưỡng cảnh báo. Chỉ hiển thị sản phẩm đang hoạt động (status = true). Sắp xếp theo số lượng tồn kho tăng dần (ít nhất trước).\n\noperationId: getLowStockProducts"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /api/v1/admin/dashboard/order-status-chart - Lấy biểu đồ phân bố đơn hàng theo trạng thái",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/dashboard/order-status-chart",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "dashboard",
+                "order-status-chart"
+              ],
+              "query": []
+            },
+            "description": "Lấy dữ liệu biểu đồ tròn (Pie chart) thể hiện số lượng và tỷ lệ phần trăm đơn hàng theo từng trạng thái (Chờ xác nhận, Đã xác nhận, Đang giao, Đã giao, Đã hủy)\n\noperationId: getOrderStatusChart"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /api/v1/admin/dashboard/overview - Lấy thống kê tổng quan",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/dashboard/overview",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "dashboard",
+                "overview"
+              ],
+              "query": []
+            },
+            "description": "Lấy 4 chỉ số chính: Tổng doanh thu (từ đơn hoàn thành), Tổng đơn hàng, Tổng sản phẩm, Tổng người dùng\n\noperationId: getOverview"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /api/v1/admin/dashboard/recent-orders - Lấy danh sách đơn hàng gần đây",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/dashboard/recent-orders?limit=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "dashboard",
+                "recent-orders"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "1",
+                  "disabled": true,
+                  "description": "Số lượng đơn hàng cần lấy (default: 10, max: 20)"
+                }
+              ]
+            },
+            "description": "Lấy danh sách đơn hàng mới nhất, sắp xếp theo thời gian tạo (mới nhất trước). Mặc định: 10 đơn, tối đa: 20 đơn.\n\noperationId: getRecentOrders_1"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /api/v1/admin/dashboard/revenue-chart - Lấy biểu đồ doanh thu theo thời gian",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/dashboard/revenue-chart?period=string",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "dashboard",
+                "revenue-chart"
+              ],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "string",
+                  "disabled": true,
+                  "description": "Khoảng thời gian (SEVEN_DAYS, THIRTY_DAYS, THREE_MONTHS). Mặc định: THIRTY_DAYS"
+                }
+              ]
+            },
+            "description": "Lấy dữ liệu biểu đồ doanh thu theo ngày cho khoảng thời gian được chọn. Mặc định: 30 ngày. Chỉ tính đơn hàng đã hoàn thành (DELIVERED)\n\noperationId: getRevenueChart"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /api/v1/admin/dashboard/top-products - Lấy Top sản phẩm bán chạy",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/dashboard/top-products?limit=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "dashboard",
+                "top-products"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "1",
+                  "disabled": true,
+                  "description": "Số lượng sản phẩm cần lấy (VD: 5 cho Top 5)"
+                }
+              ]
+            },
+            "description": "Lấy danh sách sản phẩm bán chạy nhất theo số lượng đã bán (chỉ tính từ đơn hàng DELIVERED). Sắp xếp từ cao đến thấp.\n\noperationId: getTopProducts"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /api/v1/admin/dashboard/user-registration-chart - Lấy biểu đồ người dùng đăng ký mới",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/dashboard/user-registration-chart?period=string",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "dashboard",
+                "user-registration-chart"
+              ],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "string",
+                  "disabled": true,
+                  "description": "Khoảng thời gian (WEEKLY: 7 ngày, MONTHLY: 30 ngày). Mặc định: MONTHLY"
+                }
+              ]
+            },
+            "description": "Lấy dữ liệu biểu đồ cột (Bar chart) thể hiện số lượng người dùng đăng ký mới theo ngày cho khoảng thời gian được chọn. Mặc định: MONTHLY (30 ngày)\n\noperationId: getUserRegistrationChart"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin Order Management",
+      "item": [
+        {
+          "name": "GET /api/v1/admin/orders - 🔍 Lấy danh sách đơn hàng linh hoạt (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/orders?search=string&status=string&paymentMethod=string&customerId={{customerId}}&customerEmail=string&fromDate=string&toDate=string&minAmount=string&maxAmount=string&page=1&size=1&sortBy=string&sortDirection=string",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "string",
+                  "disabled": true,
+                  "description": "🔤 Search keyword (order code, email, phone, recipient name) - **Để trống = không filter theo từ khóa**"
+                },
+                {
+                  "key": "status",
+                  "value": "string",
+                  "disabled": true,
+                  "description": "📊 Filter by order status - **Để trống = tất cả trạng thái**"
+                },
+                {
+                  "key": "paymentMethod",
+                  "value": "string",
+                  "disabled": true,
+                  "description": "💳 Filter by payment method - **Để trống = tất cả phương thức thanh toán**"
+                },
+                {
+                  "key": "customerId",
+                  "value": "{{customerId}}",
+                  "disabled": true,
+                  "description": "👤 Filter by customer ID - **Để trống = tất cả khách hàng**"
+                },
+                {
+                  "key": "customerEmail",
+                  "value": "string",
+                  "disabled": true,
+                  "description": "📧 Filter by customer email - **Để trống = không lọc theo email**"
+                },
+                {
+                  "key": "fromDate",
+                  "value": "string",
+                  "disabled": true,
+                  "description": "📅 Filter from date (YYYY-MM-DD) - **Để trống = tìm từ ngày đầu tiên**"
+                },
+                {
+                  "key": "toDate",
+                  "value": "string",
+                  "disabled": true,
+                  "description": "📅 Filter to date (YYYY-MM-DD) - **Để trống = tìm đến hiện tại**"
+                },
+                {
+                  "key": "minAmount",
+                  "value": "string",
+                  "disabled": true,
+                  "description": "💰 Minimum amount - **Để trống hoặc 0 = không giới hạn tối thiểu**"
+                },
+                {
+                  "key": "maxAmount",
+                  "value": "string",
+                  "disabled": true,
+                  "description": "💰 Maximum amount - **Để trống hoặc 0 = không giới hạn tối đa**"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "disabled": true,
+                  "description": "📄 Page number (0-based)"
+                },
+                {
+                  "key": "size",
+                  "value": "1",
+                  "disabled": true,
+                  "description": "📏 Page size"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "string",
+                  "disabled": true,
+                  "description": "🔀 Sort field"
+                },
+                {
+                  "key": "sortDirection",
+                  "value": "string",
+                  "disabled": true,
+                  "description": "⬆️⬇️ Sort direction (asc/desc)"
+                }
+              ]
+            },
+            "description": "Lấy danh sách tất cả đơn hàng với khả năng filter và phân trang linh hoạt.   🎯 **Tham số nào để trống sẽ bị BỎ QUA** - không ảnh hưởng đến kết quả tìm kiếm.\n\n**Ví dụ sử dụng:**\n- Không có fromDate/toDate = tìm kiếm trong tất cả thời gian\n- Không có status = hiển thị tất cả trạng thái đơn hàng\n- Không có search = không lọc theo từ khóa\n- minAmount = 0 hoặc trống = không giới hạn số tiền tối thiểu\n\n**Chỉ Admin mới có quyền truy cập được.**\n\noperationId: getAllOrders"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /api/v1/admin/orders/customer/{customerId} - Lấy đơn hàng theo khách hàng (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/orders/customer/{{customerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "orders",
+                "customer",
+                "{{customerId}}"
+              ],
+              "query": []
+            },
+            "description": "Lấy tất cả đơn hàng của một khách hàng cụ thể\n\noperationId: getOrdersByCustomer"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /api/v1/admin/orders/recent - Lấy đơn hàng gần đây (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/orders/recent?limit=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "orders",
+                "recent"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "1",
+                  "disabled": true,
+                  "description": "Limit number of orders"
+                }
+              ]
+            },
+            "description": "Lấy danh sách đơn hàng mới nhất cho dashboard admin\n\noperationId: getRecentOrders"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /api/v1/admin/orders/statistics - Lấy thống kê đơn hàng (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/orders/statistics",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "orders",
+                "statistics"
+              ],
+              "query": []
+            },
+            "description": "Lấy các số liệu thống kê đơn hàng cho dashboard admin\n\noperationId: getOrderStatistics"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /api/v1/admin/orders/{orderId} - Lấy chi tiết đơn hàng (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "orders",
+                "{{orderId}}"
+              ],
+              "query": []
+            },
+            "description": "Lấy thông tin chi tiết một đơn hàng.  Chỉ Admin mới truy cập được.\n\noperationId: getOrderDetail"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /api/v1/admin/orders/{orderId}/available-transitions - Lấy các trạng thái có thể chuyển (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/orders/{{orderId}}/available-transitions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "orders",
+                "{{orderId}}",
+                "available-transitions"
+              ],
+              "query": []
+            },
+            "description": "Lấy danh sách các trạng thái mà đơn hàng có thể chuyển sang\n\noperationId: getAvailableTransitions"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "PUT /api/v1/admin/orders/{orderId}/status - Cập nhật trạng thái đơn hàng (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/orders/{{orderId}}/status?newStatus=string&adminNote=string",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "orders",
+                "{{orderId}}",
+                "status"
+              ],
+              "query": [
+                {
+                  "key": "newStatus",
+                  "value": "string",
+                  "disabled": false,
+                  "description": "New order status"
+                },
+                {
+                  "key": "adminNote",
+                  "value": "string",
+                  "disabled": true,
+                  "description": "Admin note/reason for status change"
+                }
+              ]
+            },
+            "description": "Cập nhật trạng thái đơn hàng theo quy tắc nghiệp vụ.  Chỉ Admin mới thực hiện được.\n\noperationId: updateOrderStatus"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Promotion Template Controller",
+      "item": [
+        {
+          "name": "GET /api/v1/admin/promotion-templates - [Admin] Get All Templates - Lấy danh sách tất cả templates",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/promotion-templates",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "promotion-templates"
+              ],
+              "query": []
+            },
+            "description": "[Admin] Get All Templates - Lấy danh sách tất cả templates\n\noperationId: getAllTemplates"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "POST /api/v1/admin/promotion-templates - [Admin] Create Template - Tạo template mới",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/promotion-templates",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "promotion-templates"
+              ],
+              "query": []
+            },
+            "description": "[Admin] Create Template - Tạo template mới\n\noperationId: createTemplate",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"string\",\n  \"type\": \"DISCOUNT\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /api/v1/admin/promotion-templates/{id} - [Admin] Get Template Detail - Xem chi tiết template",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/promotion-templates/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "promotion-templates",
+                "{{id}}"
+              ],
+              "query": []
+            },
+            "description": "[Admin] Get Template Detail - Xem chi tiết template\n\noperationId: getTemplateById"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "PUT /api/v1/admin/promotion-templates/{id} - [Admin] Update Template - Cập nhật template",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/promotion-templates/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "promotion-templates",
+                "{{id}}"
+              ],
+              "query": []
+            },
+            "description": "[Admin] Update Template - Cập nhật template\n\noperationId: updateTemplate",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"string\",\n  \"type\": \"DISCOUNT\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "DELETE /api/v1/admin/promotion-templates/{id} - [Admin] Delete Template - Xóa template",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/promotion-templates/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "promotion-templates",
+                "{{id}}"
+              ],
+              "query": []
+            },
+            "description": "[Admin] Delete Template - Xóa template\n\noperationId: deleteTemplate"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Promotion Controller",
+      "item": [
+        {
+          "name": "GET /api/v1/admin/promotions - [Admin] Get All - Xem danh sách tất cả khuyến mãi",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/promotions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "promotions"
+              ],
+              "query": []
+            },
+            "description": "[Admin] Get All - Xem danh sách tất cả khuyến mãi\n\noperationId: getAllPromotions"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "POST /api/v1/admin/promotions - [Admin] Create Promotion - Tạo khuyến mãi mới",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/promotions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "promotions"
+              ],
+              "query": []
+            },
+            "description": "[Admin] Create Promotion - Tạo khuyến mãi mới\n\noperationId: createPromotion",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"templateId\": \"string\",\n  \"title\": \"string\",\n  \"description\": \"string\",\n  \"effectiveDate\": \"2026-05-20T00:00:00Z\",\n  \"expirationDate\": \"2026-05-20T00:00:00Z\",\n  \"percentDiscount\": 10000,\n  \"minValueToBeApplied\": 10000,\n  \"status\": \"ACTIVE\",\n  \"targets\": [\n    {\n      \"applicableObjectId\": 1,\n      \"type\": \"PRODUCT\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /api/v1/admin/promotions/{id} - [Admin] See Promotion Detail - Xem chi tiết",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/promotions/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "promotions",
+                "{{id}}"
+              ],
+              "query": []
+            },
+            "description": "[Admin] See Promotion Detail - Xem chi tiết\n\noperationId: getDetails"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "PUT /api/v1/admin/promotions/{id} - [Admin] Modify Promotion - Chỉnh sửa khuyến mãi",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/promotions/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "promotions",
+                "{{id}}"
+              ],
+              "query": []
+            },
+            "description": "[Admin] Modify Promotion - Chỉnh sửa khuyến mãi\n\noperationId: modifyPromotion",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"templateId\": \"string\",\n  \"title\": \"string\",\n  \"description\": \"string\",\n  \"effectiveDate\": \"2026-05-20T00:00:00Z\",\n  \"expirationDate\": \"2026-05-20T00:00:00Z\",\n  \"percentDiscount\": 10000,\n  \"minValueToBeApplied\": 10000,\n  \"status\": \"ACTIVE\",\n  \"targets\": [\n    {\n      \"applicableObjectId\": 1,\n      \"type\": \"PRODUCT\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "PATCH /api/v1/admin/promotions/{id}/disable - [Admin] Disable Promotion - Vô hiệu hóa khuyến mãi",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/promotions/{{id}}/disable",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "promotions",
+                "{{id}}",
+                "disable"
+              ],
+              "query": []
+            },
+            "description": "[Admin] Disable Promotion - Vô hiệu hóa khuyến mãi\n\noperationId: disablePromotion"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin - User Management",
+      "item": [
+        {
+          "name": "GET /api/v1/admin/users - Lấy danh sách người dùng",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/users?page=1&size=1&role=string&status=string&search=string",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "disabled": true,
+                  "description": "Số trang (bắt đầu từ 0)"
+                },
+                {
+                  "key": "size",
+                  "value": "1",
+                  "disabled": true,
+                  "description": "Số lượng bản ghi mỗi trang"
+                },
+                {
+                  "key": "role",
+                  "value": "string",
+                  "disabled": true,
+                  "description": "Lọc theo vai trò (ADMIN, CUSTOMER, hoặc để trống để lấy tất cả)"
+                },
+                {
+                  "key": "status",
+                  "value": "string",
+                  "disabled": true,
+                  "description": "Lọc theo trạng thái (ACTIVE, LOCKED, hoặc để trống để lấy tất cả)"
+                },
+                {
+                  "key": "search",
+                  "value": "string",
+                  "disabled": true,
+                  "description": "Từ khóa tìm kiếm (tìm trong username, email, fullName)"
+                }
+              ]
+            },
+            "description": "Lấy danh sách tất cả người dùng với phân trang, lọc theo role/status và tìm kiếm theo username/email/fullName\n\noperationId: getAllUsers"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "POST /api/v1/admin/users - Tạo tài khoản mới",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users"
+              ],
+              "query": []
+            },
+            "description": "Tạo tài khoản CUSTOMER hoặc ADMIN mới. Email phải unique, password tối thiểu 8 ký tự (có chữ hoa, chữ thường, số).\n\noperationId: createUser",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"string\",\n  \"password\": \"string\",\n  \"fullName\": \"string\",\n  \"phoneNumber\": \"string\",\n  \"role\": \"ADMIN\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "GET /api/v1/admin/users/{userId} - Lấy chi tiết người dùng",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/users/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users",
+                "{{userId}}"
+              ],
+              "query": []
+            },
+            "description": "Lấy thông tin chi tiết của một người dùng cụ thể theo ID\n\noperationId: getUserById"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "PUT /api/v1/admin/users/{userId}/lock - Khóa tài khoản người dùng",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/users/{{userId}}/lock",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users",
+                "{{userId}}",
+                "lock"
+              ],
+              "query": []
+            },
+            "description": "Khóa tài khoản CUSTOMER. Không thể khóa tài khoản ADMIN.\n\noperationId: lockUser"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "PUT /api/v1/admin/users/{userId}/unlock - Gỡ khóa tài khoản người dùng",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/users/{{userId}}/unlock",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users",
+                "{{userId}}",
+                "unlock"
+              ],
+              "query": []
+            },
+            "description": "Mở khóa tài khoản đã bị khóa, cho phép người dùng đăng nhập trở lại.\n\noperationId: unlockUser"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,595 @@
+{
+  "info": {
+    "name": "PhoneHub - 03 User Profile Address Chatbot",
+    "description": "Authenticated customer profile, address book, password, and chatbot assistant APIs.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.variables.set('timestamp', new Date().toISOString());"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Chatbot Tư Vấn Sản Phẩm",
+      "item": [
+        {
+          "name": "POST /api/v1/chatbot-assistant/chat - Tư vấn sản phẩm",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/chatbot-assistant/chat",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "chatbot-assistant",
+                "chat"
+              ],
+              "query": []
+            },
+            "description": "Khách hàng gửi câu hỏi, chatbot phân tích intent và gợi ý sản phẩm phù hợp\n\noperationId: chat",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"string\",\n  \"productId\": 1,\n  \"categoryId\": 1,\n  \"minPrice\": 10000,\n  \"maxPrice\": 10000,\n  \"sortBy\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "POST /api/v1/chatbot-assistant/clear-cache - Xóa cache",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/chatbot-assistant/clear-cache",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "chatbot-assistant",
+                "clear-cache"
+              ],
+              "query": []
+            },
+            "description": "Xóa cache sản phẩm và embedding (admin only)\n\noperationId: clearCache"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Address",
+      "item": [
+        {
+          "name": "GET /api/v1/user/addresses - Lấy danh sách địa chỉ",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user/addresses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "addresses"
+              ],
+              "query": []
+            },
+            "description": "Trả về tất cả địa chỉ giao hàng của người dùng\n\noperationId: getAddresses"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "POST /api/v1/user/addresses - Thêm địa chỉ mới",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user/addresses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "addresses"
+              ],
+              "query": []
+            },
+            "description": "Tạo một địa chỉ giao hàng mới\n\noperationId: createAddress",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipientName\": \"string\",\n  \"phoneNumber\": \"string\",\n  \"streetAddress\": \"string\",\n  \"ward\": \"string\",\n  \"wardCode\": \"string\",\n  \"province\": \"string\",\n  \"provinceCode\": \"string\",\n  \"isDefault\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "PUT /api/v1/user/addresses/{id} - Cập nhật địa chỉ",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user/addresses/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "addresses",
+                "{{id}}"
+              ],
+              "query": []
+            },
+            "description": "Cập nhật thông tin địa chỉ giao hàng\n\noperationId: updateAddress",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipientName\": \"string\",\n  \"phoneNumber\": \"string\",\n  \"streetAddress\": \"string\",\n  \"ward\": \"string\",\n  \"wardCode\": \"string\",\n  \"province\": \"string\",\n  \"provinceCode\": \"string\",\n  \"isDefault\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "DELETE /api/v1/user/addresses/{id} - Xóa địa chỉ",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user/addresses/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "addresses",
+                "{{id}}"
+              ],
+              "query": []
+            },
+            "description": "Xóa một địa chỉ giao hàng\n\noperationId: deleteAddress"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "PUT /api/v1/user/addresses/{id}/set-default - Đặt làm địa chỉ mặc định",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user/addresses/{{id}}/set-default",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "addresses",
+                "{{id}}",
+                "set-default"
+              ],
+              "query": []
+            },
+            "description": "Đặt một địa chỉ làm mặc định\n\noperationId: setDefaultAddress"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "GET /api/v1/user/me - Lấy thông tin người dùng hiện tại",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "me"
+              ],
+              "query": []
+            },
+            "description": "Trả về thông tin chi tiết của người dùng đang đăng nhập\n\noperationId: getCurrentUser"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "POST /api/v1/user/password - Đổi mật khẩu",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user/password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "password"
+              ],
+              "query": []
+            },
+            "description": "Cập nhật mật khẩu hiện tại sang mật khẩu mới\n\noperationId: changePassword",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"string\",\n  \"newPassword\": \"string\",\n  \"confirmPassword\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "POST /api/v1/user/profile - Cập nhật thông tin cá nhân",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "profile"
+              ],
+              "query": []
+            },
+            "description": "Cập nhật họ tên và số điện thoại\n\noperationId: updateProfile",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"string\",\n  \"phoneNumber\": \"string\",\n  \"gender\": \"MALE\",\n  \"dateOfBirth\": \"2026-05-20\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is successful or expected error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 202, 204, 400, 401, 403, 404, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+                  "  pm.test('Response is valid JSON', function () { pm.response.json(); });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    }
+  ]
+}

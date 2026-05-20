@@ -1,0 +1,241 @@
+#name: CI - Postman API Tests
+#
+#on:
+#  push:
+#    branches:
+#      - main
+#      - develop
+#  pull_request:
+#    branches:
+#      - main
+#      - develop
+#  workflow_dispatch:
+#
+#permissions:
+#  contents: read
+#
+#jobs:
+#  postman-api-tests:
+#    name: Run Postman collections
+#    runs-on: ubuntu-latest
+#
+#    defaults:
+#      run:
+#        shell: bash
+#
+#    env:
+#      BASE_URL: http://localhost:8081
+#      POSTGRES_USER: phonehub
+#      POSTGRES_PASSWORD: phonehub_password
+#      POSTGRES_DB: phonehub_db
+#      DB_HOST: localhost
+#      DB_USERNAME: phonehub
+#      DB_PASSWORD: phonehub_password
+#      REDIS_HOST: localhost
+#      MAIL_HOST: smtp.example.com
+#      MAIL_PORT: "587"
+#      MAIL_USERNAME: ci@example.com
+#      MAIL_PASSWORD: dummy-password
+#      GOOGLE_CLIENT_ID: dummy-google-client-id
+#      GOOGLE_CLIENT_SECRET: dummy-google-client-secret
+#      JWT_SECRET: ci_jwt_secret_key_for_phonehub_tests_which_is_long_enough
+#      JWT_EXPIRATION: "86400000"
+#      JWT_REFRESH_EXPIRATION: "604800000"
+#      VNPAY_URL: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+#      VNPAY_TMN_CODE: dummy-vnpay-code
+#      VNPAY_HASH_SECRET: dummy-vnpay-hash-secret
+#      VNPAY_RETURN_URL: http://localhost:8081/api/v1/payments/vnpay/return
+#      FRONTEND_URL: http://localhost:3000
+#      GEMINI_API_KEY: dummy-gemini-api-key
+#      GEMINI_API_URL: https://generativelanguage.googleapis.com/v1beta/models
+#      GEMINI_MODEL: gemini-1.5-flash
+#      GEMINI_EMBEDDING_MODEL: text-embedding-004
+#      API_PRODUCT_BASE_URL: http://localhost:8081/api/v1/products
+#      JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+#      JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+#      JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+#      JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
+#      JIRA_ISSUE_TYPE: ${{ vars.JIRA_ISSUE_TYPE || 'Bug' }}
+#
+#    steps:
+#      - name: Checkout source
+#        uses: actions/checkout@v4
+#
+#      - name: Set up Java
+#        uses: actions/setup-java@v4
+#        with:
+#          distribution: temurin
+#          java-version: "17"
+#          cache: maven
+#
+#      - name: Set up Node.js
+#        uses: actions/setup-node@v4
+#        with:
+#          node-version: "20"
+#
+#      - name: Install Newman
+#        run: npm install -g newman newman-reporter-htmlextra
+#
+#      - name: Start database and Redis
+#        working-directory: backend
+#        run: |
+#          cat > .env <<EOF
+#          POSTGRES_USER=${POSTGRES_USER}
+#          POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+#          POSTGRES_DB=${POSTGRES_DB}
+#          DB_HOST=postgres
+#          DB_USERNAME=${POSTGRES_USER}
+#          DB_PASSWORD=${POSTGRES_PASSWORD}
+#          REDIS_HOST=redis
+#          EOF
+#          docker compose up -d postgres redis
+#
+#      - name: Wait for database
+#        run: |
+#          for i in {1..30}; do
+#            if docker exec phonehub-postgres pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"; then
+#              exit 0
+#            fi
+#            sleep 2
+#          done
+#          docker compose -f backend/docker-compose.yml logs postgres
+#          exit 1
+#
+#      - name: Build backend
+#        working-directory: backend
+#        run: |
+#          chmod +x ./mvnw
+#          ./mvnw -B -DskipTests package
+#
+#      - name: Start backend
+#        working-directory: backend
+#        run: |
+#          nohup java -jar target/*.jar > ../backend.log 2>&1 &
+#          echo $! > ../backend.pid
+#
+#      - name: Wait for backend health
+#        run: |
+#          for i in {1..60}; do
+#            if curl -fsS "$BASE_URL/api/v1/health"; then
+#              exit 0
+#            fi
+#            sleep 2
+#          done
+#          echo "Backend did not become healthy"
+#          tail -n 200 backend.log || true
+#          exit 1
+#
+#      - name: Prepare Postman reports
+#        run: mkdir -p postman_tests/reports
+#
+#      - name: Run Postman collections
+#        id: newman
+#        continue-on-error: true
+#        run: |
+#          set +e
+#          FAILED=0
+#          for collection in postman_tests/*.postman_collection.json; do
+#            name="$(basename "$collection" .postman_collection.json)"
+#            echo "Running $name"
+#            newman run "$collection" \
+#              --environment postman_tests/phonehub_local.postman_environment.json \
+#              --env-var "baseUrl=$BASE_URL" \
+#              --reporters cli,json,junit,htmlextra \
+#              --reporter-json-export "postman_tests/reports/${name}.json" \
+#              --reporter-junit-export "postman_tests/reports/${name}.xml" \
+#              --reporter-htmlextra-export "postman_tests/reports/${name}.html"
+#            status=$?
+#            if [ "$status" -ne 0 ]; then
+#              FAILED=1
+#            fi
+#          done
+#          echo "failed=$FAILED" >> "$GITHUB_OUTPUT"
+#          exit "$FAILED"
+#
+#      - name: Upload Postman reports
+#        if: always()
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: postman-api-test-reports
+#          path: |
+#            postman_tests/reports
+#            backend.log
+#          if-no-files-found: ignore
+#
+#      - name: Create Jira issue on Postman failure
+#        if: steps.newman.outputs.failed == '1' && env.JIRA_BASE_URL != '' && env.JIRA_EMAIL != '' && env.JIRA_API_TOKEN != '' && env.JIRA_PROJECT_KEY != ''
+#        run: |
+#          node <<'NODE'
+#          const fs = require('fs');
+#          const path = require('path');
+#
+#          const reportsDir = 'postman_tests/reports';
+#          const failedCollections = [];
+#
+#          for (const file of fs.readdirSync(reportsDir).filter((f) => f.endsWith('.json'))) {
+#            const report = JSON.parse(fs.readFileSync(path.join(reportsDir, file), 'utf8'));
+#            const failures = report.run?.failures || [];
+#            if (failures.length > 0) {
+#              failedCollections.push({
+#                collection: file.replace(/\.json$/, ''),
+#                failures: failures.slice(0, 10).map((failure) => ({
+#                  name: failure.source?.name || failure.parent?.name || 'Unknown request',
+#                  error: failure.error?.message || 'Unknown error',
+#                })),
+#              });
+#            }
+#          }
+#
+#          const summary = failedCollections.length
+#            ? failedCollections.map((c) => {
+#                const details = c.failures.map((f) => `- ${f.name}: ${f.error}`).join('\n');
+#                return `Collection ${c.collection}\n${details}`;
+#              }).join('\n\n')
+#            : 'Newman exited with failure. Check GitHub Actions artifacts for details.';
+#
+#          const payload = {
+#            fields: {
+#              project: { key: process.env.JIRA_PROJECT_KEY },
+#              summary: `[CI] Postman API tests failed - ${process.env.GITHUB_REPOSITORY}`,
+#              description: {
+#                type: 'doc',
+#                version: 1,
+#                content: [
+#                  {
+#                    type: 'paragraph',
+#                    content: [
+#                      {
+#                        type: 'text',
+#                        text: `Postman API tests failed in GitHub Actions run ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`,
+#                      },
+#                    ],
+#                  },
+#                  {
+#                    type: 'codeBlock',
+#                    attrs: { language: 'text' },
+#                    content: [{ type: 'text', text: summary }],
+#                  },
+#                ],
+#              },
+#              issuetype: { name: process.env.JIRA_ISSUE_TYPE || 'Bug' },
+#            },
+#          };
+#
+#          fs.writeFileSync('jira-payload.json', JSON.stringify(payload));
+#          NODE
+#
+#          curl --fail --show-error --silent \
+#            --request POST \
+#            --url "${JIRA_BASE_URL%/}/rest/api/3/issue" \
+#            --user "${JIRA_EMAIL}:${JIRA_API_TOKEN}" \
+#            --header "Accept: application/json" \
+#            --header "Content-Type: application/json" \
+#            --data @jira-payload.json
+#
+#      - name: Fail workflow when Postman failed
+#        if: steps.newman.outputs.failed == '1'
+#        run: exit 1
+#
+#      - name: Show backend logs on failure
+#        if: failure()
+#        run: tail -n 200 backend.log || true
