@@ -283,14 +283,31 @@ jobs:
           }
           NODE
 
+#          for payload in jira-payload-*.json; do
+#            curl --fail --show-error --silent \
+#              --request POST \
+#              --url "${JIRA_BASE_URL%/}/rest/api/3/issue" \
+#              --user "${JIRA_EMAIL}:${JIRA_API_TOKEN}" \
+#              --header "Accept: application/json" \
+#              --header "Content-Type: application/json" \
+#              --data @"$payload"
+#          done
           for payload in jira-payload-*.json; do
-            curl --fail --show-error --silent \
+            echo "Đang gửi payload:"
+            cat "$payload"
+            RESPONSE=$(curl --write-out "%{http_code}" --silent --output response.txt \
               --request POST \
               --url "${JIRA_BASE_URL%/}/rest/api/3/issue" \
               --user "${JIRA_EMAIL}:${JIRA_API_TOKEN}" \
               --header "Accept: application/json" \
               --header "Content-Type: application/json" \
-              --data @"$payload"
+              --data @"$payload")
+          
+            if [ "$RESPONSE" -ne 201 ]; then
+              echo "Lỗi khi tạo issue (HTTP $RESPONSE):"
+              cat response.txt
+              exit 1
+            fi
           done
 
       - name: Fail workflow when Postman failed
