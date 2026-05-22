@@ -90,6 +90,11 @@ jobs:
       - name: Start backend server
         working-directory: backend
         env:
+          DB_HOST: localhost          # ← thêm dòng này
+          DB_USERNAME: phonehub       # ← thêm
+          DB_PASSWORD: phonehub_password  # ← thêm
+          REDIS_HOST: localhost       # ← thêm
+
           MAIL_HOST: smtp.example.com
           MAIL_PORT: "587"
           MAIL_USERNAME: ci@example.com
