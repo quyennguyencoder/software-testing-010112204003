@@ -14,15 +14,177 @@ on:
 permissions:
   contents: read
 
+# ─────────────────────────────────────────────────────────────────────────────
+# PHÂN CÔNG COLLECTION → MEMBER
+# ─────────────────────────────────────────────────────────────────────────────
+# 01_Leader_Auth_User_WithTests  → Leader
+# 02_Member_ProductView          → Member 2
+# 03_Member_AdminProduct         → Member 3
+# 04_Member_Order                → Member 4
+# 05_Member_Cart_Address         → Member 5
+# 06_Member_AdminOrder_Dashboard → Member 6
+# 07_Member_Promotion_Payment_Chatbot → Member 7
+#
+# Mỗi collection chạy song song trong job riêng (matrix strategy).
+# Nếu 1 job thất bại → tạo Jira issue và gán đúng member phụ trách.
+# ─────────────────────────────────────────────────────────────────────────────
+
 jobs:
-  postman-api-tests:
-    name: Run Postman collections
+  # =========================================================================
+  # JOB 1: Khởi động backend – dùng chung cho tất cả matrix jobs
+  # =========================================================================
+  start-backend:
+    name: 🚀 Start Backend
     runs-on: ubuntu-latest
     environment: secret
 
-    defaults:
-      run:
-        shell: bash
+    env:
+      BASE_URL: http://localhost:8081
+      POSTGRES_USER: phonehub
+      POSTGRES_PASSWORD: phonehub_password
+      POSTGRES_DB: phonehub_db
+
+    outputs:
+      backend_ready: ${{ steps.health.outputs.ready }}
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Start Postgres & Redis
+        working-directory: backend
+        run: |
+          cat > .env <<EOF
+          POSTGRES_USER=${POSTGRES_USER}
+          POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+          POSTGRES_DB=${POSTGRES_DB}
+          DB_HOST=postgres
+          DB_USERNAME=${POSTGRES_USER}
+          DB_PASSWORD=${POSTGRES_PASSWORD}
+          REDIS_HOST=redis
+          EOF
+          docker compose up -d postgres redis
+
+      - name: Wait for Postgres ready
+        run: |
+          for i in {1..30}; do
+            if docker exec phonehub-postgres pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose -f backend/docker-compose.yml logs postgres
+          exit 1
+
+      - name: Build backend (skip unit tests)
+        working-directory: backend
+        run: mvn clean package -B -DskipTests
+
+      - name: Start backend server
+        working-directory: backend
+        env:
+          MAIL_HOST: smtp.example.com
+          MAIL_PORT: "587"
+          MAIL_USERNAME: ci@example.com
+          MAIL_PASSWORD: dummy-password
+          GOOGLE_CLIENT_ID: dummy-google-client-id
+          GOOGLE_CLIENT_SECRET: dummy-google-client-secret
+          JWT_SECRET: ci_jwt_secret_key_for_phonehub_tests_which_is_long_enough
+          JWT_EXPIRATION: "86400000"
+          JWT_REFRESH_EXPIRATION: "604800000"
+          VNPAY_URL: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+          VNPAY_TMN_CODE: dummy-vnpay-code
+          VNPAY_HASH_SECRET: dummy-vnpay-hash-secret
+          VNPAY_RETURN_URL: http://localhost:8081/api/v1/payments/vnpay/return
+          FRONTEND_URL: http://localhost:3000
+          GEMINI_API_KEY: dummy-gemini-api-key
+          GEMINI_API_URL: https://generativelanguage.googleapis.com/v1beta/models
+          GEMINI_MODEL: gemini-1.5-flash
+          GEMINI_EMBEDDING_MODEL: text-embedding-004
+          API_PRODUCT_BASE_URL: http://localhost:8081/api/v1/products
+        run: |
+          nohup java -jar target/*.jar > ../backend.log 2>&1 &
+          echo $! > ../backend.pid
+
+      - name: Wait for backend health
+        id: health
+        run: |
+          for i in {1..60}; do
+            if curl -fsS "http://localhost:8081/api/v1/health"; then
+              echo "ready=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Backend did not become healthy"
+          tail -n 200 backend.log || true
+          echo "ready=false" >> "$GITHUB_OUTPUT"
+          exit 1
+
+      - name: Upload backend log (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-startup-log
+          path: backend.log
+
+  # =========================================================================
+  # JOB 2: Chạy 7 collection song song qua matrix
+  # =========================================================================
+  run-collections:
+    name: 🧪 [${{ matrix.member }}] ${{ matrix.collection }}
+    needs: start-backend
+    runs-on: ubuntu-latest
+    environment: secret
+
+    # Không hủy các job khác nếu 1 job fail → thu thập đủ báo cáo
+    continue-on-error: true
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # ── Leader ──────────────────────────────────────────────────────
+          - member: "Leader"
+            collection: "01_Leader_Auth_User_WithTests"
+            jira_assignee_env: JIRA_ASSIGNEE_LEADER
+
+          # ── Member 2 ─────────────────────────────────────────────────────
+          - member: "Member-2"
+            collection: "02_Member_ProductView"
+            jira_assignee_env: JIRA_ASSIGNEE_MEMBER2
+
+          # ── Member 3 ─────────────────────────────────────────────────────
+          - member: "Member-3"
+            collection: "03_Member_AdminProduct"
+            jira_assignee_env: JIRA_ASSIGNEE_MEMBER3
+
+          # ── Member 4 ─────────────────────────────────────────────────────
+          - member: "Member-4"
+            collection: "04_Member_Order"
+            jira_assignee_env: JIRA_ASSIGNEE_MEMBER4
+
+          # ── Member 5 ─────────────────────────────────────────────────────
+          - member: "Member-5"
+            collection: "05_Member_Cart_Address"
+            jira_assignee_env: JIRA_ASSIGNEE_MEMBER5
+
+          # ── Member 6 ─────────────────────────────────────────────────────
+          - member: "Member-6"
+            collection: "06_Member_AdminOrder_Dashboard"
+            jira_assignee_env: JIRA_ASSIGNEE_MEMBER6
+
+          # ── Member 7 ─────────────────────────────────────────────────────
+          - member: "Member-7"
+            collection: "07_Member_Promotion_Payment_Chatbot"
+            jira_assignee_env: JIRA_ASSIGNEE_MEMBER7
 
     env:
       BASE_URL: http://localhost:8081
@@ -52,24 +214,24 @@ jobs:
       GEMINI_MODEL: gemini-1.5-flash
       GEMINI_EMBEDDING_MODEL: text-embedding-004
       API_PRODUCT_BASE_URL: http://localhost:8081/api/v1/products
+      # Jira config
       JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
       JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
       JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
       JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
       JIRA_ISSUE_TYPE: ${{ vars.JIRA_ISSUE_TYPE || 'Bug' }}
-      JIRA_DEFAULT_ASSIGNEE_ACCOUNT_ID: ${{ vars.JIRA_DEFAULT_ASSIGNEE_ACCOUNT_ID }}
-      JIRA_ASSIGNEE_MAP_JSON: ${{ vars.JIRA_ASSIGNEE_MAP_JSON }}
+      # Jira accountId của từng thành viên (cấu hình trong GitHub → Settings → Variables)
+      JIRA_ASSIGNEE_LEADER:  ${{ vars.JIRA_ASSIGNEE_LEADER }}
+      JIRA_ASSIGNEE_MEMBER2: ${{ vars.JIRA_ASSIGNEE_MEMBER2 }}
+      JIRA_ASSIGNEE_MEMBER3: ${{ vars.JIRA_ASSIGNEE_MEMBER3 }}
+      JIRA_ASSIGNEE_MEMBER4: ${{ vars.JIRA_ASSIGNEE_MEMBER4 }}
+      JIRA_ASSIGNEE_MEMBER5: ${{ vars.JIRA_ASSIGNEE_MEMBER5 }}
+      JIRA_ASSIGNEE_MEMBER6: ${{ vars.JIRA_ASSIGNEE_MEMBER6 }}
+      JIRA_ASSIGNEE_MEMBER7: ${{ vars.JIRA_ASSIGNEE_MEMBER7 }}
 
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
-          cache: maven
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -79,7 +241,18 @@ jobs:
       - name: Install Newman
         run: npm install -g newman newman-reporter-htmlextra
 
-      - name: Start database and Redis
+      - name: Prepare report directory
+        run: mkdir -p postman_tests/reports
+
+      # ── Khởi động lại DB + Backend trong runner riêng của matrix job ──
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Start Postgres & Redis
         working-directory: backend
         run: |
           cat > .env <<EOF
@@ -93,7 +266,7 @@ jobs:
           EOF
           docker compose up -d postgres redis
 
-      - name: Wait for database
+      - name: Wait for Postgres
         run: |
           for i in {1..30}; do
             if docker exec phonehub-postgres pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"; then
@@ -101,18 +274,13 @@ jobs:
             fi
             sleep 2
           done
-          docker compose -f backend/docker-compose.yml logs postgres
           exit 1
 
-      - name: Build backend
-        working-directory: backend
-        run: mvn clean package -B -DskipTests
-
-      - name: Start backend
+      - name: Build & start backend
         working-directory: backend
         run: |
+          mvn clean package -B -DskipTests
           nohup java -jar target/*.jar > ../backend.log 2>&1 &
-          echo $! > ../backend.pid
 
       - name: Wait for backend health
         run: |
@@ -122,201 +290,211 @@ jobs:
             fi
             sleep 2
           done
-          echo "Backend did not become healthy"
           tail -n 200 backend.log || true
           exit 1
 
-      - name: Prepare Postman reports
-        run: mkdir -p postman_tests/reports
-
-      - name: Run Postman collections
+      # ── Chạy Newman cho collection của member này ──────────────────────
+      - name: Run Newman — ${{ matrix.member }} / ${{ matrix.collection }}
         id: newman
         continue-on-error: true
         run: |
-          set +e
-          FAILED=0
-          for collection in postman_tests/*.postman_collection.json; do
-            name="$(basename "$collection" .postman_collection.json)"
-            echo "Running $name"
-            newman run "$collection" \
-              --environment postman_tests/phonehub_local.postman_environment.json \
-              --env-var "baseUrl=$BASE_URL" \
-              --reporters cli,json,junit,htmlextra \
-              --reporter-json-export "postman_tests/reports/${name}.json" \
-              --reporter-junit-export "postman_tests/reports/${name}.xml" \
-              --reporter-htmlextra-export "postman_tests/reports/${name}.html"
-            status=$?
-            if [ "$status" -ne 0 ]; then
-              FAILED=1
-            fi
-          done
-          echo "failed=$FAILED" >> "$GITHUB_OUTPUT"
-          exit "$FAILED"
+          newman run \
+            "postman_tests/${{ matrix.collection }}.postman_collection.json" \
+            --environment postman_tests/phonehub_local.postman_environment.json \
+            --env-var "baseUrl=$BASE_URL" \
+            --reporters cli,json,junit,htmlextra \
+            --reporter-json-export   "postman_tests/reports/${{ matrix.collection }}.json" \
+            --reporter-junit-export  "postman_tests/reports/${{ matrix.collection }}.xml" \
+            --reporter-htmlextra-export "postman_tests/reports/${{ matrix.collection }}.html" \
+          && echo "status=passed" >> "$GITHUB_OUTPUT" \
+          || echo "status=failed" >> "$GITHUB_OUTPUT"
 
-      - name: Upload Postman reports
+      # ── Upload báo cáo của member này (luôn chạy) ────────────────────
+      - name: Upload report — ${{ matrix.member }}
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: postman-api-test-reports
+          name: report-${{ matrix.member }}
           path: |
-            postman_tests/reports
+            postman_tests/reports/${{ matrix.collection }}.*
             backend.log
           if-no-files-found: ignore
 
-      - name: Create Jira issue on Postman failure
-        if: steps.newman.outputs.failed == '1' && env.JIRA_BASE_URL != '' && env.JIRA_EMAIL != '' && env.JIRA_API_TOKEN != '' && env.JIRA_PROJECT_KEY != '' && env.JIRA_DEFAULT_ASSIGNEE_ACCOUNT_ID != ''
+      # ── Tạo Jira issue và gán đúng member phụ trách ──────────────────
+      - name: Create Jira issue → assign to ${{ matrix.member }}
+        if: steps.newman.outputs.status == 'failed' && env.JIRA_BASE_URL != '' && env.JIRA_EMAIL != '' && env.JIRA_API_TOKEN != '' && env.JIRA_PROJECT_KEY != ''
+        env:
+          ASSIGNEE_ACCOUNT_ID: ${{ env[matrix.jira_assignee_env] }}
+          COLLECTION_NAME: ${{ matrix.collection }}
+          MEMBER_NAME: ${{ matrix.member }}
+          GH_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           node <<'NODE'
-          const fs = require('fs');
+          const fs   = require('fs');
           const path = require('path');
 
-          const reportsDir = 'postman_tests/reports';
-          const failedCollections = [];
-          const assigneeMap = parseAssigneeMap(process.env.JIRA_ASSIGNEE_MAP_JSON);
+          const collection   = process.env.COLLECTION_NAME;
+          const member       = process.env.MEMBER_NAME;
+          const assigneeId   = process.env.ASSIGNEE_ACCOUNT_ID || '';
+          const runUrl       = process.env.GH_RUN_URL;
+          const reportFile   = path.join('postman_tests', 'reports', `${collection}.json`);
 
-          for (const file of fs.readdirSync(reportsDir).filter((f) => f.endsWith('.json'))) {
-            const report = JSON.parse(fs.readFileSync(path.join(reportsDir, file), 'utf8'));
-            const failures = report.run?.failures || [];
+          // ── Đọc failures từ báo cáo Newman ─────────────────────────────
+          let failureSummary = 'Không đọc được báo cáo Newman. Kiểm tra GitHub Actions artifacts.';
+          if (fs.existsSync(reportFile)) {
+            const report   = JSON.parse(fs.readFileSync(reportFile, 'utf8'));
+            const failures = (report.run?.failures || []).slice(0, 15);
             if (failures.length > 0) {
-              failedCollections.push({
-                collection: file.replace(/\.json$/, ''),
-                failures: failures.slice(0, 10).map((failure) => ({
-                  name: failure.source?.name || failure.parent?.name || 'Unknown request',
-                  error: failure.error?.message || 'Unknown error',
-                })),
-              });
+              failureSummary = failures
+                .map((f, i) =>
+                  `${i + 1}. [${f.source?.name || f.parent?.name || 'Unknown request'}]\n   ${f.error?.message || 'Unknown error'}`
+                )
+                .join('\n');
+            } else {
+              failureSummary = 'Newman exit ≠ 0 nhưng không tìm thấy failure cụ thể. Xem artifact để biết thêm.';
             }
           }
 
-          const groups = groupByAssignee(failedCollections, assigneeMap);
-
-          groups.forEach((group, index) => {
-            const summary = group.collections.length
-              ? group.collections.map((c) => {
-                  const details = c.failures.map((f) => `- ${f.name}: ${f.error}`).join('\n');
-                  return `Collection ${c.collection}\n${details}`;
-                }).join('\n\n')
-              : 'Newman exited with failure. Check GitHub Actions artifacts for details.';
-
-            const collectionNames = group.collections.map((c) => c.collection).join(', ') || 'unknown collection';
-            const payload = {
-              fields: {
-                project: { key: process.env.JIRA_PROJECT_KEY },
-                summary: `[CI] Postman API tests failed - ${collectionNames}`,
-                description: {
-                  type: 'doc',
-                  version: 1,
-                  content: [
-                    {
-                      type: 'paragraph',
-                      content: [
-                        {
-                          type: 'text',
-                          text: `Postman API tests failed in GitHub Actions run ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`,
-                        },
-                      ],
-                    },
-                    {
-                      type: 'paragraph',
-                      content: [
-                        {
-                          type: 'text',
-                          text: group.assignee
-                            ? `Assigned by collection ownership map to Jira accountId ${group.assignee}.`
-                            : 'No Jira assignee matched this failing collection. Configure JIRA_ASSIGNEE_MAP_JSON or JIRA_DEFAULT_ASSIGNEE_ACCOUNT_ID.',
-                        },
-                      ],
-                    },
-                    {
-                      type: 'codeBlock',
-                      attrs: { language: 'text' },
-                      content: [{ type: 'text', text: summary }],
-                    },
-                  ],
-                },
-                issuetype: { name: process.env.JIRA_ISSUE_TYPE || 'Bug' },
-              },
-            };
-
-            if (group.assignee) {
-              payload.fields.assignee = { accountId: group.assignee };
-            }
-
-            fs.writeFileSync(`jira-payload-${index + 1}.json`, JSON.stringify(payload));
-          });
-
-          function parseAssigneeMap(raw) {
-            if (!raw || !raw.trim()) return {};
-            try {
-              return JSON.parse(raw);
-            } catch (error) {
-              throw new Error(`JIRA_ASSIGNEE_MAP_JSON is not valid JSON: ${error.message}`);
-            }
-          }
-
-          function resolveAssignee(collection, map) {
-            const withoutNumber = collection.replace(/^\d+_/, '');
-            const prefix = collection.split('_')[0];
-            return (
-              map[collection] ||
-              map[withoutNumber] ||
-              map[prefix] ||
-              process.env.JIRA_DEFAULT_ASSIGNEE_ACCOUNT_ID ||
-              ''
-            );
-          }
-
-          function groupByAssignee(collections, map) {
-            const fallback = collections.length ? collections : [{ collection: 'newman', failures: [] }];
-            const grouped = new Map();
-
-            for (const collection of fallback) {
-              const assignee = resolveAssignee(collection.collection, map);
-              const key = assignee || 'UNASSIGNED';
-              if (!grouped.has(key)) {
-                grouped.set(key, { assignee, collections: [] });
+          // ── Build Jira payload (Atlassian Document Format) ──────────────
+          const payload = {
+            fields: {
+              project:   { key: process.env.JIRA_PROJECT_KEY },
+              issuetype: { name: process.env.JIRA_ISSUE_TYPE || 'Bug' },
+              summary:   `[CI] Postman thất bại — ${collection} (${member})`,
+              description: {
+                type: 'doc', version: 1,
+                content: [
+                  {
+                    type: 'heading', attrs: { level: 3 },
+                    content: [{ type: 'text', text: '🔴 Postman API Test Failure' }]
+                  },
+                  {
+                    type: 'bulletList',
+                    content: [
+                      bulletItem(`Collection : ${collection}`),
+                      bulletItem(`Phụ trách  : ${member}`),
+                      bulletItem(`CI Run     : ${runUrl}`),
+                    ]
+                  },
+                  {
+                    type: 'heading', attrs: { level: 4 },
+                    content: [{ type: 'text', text: 'Chi tiết lỗi (tối đa 15 failures)' }]
+                  },
+                  {
+                    type: 'codeBlock', attrs: { language: 'text' },
+                    content: [{ type: 'text', text: failureSummary }]
+                  },
+                  {
+                    type: 'paragraph',
+                    content: [{
+                      type: 'text',
+                      text: 'Tải báo cáo HTML đầy đủ tại phần Artifacts của CI run ở trên.'
+                    }]
+                  }
+                ]
               }
-              grouped.get(key).collections.push(collection);
             }
+          };
 
-            return [...grouped.values()];
+          if (assigneeId) {
+            payload.fields.assignee = { accountId: assigneeId };
           }
+
+          function bulletItem(text) {
+            return {
+              type: 'listItem',
+              content: [{
+                type: 'paragraph',
+                content: [{ type: 'text', text }]
+              }]
+            };
+          }
+
+          fs.writeFileSync('jira-payload.json', JSON.stringify(payload, null, 2));
+          console.log('Jira payload đã được tạo cho:', member, assigneeId ? `(accountId: ${assigneeId})` : '(no assignee)');
           NODE
 
-          for payload in jira-payload-*.json; do
-            response_file="${payload%.json}-response.json"
-            http_status="$(
-              curl --show-error --silent \
-                --request POST \
-                --url "${JIRA_BASE_URL%/}/rest/api/3/issue" \
-                --user "${JIRA_EMAIL}:${JIRA_API_TOKEN}" \
-                --header "Accept: application/json" \
-                --header "Content-Type: application/json" \
-                --data @"$payload" \
-                --output "$response_file" \
-                --write-out "%{http_code}"
-            )"
+          # Gửi lên Jira
+          RESPONSE_FILE="jira-response.json"
+          HTTP_STATUS="$(
+            curl --show-error --silent \
+              --request POST \
+              --url "${JIRA_BASE_URL%/}/rest/api/3/issue" \
+              --user "${JIRA_EMAIL}:${JIRA_API_TOKEN}" \
+              --header "Accept: application/json" \
+              --header "Content-Type: application/json" \
+              --data @jira-payload.json \
+              --output "$RESPONSE_FILE" \
+              --write-out "%{http_code}"
+          )"
 
-            if [ "$http_status" -ge 200 ] && [ "$http_status" -lt 300 ]; then
-              echo "Created Jira issue from $payload"
-              cat "$response_file"
-              continue
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+            echo "✅ Jira issue đã tạo thành công cho ${{ matrix.member }}"
+            cat "$RESPONSE_FILE"
+          else
+            echo "❌ Tạo Jira issue thất bại (HTTP $HTTP_STATUS)"
+            cat "$RESPONSE_FILE"
+            if grep -qi '"assignee"' "$RESPONSE_FILE"; then
+              echo "⚠️  Jira từ chối trường assignee. Kiểm tra lại JIRA_ASSIGNEE_${{ matrix.member }} có đúng Jira Cloud accountId không."
             fi
-
-            echo "Jira issue creation failed for $payload with HTTP $http_status"
-            cat "$response_file"
-
-            if grep -qi '"assignee"' "$response_file"; then
-              echo "Jira rejected the assignee field. Check that JIRA_DEFAULT_ASSIGNEE_ACCOUNT_ID and JIRA_ASSIGNEE_MAP_JSON contain valid Jira Cloud accountId values, and that the user can be assigned in this project."
-            fi
-
             exit 1
-          done
+          fi
 
-      - name: Fail workflow when Postman failed
-        if: steps.newman.outputs.failed == '1'
-        run: exit 1
+      # ── Fail job nếu Newman thất bại (sau khi đã upload artifact + Jira) ─
+      - name: Fail job if tests failed
+        if: steps.newman.outputs.status == 'failed'
+        run: |
+          echo "❌ Collection ${{ matrix.collection }} (${{ matrix.member }}) có test thất bại."
+          exit 1
 
       - name: Show backend logs on failure
         if: failure()
         run: tail -n 200 backend.log || true
+
+  # =========================================================================
+  # JOB 3: Tổng hợp kết quả — chạy sau khi tất cả matrix jobs xong
+  # =========================================================================
+  summary:
+    name: 📊 Test Summary
+    needs: run-collections
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Download all reports
+        uses: actions/download-artifact@v4
+        with:
+          path: all-reports
+
+      - name: Print summary table
+        run: |
+          echo "## 🧪 Postman API Test Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Member | Collection | Status |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|--------|-----------|--------|" >> "$GITHUB_STEP_SUMMARY"
+
+          declare -A MEMBERS=(
+            ["01_Leader_Auth_User_WithTests"]="Leader"
+            ["02_Member_ProductView"]="Member 2"
+            ["03_Member_AdminProduct"]="Member 3"
+            ["04_Member_Order"]="Member 4"
+            ["05_Member_Cart_Address"]="Member 5"
+            ["06_Member_AdminOrder_Dashboard"]="Member 6"
+            ["07_Member_Promotion_Payment_Chatbot"]="Member 7"
+          )
+
+          for col in "${!MEMBERS[@]}"; do
+            member="${MEMBERS[$col]}"
+            xml_file=$(find all-reports -name "${col}.xml" 2>/dev/null | head -1)
+            if [ -z "$xml_file" ]; then
+              status="⚠️ No report"
+            elif grep -q 'failures="[1-9]' "$xml_file" || grep -q 'errors="[1-9]' "$xml_file"; then
+              status="❌ FAILED"
+            else
+              status="✅ PASSED"
+            fi
+            echo "| $member | \`$col\` | $status |" >> "$GITHUB_STEP_SUMMARY"
+          done
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "_Tải báo cáo HTML chi tiết tại phần **Artifacts** của CI run này._" >> "$GITHUB_STEP_SUMMARY"
