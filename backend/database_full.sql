@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS unaccent;
 
 -- ============================================
 -- 1. USERS DOMAIN
--- ============================================
+-- ==========================================
 
 -- Table: users
 CREATE TABLE IF NOT EXISTS users (
