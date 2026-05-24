@@ -14,7 +14,7 @@
         {
           "name": "Lấy chi tiết sản phẩm (Admin)",
           "event": [
-            {
+            { 
               "listen": "test",
               "script": {
                 "exec": [
