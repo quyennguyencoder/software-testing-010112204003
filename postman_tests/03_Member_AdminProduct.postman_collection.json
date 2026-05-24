@@ -12,9 +12,50 @@
       "name": "Product Management",
       "item": [
         {
+          "name": "Đăng nhập Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"usernameOrEmail\": \"user1\",\r\n  \"password\": \"User123456\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:8081/api/v1/auth/login' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"usernameOrEmail\": \"user1\",\r\n  \"password\": \"User123456\"\r\n}'"
+          },
+          "response": []
+        },
+        {
           "name": "Lấy chi tiết sản phẩm (Admin)",
           "event": [
-            { 
+            {
               "listen": "test",
               "script": {
                 "exec": [
@@ -71,7 +112,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMUBnbWFpbC5jb20iLCJ1c2VySWQiOjE0LCJpYXQiOjE3Nzk2MDY1NDAsImV4cCI6MTc3OTY5Mjk0MH0.ZeXTr6jtzbbNxY49fPhq6uBjtv55Gcy1gszfbABBKuM",
+                  "value": "{{accessToken}}",
                   "type": "string"
                 }
               ]
@@ -141,7 +182,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMUBnbWFpbC5jb20iLCJ1c2VySWQiOjE0LCJpYXQiOjE3Nzk2MDY1NDAsImV4cCI6MTc3OTY5Mjk0MH0.ZeXTr6jtzbbNxY49fPhq6uBjtv55Gcy1gszfbABBKuM",
+                  "value": "{{accessToken}}",
                   "type": "string"
                 }
               ]
@@ -195,7 +236,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMUBnbWFpbC5jb20iLCJ1c2VySWQiOjE0LCJpYXQiOjE3Nzk2MDY1NDAsImV4cCI6MTc3OTY5Mjk0MH0.ZeXTr6jtzbbNxY49fPhq6uBjtv55Gcy1gszfbABBKuM",
+                  "value": "{{accessToken}}",
                   "type": "string"
                 }
               ]
