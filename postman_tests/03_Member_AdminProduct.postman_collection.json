@@ -1,9 +1,11 @@
 {
   "info": {
-    "_postman_id": "19340e89-a202-40b3-911b-f7ce1d3f0009",
+    "_postman_id": "8de47d52-75e3-4d40-92e0-41f5a92cdcee",
     "name": "🛠️ [Member 3] Admin - Product, Brand, Category",
     "description": "Quản lý sản phẩm, thương hiệu, danh mục từ phía Admin (16 endpoints)",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49201715",
+    "_collection_link": "https://go.postman.co/collection/49201715-8de47d52-75e3-4d40-92e0-41f5a92cdcee?source=collection_link"
   },
   "item": [
     {
@@ -11,11 +13,82 @@
       "item": [
         {
           "name": "Lấy chi tiết sản phẩm (Admin)",
+          "event": [
+            { 
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test Case 01: Kiểm tra mã trạng thái HTTP (HTTP Status Code)\r",
+                  "pm.test(\"TC01: Mã trạng thái phản hồi phải là 200 OK\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Test Case 02: Kiểm tra hiệu năng API (Response Time)\r",
+                  "pm.test(\"TC02: Thời gian phản hồi phải dưới 500ms để đảm bảo hiệu suất\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                  "});\r",
+                  "\r",
+                  "// Test Case 03: Kiểm định cấu trúc vỏ phản hồi (Response Wrapper/Payload)\r",
+                  "pm.test(\"TC03: Phản hồi phải tuân thủ chuẩn định dạng API của hệ thống\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    \r",
+                  "    // Xác thực các cờ trạng thái (Status Flags)\r",
+                  "    pm.expect(jsonData.success).to.be.true;\r",
+                  "    pm.expect(jsonData.status).to.eql(200);\r",
+                  "    \r",
+                  "    // Xác thực sự tồn tại của đối tượng mang dữ liệu chính (Data Payload)\r",
+                  "    pm.expect(jsonData).to.have.property(\"data\");\r",
+                  "});\r",
+                  "\r",
+                  "// Test Case 04: Kiểm định tính toàn vẹn của dữ liệu thực thể (Entity Data Integrity)\r",
+                  "pm.test(\"TC04: Đối tượng Product phải chứa đầy đủ các thuộc tính bắt buộc\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    \r",
+                  "    // Trích xuất đối tượng Product từ payload\r",
+                  "    var product = jsonData.data; \r",
+                  "    \r",
+                  "    // Xác thực các trường thông tin cơ bản\r",
+                  "    pm.expect(product).to.have.property('id');\r",
+                  "    pm.expect(product).to.have.property('name');\r",
+                  "    \r",
+                  "    // Xác thực kiểu dữ liệu của các thuộc tính danh sách (Collections/Arrays)\r",
+                  "    pm.expect(product.templates).to.be.an('array');\r",
+                  "    pm.expect(product.images).to.be.an('array');\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMUBnbWFpbC5jb20iLCJ1c2VySWQiOjE0LCJpYXQiOjE3Nzk2MDY1NDAsImV4cCI6MTc3OTY5Mjk0MH0.ZeXTr6jtzbbNxY49fPhq6uBjtv55Gcy1gszfbABBKuM",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/{id}",
+              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -29,12 +102,133 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Lấy thông tin chi tiết của một sản phẩm theo ID"
+          },
+          "response": []
+        },
+        {
+          "name": "[FAIL] Lấy chi tiết sản phẩm - ID không tồn tại",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// ID không có thật thì Backend bắt buộc phải trả về mã 404 Not Found\r",
+                  "pm.test(\"1. Mã trạng thái phản hồi phải là 404 Not Found\", function () {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});\r",
+                  "\r",
+                  "// Kiểm tra cấu trúc lỗi trả về xem có rõ ràng không\r",
+                  "pm.test(\"2. Hệ thống phải báo success = false và có message thông báo lỗi\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.success).to.be.false;\r",
+                  "    pm.expect(jsonData.message).to.include(\"Không tìm thấy\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMUBnbWFpbC5jb20iLCJ1c2VySWQiOjE0LCJpYXQiOjE3Nzk2MDY1NDAsImV4cCI6MTc3OTY5Mjk0MH0.ZeXTr6jtzbbNxY49fPhq6uBjtv55Gcy1gszfbABBKuM",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "products",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "35"
+                }
+              ]
+            },
+            "description": "Lấy thông tin chi tiết của một sản phẩm theo ID"
+          },
+          "response": []
+        },
+        {
+          "name": "[FAIL] Lấy chi tiết sản phẩm - Sai định dạng ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Truyền chữ vào ô số thì Backend phải chặn ngay từ đầu bằng mã 400 Bad Request\r",
+                  "pm.test(\"1. Mã trạng thái phản hồi phải là 400 Bad Request\", function () {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMUBnbWFpbC5jb20iLCJ1c2VySWQiOjE0LCJpYXQiOjE3Nzk2MDY1NDAsImV4cCI6MTc3OTY5Mjk0MH0.ZeXTr6jtzbbNxY49fPhq6uBjtv55Gcy1gszfbABBKuM",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "products",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "abc",
                   "description": "ID của sản phẩm"
                 }
               ]
             },
-            "description": "Lấy thông tin chi tiết của một sản phẩm theo ID",
+            "description": "Lấy thông tin chi tiết của một sản phẩm theo ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Cập nhật sản phẩm (Admin)",
+          "request": {
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -44,13 +238,7 @@
                   "type": "string"
                 }
               ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Cập nhật sản phẩm (Admin)",
-          "request": {
+            },
             "method": "PUT",
             "header": [
               {
@@ -58,37 +246,6 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/{id}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "",
-                  "description": "ID của sản phẩm"
-                }
-              ]
-            },
-            "description": "Cập nhật thông tin sản phẩm đã tồn tại",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"thumbnailUrl\": \"string\",\n  \"categoryId\": 1,\n  \"brandId\": 1,\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"string\",\n      \"price\": 1,\n      \"stockQuantity\": 1\n    }\n  ],\n  \"metadata\": {}\n}",
@@ -97,17 +254,9 @@
                   "language": "json"
                 }
               }
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Xóa sản phẩm (Admin - Soft Delete)",
-          "request": {
-            "method": "DELETE",
-            "header": [],
+            },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/{id}",
+              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -126,7 +275,13 @@
                 }
               ]
             },
-            "description": "Xóa mềm sản phẩm, có thể khôi phục sau này",
+            "description": "Cập nhật thông tin sản phẩm đã tồn tại"
+          },
+          "response": []
+        },
+        {
+          "name": "Xóa sản phẩm (Admin - Soft Delete)",
+          "request": {
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -136,13 +291,46 @@
                   "type": "string"
                 }
               ]
-            }
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "products",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "",
+                  "description": "ID của sản phẩm"
+                }
+              ]
+            },
+            "description": "Xóa mềm sản phẩm, có thể khôi phục sau này"
           },
           "response": []
         },
         {
           "name": "Xem danh sách tất cả sản phẩm (Admin)",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
@@ -213,7 +401,13 @@
                 }
               ]
             },
-            "description": "Lấy danh sách sản phẩm với tùy chọn lọc, tìm kiếm và sắp xếp. Nếu không truyền tham số gì thì mặc định trả về tất cả sản phẩm đang hoạt động.",
+            "description": "Lấy danh sách sản phẩm với tùy chọn lọc, tìm kiếm và sắp xếp. Nếu không truyền tham số gì thì mặc định trả về tất cả sản phẩm đang hoạt động."
+          },
+          "response": []
+        },
+        {
+          "name": "Tạo sản phẩm mới (Admin)",
+          "request": {
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -223,13 +417,7 @@
                   "type": "string"
                 }
               ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Tạo sản phẩm mới (Admin)",
-          "request": {
+            },
             "method": "POST",
             "header": [
               {
@@ -237,6 +425,15 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"thumbnailUrl\": \"string\",\n  \"categoryId\": 1,\n  \"brandId\": 1,\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"string\",\n      \"price\": 1,\n      \"stockQuantity\": 1\n    }\n  ],\n  \"metadata\": {},\n  \"images\": [\n    {\n      \"imageUrl\": \"string\",\n      \"imageOrder\": 1,\n      \"isPrimary\": true\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/products",
               "host": [
@@ -249,7 +446,13 @@
                 "products"
               ]
             },
-            "description": "Tạo một sản phẩm mới trong hệ thống",
+            "description": "Tạo một sản phẩm mới trong hệ thống"
+          },
+          "response": []
+        },
+        {
+          "name": "Khôi phục sản phẩm đã xóa (Admin)",
+          "request": {
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -260,25 +463,10 @@
                 }
               ]
             },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"thumbnailUrl\": \"string\",\n  \"categoryId\": 1,\n  \"brandId\": 1,\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"string\",\n      \"price\": 1,\n      \"stockQuantity\": 1\n    }\n  ],\n  \"metadata\": {},\n  \"images\": [\n    {\n      \"imageUrl\": \"string\",\n      \"imageOrder\": 1,\n      \"isPrimary\": true\n    }\n  ]\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Khôi phục sản phẩm đã xóa (Admin)",
-          "request": {
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/{id}/restore",
+              "raw": "{{baseUrl}}/api/v1/admin/products/:id/restore",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -298,7 +486,13 @@
                 }
               ]
             },
-            "description": "Khôi phục sản phẩm đã bị xóa mềm",
+            "description": "Khôi phục sản phẩm đã bị xóa mềm"
+          },
+          "response": []
+        },
+        {
+          "name": "Quản lý hình ảnh sản phẩm (Admin)",
+          "request": {
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -308,13 +502,7 @@
                   "type": "string"
                 }
               ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Quản lý hình ảnh sản phẩm (Admin)",
-          "request": {
+            },
             "method": "POST",
             "header": [
               {
@@ -322,8 +510,17 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"images\": [\n    {\n      \"imageUrl\": \"string\",\n      \"imageOrder\": 1,\n      \"isPrimary\": true\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/{id}/images",
+              "raw": "{{baseUrl}}/api/v1/admin/products/:id/images",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -343,7 +540,13 @@
                 }
               ]
             },
-            "description": "Thêm, cập nhật hoặc sắp xếp lại hình ảnh sản phẩm. Sẽ thay thế toàn bộ ảnh hiện tại.",
+            "description": "Thêm, cập nhật hoặc sắp xếp lại hình ảnh sản phẩm. Sẽ thay thế toàn bộ ảnh hiện tại."
+          },
+          "response": []
+        },
+        {
+          "name": "Lấy metadata sản phẩm lớn hơn giá",
+          "request": {
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -354,25 +557,10 @@
                 }
               ]
             },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"images\": [\n    {\n      \"imageUrl\": \"string\",\n      \"imageOrder\": 1,\n      \"isPrimary\": true\n    }\n  ]\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Lấy metadata sản phẩm lớn hơn giá",
-          "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/metadata/greater-than-price",
+              "raw": "{{baseUrl}}/api/v1/admin/products/metadata/greater-than-price?price=",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -388,12 +576,17 @@
                 {
                   "key": "price",
                   "value": "",
-                  "description": "Giá trị so sánh",
-                  "disabled": false
+                  "description": "Giá trị so sánh"
                 }
               ]
             },
-            "description": "Lấy danh sách metadata sản phẩm có giá lớn hơn giá trị được chỉ định",
+            "description": "Lấy danh sách metadata sản phẩm có giá lớn hơn giá trị được chỉ định"
+          },
+          "response": []
+        },
+        {
+          "name": "Lấy danh sách sản phẩm đã xóa mềm (Admin)",
+          "request": {
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -403,13 +596,7 @@
                   "type": "string"
                 }
               ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Lấy danh sách sản phẩm đã xóa mềm (Admin)",
-          "request": {
+            },
             "method": "GET",
             "header": [],
             "url": {
@@ -469,7 +656,13 @@
                 }
               ]
             },
-            "description": "Lấy tất cả sản phẩm đã bị xóa mềm (isDeleted=true)",
+            "description": "Lấy tất cả sản phẩm đã bị xóa mềm (isDeleted=true)"
+          },
+          "response": []
+        },
+        {
+          "name": "Xóa hình ảnh sản phẩm (Admin)",
+          "request": {
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -479,17 +672,11 @@
                   "type": "string"
                 }
               ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Xóa hình ảnh sản phẩm (Admin)",
-          "request": {
+            },
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/{id}/images/{imageId}",
+              "raw": "{{baseUrl}}/api/v1/admin/products/:id/images/:imageId",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -515,17 +702,7 @@
                 }
               ]
             },
-            "description": "Xóa một hình ảnh cụ thể của sản phẩm",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
+            "description": "Xóa một hình ảnh cụ thể của sản phẩm"
           },
           "response": []
         }
@@ -537,6 +714,16 @@
         {
           "name": "[ADMIN] Cập nhật thương hiệu",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PUT",
             "header": [
               {
@@ -544,8 +731,17 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"logoUrl\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/brands/{id}",
+              "raw": "{{baseUrl}}/api/v1/admin/brands/:id",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -564,7 +760,13 @@
                 }
               ]
             },
-            "description": "Cập nhật thông tin của thương hiệu đã tồn tại. Kiểm tra trùng tên (loại trừ chính nó). **Yêu cầu quyền ADMIN.**",
+            "description": "Cập nhật thông tin của thương hiệu đã tồn tại. Kiểm tra trùng tên (loại trừ chính nó). **Yêu cầu quyền ADMIN.**"
+          },
+          "response": []
+        },
+        {
+          "name": "[ADMIN] Xóa thương hiệu",
+          "request": {
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -575,25 +777,10 @@
                 }
               ]
             },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"logoUrl\": \"string\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "[ADMIN] Xóa thương hiệu",
-          "request": {
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/brands/{id}",
+              "raw": "{{baseUrl}}/api/v1/admin/brands/:id",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -612,7 +799,13 @@
                 }
               ]
             },
-            "description": "Xóa thương hiệu theo ID. Kiểm tra ràng buộc trước khi xóa: Không cho phép xóa nếu thương hiệu có sản phẩm liên kết. **Yêu cầu quyền ADMIN.**",
+            "description": "Xóa thương hiệu theo ID. Kiểm tra ràng buộc trước khi xóa: Không cho phép xóa nếu thương hiệu có sản phẩm liên kết. **Yêu cầu quyền ADMIN.**"
+          },
+          "response": []
+        },
+        {
+          "name": "[ADMIN] Tạo thương hiệu mới",
+          "request": {
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -622,13 +815,7 @@
                   "type": "string"
                 }
               ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "[ADMIN] Tạo thương hiệu mới",
-          "request": {
+            },
             "method": "POST",
             "header": [
               {
@@ -636,6 +823,15 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"logoUrl\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/brands",
               "host": [
@@ -648,26 +844,7 @@
                 "brands"
               ]
             },
-            "description": "Tạo một thương hiệu mới. Kiểm tra trùng tên. **Yêu cầu quyền ADMIN.**",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"logoUrl\": \"string\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
+            "description": "Tạo một thương hiệu mới. Kiểm tra trùng tên. **Yêu cầu quyền ADMIN.**"
           },
           "response": []
         }
@@ -679,6 +856,16 @@
         {
           "name": "[ADMIN] Cập nhật danh mục",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PUT",
             "header": [
               {
@@ -686,8 +873,17 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"parentId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/categories/{id}",
+              "raw": "{{baseUrl}}/api/v1/admin/categories/:id",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -706,7 +902,13 @@
                 }
               ]
             },
-            "description": "Cập nhật thông tin của danh mục đã tồn tại. Kiểm tra trùng tên trong cùng cấp parentId (loại trừ chính nó). Không cho phép đặt danh mục làm cha của chính nó. **Yêu cầu quyền ADMIN.**",
+            "description": "Cập nhật thông tin của danh mục đã tồn tại. Kiểm tra trùng tên trong cùng cấp parentId (loại trừ chính nó). Không cho phép đặt danh mục làm cha của chính nó. **Yêu cầu quyền ADMIN.**"
+          },
+          "response": []
+        },
+        {
+          "name": "[ADMIN] Xóa danh mục",
+          "request": {
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -717,25 +919,10 @@
                 }
               ]
             },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"parentId\": 1\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "[ADMIN] Xóa danh mục",
-          "request": {
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/categories/{id}",
+              "raw": "{{baseUrl}}/api/v1/admin/categories/:id",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -754,7 +941,13 @@
                 }
               ]
             },
-            "description": "Xóa danh mục theo ID. Kiểm tra ràng buộc trước khi xóa: Không cho phép xóa nếu danh mục có danh mục con hoặc có sản phẩm liên kết. **Yêu cầu quyền ADMIN.**",
+            "description": "Xóa danh mục theo ID. Kiểm tra ràng buộc trước khi xóa: Không cho phép xóa nếu danh mục có danh mục con hoặc có sản phẩm liên kết. **Yêu cầu quyền ADMIN.**"
+          },
+          "response": []
+        },
+        {
+          "name": "[ADMIN] Tạo danh mục mới",
+          "request": {
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -764,13 +957,7 @@
                   "type": "string"
                 }
               ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "[ADMIN] Tạo danh mục mới",
-          "request": {
+            },
             "method": "POST",
             "header": [
               {
@@ -778,6 +965,15 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"parentId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/categories",
               "host": [
@@ -790,36 +986,11 @@
                 "categories"
               ]
             },
-            "description": "Tạo một danh mục mới. Nếu parentId=null: tạo danh mục gốc. Nếu parentId=<id>: tạo danh mục con. Kiểm tra trùng tên trong cùng cấp parentId. **Yêu cầu quyền ADMIN.**",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"parentId\": 1\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
+            "description": "Tạo một danh mục mới. Nếu parentId=null: tạo danh mục gốc. Nếu parentId=<id>: tạo danh mục con. Kiểm tra trùng tên trong cùng cấp parentId. **Yêu cầu quyền ADMIN.**"
           },
           "response": []
         }
       ]
-    }
-  ],
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "{{baseUrl}}"
     }
   ],
   "auth": {
@@ -831,5 +1002,11 @@
         "type": "string"
       }
     ]
-  }
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "{{baseUrl}}"
+    }
+  ]
 }
