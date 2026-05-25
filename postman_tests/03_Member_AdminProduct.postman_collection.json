@@ -13,6 +13,38 @@
       "item": [
         {
           "name": "Đăng nhập Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Kiểm tra chắc chắn API gọi thành công (Status 200)\r",
+                  "pm.test(\"Đăng nhập thành công với mã 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Chuyển phản hồi của Backend thành đối tượng JSON\r",
+                  "var jsonData = pm.response.json();\r",
+                  "\r",
+                  "// Tìm đúng đường dẫn đến chỗ giấu Token và lưu lại\r",
+                  "if (jsonData && jsonData.data && jsonData.data.accessToken) {\r",
+                  "    var token = jsonData.data.accessToken;\r",
+                  "    \r",
+                  "    // Lưu Token vào biến môi trường tên là \"accessToken\"\r",
+                  "    pm.environment.set(\"accessToken\", token);\r",
+                  "    \r",
+                  "    // In ra console để tự tin là đã lưu thành công\r",
+                  "    console.log(\"Hệ thống đã tự động chộp được Token: \" + token);\r",
+                  "} else {\r",
+                  "    console.log(\"Lỗi: Không tìm thấy accessToken trong phản hồi!\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -27,7 +59,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"usernameOrEmail\": \"user1\",\r\n  \"password\": \"User123456\"\r\n}",
+              "raw": "{\r\n  \"usernameOrEmail\": \"admin123\",\r\n  \"password\": \"Admin123456\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -35,12 +67,10 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8081/api/v1/auth/login",
-              "protocol": "http",
+              "raw": "{{baseUrl}}/api/v1/auth/login",
               "host": [
-                "localhost"
+                "{{baseUrl}}"
               ],
-              "port": "8081",
               "path": [
                 "api",
                 "v1",
@@ -269,6 +299,45 @@
         },
         {
           "name": "Cập nhật sản phẩm (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "\r",
+                  "var jsonData = pm.response.json();\r",
+                  "\r",
+                  "// 1. Kiểm tra Mã trạng thái\r",
+                  "pm.test(\"TC01: Mã trạng thái phản hồi phải là 200 OK\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// 2. Kiểm tra Thời gian phản hồi\r",
+                  "pm.test(\"TC02: Thời gian phản hồi phải dưới 500ms để đảm bảo hiệu suất\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                  "});\r",
+                  "\r",
+                  "// 3. Kiểm tra Cấu trúc JSON chung\r",
+                  "pm.test(\"TC03: Hệ thống phải báo success = true và có thông báo thành công\", function () {\r",
+                  "    pm.expect(jsonData.success).to.be.true;\r",
+                  "    pm.expect(jsonData.status).to.eql(200);\r",
+                  "    pm.expect(jsonData.message).to.eql(\"Cập nhật sản phẩm thành công\");\r",
+                  "});\r",
+                  "\r",
+                  "// 4. Kiểm tra Tính chính xác của dữ liệu \r",
+                  "pm.test(\"TC04: Dữ liệu trả về phải chứa đúng ID và Tên sản phẩm vừa cập nhật\", function () {\r",
+                  "    pm.expect(jsonData.data.id).to.eql(10); \r",
+                  "    pm.expect(jsonData.data.name).to.eql(\"Xiaomi Redmi Pad\");\r",
+                  "    pm.expect(jsonData.data).to.be.an('object');\r",
+                  "    pm.expect(jsonData.data).to.have.property('description');\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "bearer",
@@ -289,7 +358,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"thumbnailUrl\": \"string\",\n  \"categoryId\": 1,\n  \"brandId\": 1,\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"string\",\n      \"price\": 1,\n      \"stockQuantity\": 1\n    }\n  ],\n  \"metadata\": {}\n}",
+              "raw": "{\n  \"name\": \"Xiaomi Redmi Pad\",\n  \"description\": \"string\",\n  \"thumbnailUrl\": \"string\",\n  \"categoryId\": 1,\n  \"brandId\": 1,\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"XIAOMI-PADSE-528-MINT\",\n      \"price\": 1,\n      \"stockQuantity\": 1\n    }\n  ],\n  \"metadata\": {}\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -311,7 +380,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
+                  "value": "10",
                   "description": "ID của sản phẩm"
                 }
               ]
