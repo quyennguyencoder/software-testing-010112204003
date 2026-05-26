@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS unaccent;
 
 -- ============================================
 -- 1. USERS DOMAIN
--- ==========================================
+-- ============================================
 
 -- Table: users
 CREATE TABLE IF NOT EXISTS users (
@@ -23,18 +23,20 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Sample data: users
 INSERT INTO users (username, password_hash, full_name, email, phone_number, gender, date_of_birth, role, status, created_at, updated_at) VALUES
-('admin', '$2a$10$N.zmdr9VKQf5VGcbq8BbXeuEYXCEL2k0E3W6AJCvHLE3p91NEVGie', 'Nguyễn Văn Admin', 'admin@utephonehub.com', '0901234567', 'MALE', '1990-01-01', 'ADMIN', 'ACTIVE', NOW() - INTERVAL '7 days', NOW() - INTERVAL '7 days'),
-('user001', '$2a$10$N.zmdr9VKQf5VGcbq8BbXeuEYXCEL2k0E3W6AJCvHLE3p91NEVGie', 'Trần Thị Hương', 'huong.tran@gmail.com', '0912345678', 'FEMALE', '1995-05-15', 'CUSTOMER', 'ACTIVE', NOW() - INTERVAL '6 days', NOW() - INTERVAL '6 days'),
-('user002', '$2a$10$N.zmdr9VKQf5VGcbq8BbXeuEYXCEL2k0E3W6AJCvHLE3p91NEVGie', 'Lê Văn Nam', 'nam.le@gmail.com', '0923456789', 'MALE', '1998-08-20', 'CUSTOMER', 'ACTIVE', NOW() - INTERVAL '6 days', NOW() - INTERVAL '6 days'),
-('user003', '$2a$10$N.zmdr9VKQf5VGcbq8BbXeuEYXCEL2k0E3W6AJCvHLE3p91NEVGie', 'Phạm Thị Mai', 'mai.pham@gmail.com', '0934567890', 'FEMALE', '2000-03-10', 'CUSTOMER', 'ACTIVE', NOW() - INTERVAL '5 days', NOW() - INTERVAL '5 days'),
-('user004', '$2a$10$N.zmdr9VKQf5VGcbq8BbXeuEYXCEL2k0E3W6AJCvHLE3p91NEVGie', 'Hoàng Văn Đức', 'duc.hoang@gmail.com', '0945678901', 'MALE', '1997-11-25', 'CUSTOMER', 'ACTIVE', NOW() - INTERVAL '5 days', NOW() - INTERVAL '5 days'),
-('user005', '$2a$10$N.zmdr9VKQf5VGcbq8BbXeuEYXCEL2k0E3W6AJCvHLE3p91NEVGie', 'Nguyễn Thị Lan', 'lan.nguyen@gmail.com', '0956789012', 'FEMALE', '1999-07-12', 'CUSTOMER', 'ACTIVE', NOW() - INTERVAL '4 days', NOW() - INTERVAL '4 days'),
-('user006', '$2a$10$N.zmdr9VKQf5VGcbq8BbXeuEYXCEL2k0E3W6AJCvHLE3p91NEVGie', 'Võ Văn Hùng', 'hung.vo@gmail.com', '0967890123', 'MALE', '1996-04-18', 'CUSTOMER', 'ACTIVE', NOW() - INTERVAL '3 days', NOW() - INTERVAL '3 days'),
-('user007', '$2a$10$N.zmdr9VKQf5VGcbq8BbXeuEYXCEL2k0E3W6AJCvHLE3p91NEVGie', 'Bùi Thị Hoa', 'hoa.bui@gmail.com', '0978901234', 'FEMALE', '2001-09-22', 'CUSTOMER', 'ACTIVE', NOW() - INTERVAL '3 days', NOW() - INTERVAL '3 days'),
-('user008', '$2a$10$N.zmdr9VKQf5VGcbq8BbXeuEYXCEL2k0E3W6AJCvHLE3p91NEVGie', 'Đặng Văn Tài', 'tai.dang@gmail.com', '0989012345', 'MALE', '1994-12-05', 'CUSTOMER', 'ACTIVE', NOW() - INTERVAL '2 days', NOW() - INTERVAL '2 days'),
-('user009', '$2a$10$N.zmdr9VKQf5VGcbq8BbXeuEYXCEL2k0E3W6AJCvHLE3p91NEVGie', 'Lý Thị Kim', 'kim.ly@gmail.com', '0990123456', 'FEMALE', '2002-06-30', 'CUSTOMER', 'ACTIVE', NOW() - INTERVAL '1 day', NOW() - INTERVAL '1 day'),
-('user010', '$2a$10$N.zmdr9VKQf5VGcbq8BbXeuEYXCEL2k0E3W6AJCvHLE3p91NEVGie', 'Trương Văn Long', 'long.truong@gmail.com', '0901234568', 'MALE', '1993-03-15', 'CUSTOMER', 'LOCKED', NOW() - INTERVAL '1 day', NOW() - INTERVAL '1 day'),
-('user011', '$2a$10$N.zmdr9VKQf5VGcbq8BbXeuEYXCEL2k0E3W6AJCvHLE3p91NEVGie', 'Phan Thị Nga', 'nga.phan@gmail.com', '0912345679', 'FEMALE', '1996-08-20', 'CUSTOMER', 'ACTIVE', NOW(), NOW());
+('admin001', '$2a$10$9eZF2GHI2hbWB0i.CPnuR.GZFLaoarn8ANLEnZ.G5PvK2qxl2nmSi', 'Nguyễn Văn Admin', 'admin@utephonehub.com', '0901234567', 'MALE', '1990-01-01', 'ADMIN', 'ACTIVE', NOW() - INTERVAL '7 days', NOW() - INTERVAL '7 days'),
+('user001', '$2a$10$9eZF2GHI2hbWB0i.CPnuR.GZFLaoarn8ANLEnZ.G5PvK2qxl2nmSi', 'Trần Thị Hương', 'huong.tran@gmail.com', '0912345678', 'FEMALE', '1995-05-15', 'CUSTOMER', 'ACTIVE', NOW() - INTERVAL '6 days', NOW() - INTERVAL '6 days'),
+('user002', '$2a$10$9eZF2GHI2hbWB0i.CPnuR.GZFLaoarn8ANLEnZ.G5PvK2qxl2nmSi', 'Lê Văn Nam', 'nam.le@gmail.com', '0923456789', 'MALE', '1998-08-20', 'CUSTOMER', 'ACTIVE', NOW() - INTERVAL '6 days', NOW() - INTERVAL '6 days'),
+('user003', '$2a$10$9eZF2GHI2hbWB0i.CPnuR.GZFLaoarn8ANLEnZ.G5PvK2qxl2nmSi', 'Phạm Thị Mai', 'mai.pham@gmail.com', '0934567890', 'FEMALE', '2000-03-10', 'CUSTOMER', 'ACTIVE', NOW() - INTERVAL '5 days', NOW() - INTERVAL '5 days'),
+('user004', '$2a$10$9eZF2GHI2hbWB0i.CPnuR.GZFLaoarn8ANLEnZ.G5PvK2qxl2nmSi', 'Hoàng Văn Đức', 'duc.hoang@gmail.com', '0945678901', 'MALE', '1997-11-25', 'CUSTOMER', 'ACTIVE', NOW() - INTERVAL '5 days', NOW() - INTERVAL '5 days'),
+('user005', '$2a$10$9eZF2GHI2hbWB0i.CPnuR.GZFLaoarn8ANLEnZ.G5PvK2qxl2nmSi', 'Nguyễn Thị Lan', 'lan.nguyen@gmail.com', '0956789012', 'FEMALE', '1999-07-12', 'CUSTOMER', 'ACTIVE', NOW() - INTERVAL '4 days', NOW() - INTERVAL '4 days'),
+('user006', '$2a$10$9eZF2GHI2hbWB0i.CPnuR.GZFLaoarn8ANLEnZ.G5PvK2qxl2nmSi', 'Võ Văn Hùng', 'hung.vo@gmail.com', '0967890123', 'MALE', '1996-04-18', 'CUSTOMER', 'ACTIVE', NOW() - INTERVAL '3 days', NOW() - INTERVAL '3 days'),
+('user007', '$2a$10$9eZF2GHI2hbWB0i.CPnuR.GZFLaoarn8ANLEnZ.G5PvK2qxl2nmSi', 'Bùi Thị Hoa', 'hoa.bui@gmail.com', '0978901234', 'FEMALE', '2001-09-22', 'CUSTOMER', 'ACTIVE', NOW() - INTERVAL '3 days', NOW() - INTERVAL '3 days'),
+('user008', '$2a$10$9eZF2GHI2hbWB0i.CPnuR.GZFLaoarn8ANLEnZ.G5PvK2qxl2nmSi', 'Đặng Văn Tài', 'tai.dang@gmail.com', '0989012345', 'MALE', '1994-12-05', 'CUSTOMER', 'ACTIVE', NOW() - INTERVAL '2 days', NOW() - INTERVAL '2 days'),
+('user009', '$2a$10$9eZF2GHI2hbWB0i.CPnuR.GZFLaoarn8ANLEnZ.G5PvK2qxl2nmSi', 'Lý Thị Kim', 'kim.ly@gmail.com', '0990123456', 'FEMALE', '2002-06-30', 'CUSTOMER', 'ACTIVE', NOW() - INTERVAL '1 day', NOW() - INTERVAL '1 day'),
+('user010', '$2a$10$9eZF2GHI2hbWB0i.CPnuR.GZFLaoarn8ANLEnZ.G5PvK2qxl2nmSi', 'Trương Văn Long', 'long.truong@gmail.com', '0901234568', 'MALE', '1993-03-15', 'CUSTOMER', 'LOCKED', NOW() - INTERVAL '1 day', NOW() - INTERVAL '1 day'),
+('user011', '$2a$10$9eZF2GHI2hbWB0i.CPnuR.GZFLaoarn8ANLEnZ.G5PvK2qxl2nmSi', 'Phan Thị Nga', 'nga.phan@gmail.com', '0912345679', 'FEMALE', '1996-08-20', 'CUSTOMER', 'ACTIVE', NOW(), NOW()),
+('admin', '$2a$10$9eZF2GHI2hbWB0i.CPnuR.GZFLaoarn8ANLEnZ.G5PvK2qxl2nmSi', 'Admin', 'admin@gmail.com', '0321654987', 'MALE', '2026-05-26', 'ADMIN', 'ACTIVE', NOW(), NOW()),
+('user', '$2a$10$9eZF2GHI2hbWB0i.CPnuR.GZFLaoarn8ANLEnZ.G5PvK2qxl2nmSi', 'User', 'user@gmail.com', '0987654321', 'MALE', '2026-05-26', 'CUSTOMER', 'ACTIVE', NOW(), NOW());
 
 -- Table: addresses
 CREATE TABLE IF NOT EXISTS addresses (
@@ -485,8 +487,8 @@ CHECK (
 
 -- iPhone 15 Pro Max
 INSERT INTO products (id, name, description, thumbnail_url, status, is_deleted, category_id, brand_id, created_at, updated_at) VALUES
-(1, 'iPhone 15 Pro Max', 'iPhone 15 Pro Max - Điện thoại cao cấp với chip A17 Pro, camera 48MP, viền titan sang trọng', 
- 'https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-blue-thumbnew-600x600.jpg', 
+(1, 'iPhone 15 Pro Max', 'iPhone 15 Pro Max - Điện thoại cao cấp với chip A17 Pro, camera 48MP, viền titan sang trọng',
+ 'https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-blue-thumbnew-600x600.jpg',
  TRUE, FALSE, 1, 1, NOW() - INTERVAL '7 days', NOW() - INTERVAL '7 days');
 
 INSERT INTO product_templates (product_id, sku, color, storage, ram, price, stock_quantity, stock_status, status) VALUES
@@ -494,8 +496,8 @@ INSERT INTO product_templates (product_id, sku, color, storage, ram, price, stoc
 (1, 'APPLE-IP15PM-256-BLACK', 'Black Titanium', '256GB', '8GB', 34990000.00, 45, 'IN_STOCK', TRUE),
 (1, 'APPLE-IP15PM-512-NATURAL', 'Natural Titanium', '512GB', '8GB', 40990000.00, 30, 'IN_STOCK', TRUE);
 
-INSERT INTO product_metadata (product_id, screen_resolution, screen_size, screen_technology, refresh_rate, cpu_chipset, gpu, 
-camera_megapixels, camera_details, front_camera_megapixels, battery_capacity, charging_power, charging_type, 
+INSERT INTO product_metadata (product_id, screen_resolution, screen_size, screen_technology, refresh_rate, cpu_chipset, gpu,
+camera_megapixels, camera_details, front_camera_megapixels, battery_capacity, charging_power, charging_type,
 weight, dimensions, material, operating_system, wireless_connectivity, sim_type, water_resistance, security_features) VALUES
 (1, '2796 x 1290', 6.7, 'Super Retina XDR OLED', 120, 'Apple A17 Pro', 'Apple GPU 6-core',
 48.0, '48MP Wide + 12MP Ultra Wide + 12MP Telephoto 5x', 12.0, 4422, 20, 'USB-C PD / MagSafe',
@@ -1070,16 +1072,16 @@ SELECT setval('product_images_id_seq', (SELECT MAX(id) FROM product_images));
 
 -- 1. Samsung Galaxy Z Fold6 (Phone, Samsung)
 INSERT INTO products (id, name, description, thumbnail_url, status, is_deleted, category_id, brand_id, created_at, updated_at) VALUES
-(26, 'Samsung Galaxy Z Fold6 5G', 'Samsung Galaxy Z Fold6 mang đến thiết kế mỏng nhẹ đột phá, màn hình gập đỉnh cao cùng sức mạnh AI vượt trội với Galaxy AI.', 
- 'https://cdn.tgdd.vn/Products/Images/42/320721/samsung-galaxy-z-fold6-thumb-1-600x600.jpg', 
+(26, 'Samsung Galaxy Z Fold6 5G', 'Samsung Galaxy Z Fold6 mang đến thiết kế mỏng nhẹ đột phá, màn hình gập đỉnh cao cùng sức mạnh AI vượt trội với Galaxy AI.',
+ 'https://cdn.tgdd.vn/Products/Images/42/320721/samsung-galaxy-z-fold6-thumb-1-600x600.jpg',
  TRUE, FALSE, 1, 2, NOW(), NOW());
 
 INSERT INTO product_templates (product_id, sku, color, storage, ram, price, stock_quantity, stock_status, status) VALUES
 (26, 'SAMSUNG-ZFOLD6-256-GRAY', 'Silver Shadow', '256GB', '12GB', 43990000.00, 20, 'IN_STOCK', TRUE),
 (26, 'SAMSUNG-ZFOLD6-512-NAVY', 'Navy', '512GB', '12GB', 47990000.00, 15, 'IN_STOCK', TRUE);
 
-INSERT INTO product_metadata (product_id, screen_resolution, screen_size, screen_technology, refresh_rate, cpu_chipset, gpu, 
-camera_megapixels, camera_details, front_camera_megapixels, battery_capacity, charging_power, charging_type, 
+INSERT INTO product_metadata (product_id, screen_resolution, screen_size, screen_technology, refresh_rate, cpu_chipset, gpu,
+camera_megapixels, camera_details, front_camera_megapixels, battery_capacity, charging_power, charging_type,
 weight, dimensions, material, operating_system, wireless_connectivity, sim_type, water_resistance, security_features) VALUES
 (26, 'QXGA+', 7.6, 'Dynamic AMOLED 2X', 120, 'Snapdragon 8 Gen 3 for Galaxy', 'Adreno 750',
 50.0, '50MP + 12MP + 10MP', 10.0, 4400, 25, 'USB-C',
@@ -1093,17 +1095,17 @@ INSERT INTO product_images (product_id, image_url, alt_text, image_order, is_pri
 
 -- 2. Asus Zenbook 14 OLED (Laptop, Asus)
 INSERT INTO products (id, name, description, thumbnail_url, status, is_deleted, category_id, brand_id, created_at, updated_at) VALUES
-(27, 'Asus Zenbook 14 OLED', 'Asus Zenbook 14 OLED UX3405MA là biểu tượng của sự sang trọng và hiệu năng di động với chip Intel Core Ultra tích hợp AI.', 
- 'https://cdn.tgdd.vn/Products/Images/44/320431/asus-zenbook-14-oled-thumb-mau-600x600.png', 
+(27, 'Asus Zenbook 14 OLED', 'Asus Zenbook 14 OLED UX3405MA là biểu tượng của sự sang trọng và hiệu năng di động với chip Intel Core Ultra tích hợp AI.',
+ 'https://cdn.tgdd.vn/Products/Images/44/320431/asus-zenbook-14-oled-thumb-mau-600x600.png',
  TRUE, FALSE, 3, 6, NOW(), NOW());
 
 INSERT INTO product_templates (product_id, sku, color, storage, ram, price, stock_quantity, stock_status, status) VALUES
 (27, 'ASUS-UX3405-512-BLUE', 'Ponder Blue', '512GB', '32GB', 34990000.00, 10, 'IN_STOCK', TRUE);
 
-INSERT INTO product_metadata (product_id, screen_resolution, screen_size, screen_technology, refresh_rate, cpu_chipset, gpu, 
+INSERT INTO product_metadata (product_id, screen_resolution, screen_size, screen_technology, refresh_rate, cpu_chipset, gpu,
 battery_capacity, charging_power, weight, dimensions, material, operating_system, keyboard_type, ports, wireless_connectivity, audio_features) VALUES
 (27, '2880 x 1800', 14.0, 'OLED 3K 120Hz', 120, 'Intel Core Ultra 5 125H', 'Intel Arc Graphics',
-75, 65, 1200.0, '312.4 x 220.1 x 14.9 mm', 'Aluminum', 'Windows 11 Home', 'Backlit Chiclet', 
+75, 65, 1200.0, '312.4 x 220.1 x 14.9 mm', 'Aluminum', 'Windows 11 Home', 'Backlit Chiclet',
 '1x USB 3.2, 2x Thunderbolt 4, 1x HDMI 2.1', 'Wi-Fi 6E, Bluetooth 5.3', 'Harman Kardon, Smart Amp');
 
 INSERT INTO product_images (product_id, image_url, alt_text, image_order, is_primary) VALUES
@@ -1113,16 +1115,16 @@ INSERT INTO product_images (product_id, image_url, alt_text, image_order, is_pri
 
 -- 3. Xiaomi Redmi Note 12 (Phone, Xiaomi)
 INSERT INTO products (id, name, description, thumbnail_url, status, is_deleted, category_id, brand_id, created_at, updated_at) VALUES
-(28, 'Xiaomi Redmi Note 12', 'Trải nghiệm thị giác tuyệt vời với màn hình AMOLED 120Hz mượt mà. Hiệu năng ổn định với chip Snapdragon 685.', 
- 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/x/i/xiaomi-redmi-note-12_2_.png', 
+(28, 'Xiaomi Redmi Note 12', 'Trải nghiệm thị giác tuyệt vời với màn hình AMOLED 120Hz mượt mà. Hiệu năng ổn định với chip Snapdragon 685.',
+ 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/x/i/xiaomi-redmi-note-12_2_.png',
  TRUE, FALSE, 1, 3, NOW(), NOW());
 
 INSERT INTO product_templates (product_id, sku, color, storage, ram, price, stock_quantity, stock_status, status) VALUES
 (28, 'XIAOMI-RN12-128-BLUE', 'Ice Blue', '128GB', '4GB', 4990000.00, 50, 'IN_STOCK', TRUE),
 (28, 'XIAOMI-RN12-128-GREY', 'Onyx Gray', '128GB', '4GB', 4990000.00, 45, 'IN_STOCK', TRUE);
 
-INSERT INTO product_metadata (product_id, screen_resolution, screen_size, screen_technology, refresh_rate, cpu_chipset, gpu, 
-camera_megapixels, camera_details, front_camera_megapixels, battery_capacity, charging_power, charging_type, 
+INSERT INTO product_metadata (product_id, screen_resolution, screen_size, screen_technology, refresh_rate, cpu_chipset, gpu,
+camera_megapixels, camera_details, front_camera_megapixels, battery_capacity, charging_power, charging_type,
 weight, dimensions, material, operating_system, wireless_connectivity, sim_type, water_resistance, security_features) VALUES
 (28, '2400 x 1080', 6.67, 'AMOLED', 120, 'Snapdragon 685', 'Adreno 610',
 50.0, '50MP + 8MP + 2MP', 13.0, 5000, 33, 'USB-C',
@@ -1134,15 +1136,15 @@ INSERT INTO product_images (product_id, image_url, alt_text, image_order, is_pri
 
 -- 4. Vivo V30 5G (Phone, Vivo)
 INSERT INTO products (id, name, description, thumbnail_url, status, is_deleted, category_id, brand_id, created_at, updated_at) VALUES
-(29, 'Vivo V30 5G', 'Nổi bật với hệ thống đèn Aura Light 3.0 hỗ trợ chụp chân dung chuyên nghiệp. Hiệu năng mạnh mẽ từ chip Snapdragon 7 Gen 3.', 
- 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/v/i/vivo-v30.png', 
+(29, 'Vivo V30 5G', 'Nổi bật với hệ thống đèn Aura Light 3.0 hỗ trợ chụp chân dung chuyên nghiệp. Hiệu năng mạnh mẽ từ chip Snapdragon 7 Gen 3.',
+ 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/v/i/vivo-v30.png',
  TRUE, FALSE, 1, 10, NOW(), NOW());
 
 INSERT INTO product_templates (product_id, sku, color, storage, ram, price, stock_quantity, stock_status, status) VALUES
 (29, 'VIVO-V30-256-GREEN', 'Green', '256GB', '12GB', 13990000.00, 30, 'IN_STOCK', TRUE);
 
-INSERT INTO product_metadata (product_id, screen_resolution, screen_size, screen_technology, refresh_rate, cpu_chipset, gpu, 
-camera_megapixels, camera_details, front_camera_megapixels, battery_capacity, charging_power, charging_type, 
+INSERT INTO product_metadata (product_id, screen_resolution, screen_size, screen_technology, refresh_rate, cpu_chipset, gpu,
+camera_megapixels, camera_details, front_camera_megapixels, battery_capacity, charging_power, charging_type,
 weight, dimensions, material, operating_system, wireless_connectivity, sim_type, water_resistance, security_features) VALUES
 (29, '1260 x 2800', 6.78, 'AMOLED 1.5K', 120, 'Snapdragon 7 Gen 3', 'Adreno 720',
 50.0, '50MP OIS + 50MP Ultra Wide', 50.0, 5000, 80, 'USB-C',
@@ -1154,16 +1156,16 @@ INSERT INTO product_images (product_id, image_url, alt_text, image_order, is_pri
 
 -- 5. iPad Gen 10 (Tablet, Apple)
 INSERT INTO products (id, name, description, thumbnail_url, status, is_deleted, category_id, brand_id, created_at, updated_at) VALUES
-(30, 'iPad Gen 10 10.9"', 'Thiết kế hoàn toàn mới với các cạnh vuông vức, màu sắc trẻ trung. Màn hình Liquid Retina sắc nét cùng chip A14 Bionic.', 
- 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/ipad-10-9-inch-2022.png', 
+(30, 'iPad Gen 10 10.9"', 'Thiết kế hoàn toàn mới với các cạnh vuông vức, màu sắc trẻ trung. Màn hình Liquid Retina sắc nét cùng chip A14 Bionic.',
+ 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/ipad-10-9-inch-2022.png',
  TRUE, FALSE, 2, 1, NOW(), NOW());
 
 INSERT INTO product_templates (product_id, sku, color, storage, ram, price, stock_quantity, stock_status, status) VALUES
 (30, 'APPLE-IPAD10-64-SILVER', 'Silver', '64GB', '4GB', 9990000.00, 40, 'IN_STOCK', TRUE),
 (30, 'APPLE-IPAD10-64-BLUE', 'Blue', '64GB', '4GB', 9990000.00, 35, 'IN_STOCK', TRUE);
 
-INSERT INTO product_metadata (product_id, screen_resolution, screen_size, screen_technology, refresh_rate, cpu_chipset, gpu, 
-camera_megapixels, front_camera_megapixels, battery_capacity, charging_power, charging_type, 
+INSERT INTO product_metadata (product_id, screen_resolution, screen_size, screen_technology, refresh_rate, cpu_chipset, gpu,
+camera_megapixels, front_camera_megapixels, battery_capacity, charging_power, charging_type,
 weight, dimensions, material, operating_system, wireless_connectivity) VALUES
 (30, '2360 x 1640', 10.9, 'Liquid Retina IPS', 60, 'Apple A14 Bionic', 'Apple GPU 4-core',
 12.0, 12.0, 7600, 20, 'USB-C',
@@ -1175,18 +1177,18 @@ INSERT INTO product_images (product_id, image_url, alt_text, image_order, is_pri
 
 -- 6. MacBook Air M2 (Laptop, Apple)
 INSERT INTO products (id, name, description, thumbnail_url, status, is_deleted, category_id, brand_id, created_at, updated_at) VALUES
-(31, 'MacBook Air M2 13.6"', 'Sự kết hợp hoàn hảo giữa thiết kế mỏng nhẹ đẳng cấp và hiệu năng vượt trội từ chip M2.', 
- 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/m/a/macbook-air-m2-2022-2.png', 
+(31, 'MacBook Air M2 13.6"', 'Sự kết hợp hoàn hảo giữa thiết kế mỏng nhẹ đẳng cấp và hiệu năng vượt trội từ chip M2.',
+ 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/m/a/macbook-air-m2-2022-2.png',
  TRUE, FALSE, 3, 1, NOW(), NOW());
 
 INSERT INTO product_templates (product_id, sku, color, storage, ram, price, stock_quantity, stock_status, status) VALUES
 (31, 'APPLE-AIRM2-256-MIDNIGHT', 'Midnight', '256GB', '8GB', 24990000.00, 25, 'IN_STOCK', TRUE),
 (31, 'APPLE-AIRM2-256-STARLIGHT', 'Starlight', '256GB', '8GB', 24990000.00, 20, 'IN_STOCK', TRUE);
 
-INSERT INTO product_metadata (product_id, screen_resolution, screen_size, screen_technology, refresh_rate, cpu_chipset, gpu, 
+INSERT INTO product_metadata (product_id, screen_resolution, screen_size, screen_technology, refresh_rate, cpu_chipset, gpu,
 battery_capacity, charging_power, weight, dimensions, material, operating_system, keyboard_type, ports, wireless_connectivity, audio_features) VALUES
 (31, '2560 x 1664', 13.6, 'Liquid Retina', 60, 'Apple M2', 'Apple GPU 8-core',
-52, 30, 1240.0, '304.1 x 215 x 11.3 mm', 'Aluminum', 'macOS', 'Magic Keyboard', 
+52, 30, 1240.0, '304.1 x 215 x 11.3 mm', 'Aluminum', 'macOS', 'Magic Keyboard',
 '2x Thunderbolt / USB 4, MagSafe 3', 'Wi-Fi 6, Bluetooth 5.0', '4-speaker sound system');
 
 INSERT INTO product_images (product_id, image_url, alt_text, image_order, is_primary) VALUES

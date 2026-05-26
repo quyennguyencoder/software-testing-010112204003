@@ -5,11 +5,14 @@ spring:
   profiles:
     active: dev
   datasource:
-    # Mặc định để localhost để chạy được trên IntelliJ
-    url: jdbc:postgresql://${DB_HOST}:5434/${POSTGRES_DB}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+#    url: jdbc:postgresql://${DB_HOST}:5434/${POSTGRES_DB}
+#    username: ${DB_USERNAME}
+#    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=require
+    username: postgres.qhneoffqcxppefarlcyd
+    password: mypostgres@123
     driver-class-name: org.postgresql.Driver
+
   
   jpa:
     hibernate:
@@ -69,7 +72,7 @@ spring:
             issuer-uri: https://accounts.google.com
 
 jwt:
-  secret: ${JWT_SECRET}
+  secret: ${JWT_SECRET:+H0WZ2cfLZ/6E8OIG/OI9JB9j2ZUpMKVSeWEc0dRCRsT+NqVdBZbWyrMLzsgg1LjPdcb62eiRZYm0AC5j59Ie5PLCYjwIFqBwzuCPRVvnXI=}
   expiration: ${JWT_EXPIRATION}
   refresh-expiration: ${JWT_REFRESH_EXPIRATION}
 
