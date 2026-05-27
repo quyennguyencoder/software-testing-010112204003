@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
--- Sample data: users
+-- Sample data: users (password: Password@123)
 INSERT INTO users (username, password_hash, full_name, email, phone_number, gender, date_of_birth, role, status, created_at, updated_at) VALUES
 ('admin001', '$2a$10$9eZF2GHI2hbWB0i.CPnuR.GZFLaoarn8ANLEnZ.G5PvK2qxl2nmSi', 'Nguyễn Văn Admin', 'admin@utephonehub.com', '0901234567', 'MALE', '1990-01-01', 'ADMIN', 'ACTIVE', NOW() - INTERVAL '7 days', NOW() - INTERVAL '7 days'),
 ('user001', '$2a$10$9eZF2GHI2hbWB0i.CPnuR.GZFLaoarn8ANLEnZ.G5PvK2qxl2nmSi', 'Trần Thị Hương', 'huong.tran@gmail.com', '0912345678', 'FEMALE', '1995-05-15', 'CUSTOMER', 'ACTIVE', NOW() - INTERVAL '6 days', NOW() - INTERVAL '6 days'),
