@@ -1221,7 +1221,6 @@
                       "script":  {
                                      "type":  "text/javascript",
                                      "exec":  [
-                                                  "// Codex shared test script",
                                                   "pm.test(\"No server error\", () =\u003e { pm.expect(pm.response.code).to.be.below(500); });",
                                                   "pm.test(\"Response time \u003c 2000ms\", () =\u003e { pm.expect(pm.response.responseTime).to.be.below(2000); });",
                                                   "pm.test(\"Response is JSON when body exists\", () =\u003e {",
