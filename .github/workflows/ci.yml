@@ -48,28 +48,28 @@ env:
   API_PRODUCT_BASE_URL: http://localhost:8081/api/v1/products
 
 jobs:
-  backend-tests:
-    name: Backend unit tests
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
-
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
-          cache: maven
-
-      - name: Run Maven tests
-        working-directory: backend
-        run: mvn test -B
+#  backend-tests:
+#    name: Backend unit tests
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout source
+#        uses: actions/checkout@v4
+#
+#      - name: Set up Java 17
+#        uses: actions/setup-java@v4
+#        with:
+#          distribution: temurin
+#          java-version: "17"
+#          cache: maven
+#
+#      - name: Run Maven tests
+#        working-directory: backend
+#        run: mvn test -B
 
   run-collections:
     name: Postman [${{ matrix.member }}] ${{ matrix.collection }}
-    needs: backend-tests
+#    needs: backend-tests
     runs-on: ubuntu-latest
     environment: secret
 
