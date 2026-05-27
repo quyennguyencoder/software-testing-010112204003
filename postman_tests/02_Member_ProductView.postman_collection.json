@@ -873,7 +873,6 @@
                       "script":  {
                                      "type":  "text/javascript",
                                      "exec":  [
-                                                  "// Codex shared prerequest script",
                                                   "const suffix = Date.now().toString();",
                                                   "pm.environment.set(\"uniqueSuffix\", suffix);",
                                                   "",
