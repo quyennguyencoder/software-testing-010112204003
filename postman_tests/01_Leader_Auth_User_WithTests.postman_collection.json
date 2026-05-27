@@ -1,1229 +1,600 @@
-{
-  "info": {
-    "_postman_id": "5137f3f8-462d-4ad5-b650-1b216d205776",
-    "name": "🔐 [Leader] Authentication & User",
-    "description": "Leader Collection - Authentication, User Profile & Health Check\nDành cho Leader: Các API cơ bản nhất, dễ kiểm thử (13 endpoints)\n\n📋 **Hướng dẫn chạy collection:**\n1. Import environment `UTE_PhoneHub.postman_environment.json`\n2. Cập nhật `testEmail` và `testPassword` trong environment\n3. Chạy theo thứ tự: Health → Register → Verify Email → Login → [các API khác]\n4. Token tự động lưu vào environment sau khi Login thành công",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "item": [
-    {
-      "name": "Authentication",
-      "item": [
-        {
-          "name": "Xác thực email đăng ký",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/auth/verify-email",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "verify-email"
+﻿{
+    "info":  {
+                 "_postman_id":  "5137f3f8-462d-4ad5-b650-1b216d205776",
+                 "name":  "🔐 [Leader] Authentication \u0026 User",
+                 "description":  "Leader Collection - Authentication, User Profile \u0026 Health Check\nDành cho Leader: Các API cơ bản nhất, dễ kiểm thử (13 endpoints)",
+                 "schema":  "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+             },
+    "item":  [
+                 {
+                     "name":  "Authentication",
+                     "item":  [
+                                  {
+                                      "name":  "Xác thực email đăng ký",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/auth/verify-email",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "auth",
+                                                                               "verify-email"
+                                                                           ]
+                                                              },
+                                                      "description":  "Xác thực email bằng mã OTP được gửi sau khi đăng ký",
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"email\": \"{{userEmail}}\",\n  \"otp\": \"string\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Đăng ký tài khoản mới",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/auth/register",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "auth",
+                                                                               "register"
+                                                                           ]
+                                                              },
+                                                      "description":  "Tạo một tài khoản khách hàng mới",
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"username\": \"{{currentUsername}}\",\n  \"fullName\": \"Test User {{uniqueSuffix}}\",\n  \"email\": \"{{currentEmail}}\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"gender\": \"MALE\",\n  \"dateOfBirth\": \"2000-01-01\",\n  \"password\": \"{{userPassword}}\",\n  \"confirmPassword\": \"{{userPassword}}\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Đăng ký tài khoản Admin",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/auth/register/admin",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "auth",
+                                                                               "register",
+                                                                               "admin"
+                                                                           ]
+                                                              },
+                                                      "description":  "Tạo một tài khoản admin mới",
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"username\": \"{{currentUsername}}\",\n  \"fullName\": \"Test User {{uniqueSuffix}}\",\n  \"email\": \"{{currentEmail}}\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"gender\": \"MALE\",\n  \"dateOfBirth\": \"2000-01-01\",\n  \"password\": \"{{userPassword}}\",\n  \"confirmPassword\": \"{{userPassword}}\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Làm mới access token",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/auth/refresh",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "auth",
+                                                                               "refresh"
+                                                                           ]
+                                                              },
+                                                      "description":  "Sử dụng refresh token để lấy access token mới",
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"refreshToken\": \"string\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Đăng xuất",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/auth/logout",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "auth",
+                                                                               "logout"
+                                                                           ]
+                                                              },
+                                                      "description":  "Kết thúc phiên đăng nhập"
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Đăng nhập",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/auth/login",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "auth",
+                                                                               "login"
+                                                                           ]
+                                                              },
+                                                      "description":  "Đăng nhập bằng username hoặc email và mật khẩu",
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"usernameOrEmail\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Xác thực OTP và đặt lại mật khẩu",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/auth/forgot-password/verify",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "auth",
+                                                                               "forgot-password",
+                                                                               "verify"
+                                                                           ]
+                                                              },
+                                                      "description":  "Xác thực mã OTP và cập nhật mật khẩu mới",
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"email\": \"{{userEmail}}\",\n  \"otp\": \"string\",\n  \"newPassword\": \"string\",\n  \"confirmPassword\": \"string\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Yêu cầu đặt lại mật khẩu",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/auth/forgot-password/request",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "auth",
+                                                                               "forgot-password",
+                                                                               "request"
+                                                                           ]
+                                                              },
+                                                      "description":  "Gửi OTP đến email để đặt lại mật khẩu",
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"email\": \"{{userEmail}}\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Bắt đầu đăng nhập bằng Google",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/auth/login/google",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "auth",
+                                                                               "login",
+                                                                               "google"
+                                                                           ]
+                                                              },
+                                                      "description":  "Redirect người dùng tới Google OAuth2 login"
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "User",
+                     "item":  [
+                                  {
+                                      "name":  "Cập nhật thông tin cá nhân",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/user/profile",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "user",
+                                                                               "profile"
+                                                                           ]
+                                                              },
+                                                      "description":  "Cập nhật họ tên và số điện thoại",
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{accessToken}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"fullName\": \"string\",\n  \"phoneNumber\": \"string\",\n  \"gender\": \"string\",\n  \"dateOfBirth\": \"string\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Đổi mật khẩu",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/user/password",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "user",
+                                                                               "password"
+                                                                           ]
+                                                              },
+                                                      "description":  "Cập nhật mật khẩu hiện tại sang mật khẩu mới",
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{accessToken}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"currentPassword\": \"string\",\n  \"newPassword\": \"string\",\n  \"confirmPassword\": \"string\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Lấy thông tin người dùng hiện tại",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/user/me",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "user",
+                                                                               "me"
+                                                                           ]
+                                                              },
+                                                      "description":  "Trả về thông tin chi tiết của người dùng đang đăng nhập",
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{accessToken}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  }
+                              ],
+                     "auth":  {
+                                  "type":  "bearer",
+                                  "bearer":  [
+                                                 {
+                                                     "key":  "token",
+                                                     "value":  "{{accessToken}}",
+                                                     "type":  "string"
+                                                 }
+                                             ]
+                              }
+                 },
+                 {
+                     "name":  "Health",
+                     "item":  [
+                                  {
+                                      "name":  "Kiểm tra trạng thái API",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/health",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "health"
+                                                                           ]
+                                                              },
+                                                      "description":  "Trả về trạng thái hoạt động của API"
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  }
+                              ]
+                 }
+             ],
+    "variable":  [
+                     {
+                         "key":  "baseUrl",
+                         "value":  "{{baseUrl}}"
+                     },
+                     {
+                         "key":  "expectedStatus",
+                         "value":  "",
+                         "type":  "string"
+                     },
+                     {
+                         "key":  "currentResourceId",
+                         "value":  "",
+                         "type":  "string"
+                     },
+                     {
+                         "key":  "currentEmail",
+                         "value":  "",
+                         "type":  "string"
+                     },
+                     {
+                         "key":  "currentUsername",
+                         "value":  "",
+                         "type":  "string"
+                     }
+                 ],
+    "auth":  {
+                 "type":  "bearer",
+                 "bearer":  [
+                                {
+                                    "key":  "token",
+                                    "value":  "{{accessToken}}",
+                                    "type":  "string"
+                                }
+                            ]
+             },
+    "event":  [
+                  {
+                      "listen":  "prerequest",
+                      "script":  {
+                                     "type":  "text/javascript",
+                                     "exec":  [
+                                                  "// Codex shared prerequest script",
+                                                  "const suffix = Date.now().toString();",
+                                                  "pm.environment.set(\"uniqueSuffix\", suffix);",
+                                                  "",
+                                                  "if (!pm.environment.get(\"userPassword\")) pm.environment.set(\"userPassword\", \"Password@123\");",
+                                                  "if (!pm.environment.get(\"adminPassword\")) pm.environment.set(\"adminPassword\", \"Password@123\");",
+                                                  "",
+                                                  "pm.environment.set(\"currentEmail\", `user_${suffix}@test.com`);",
+                                                  "pm.environment.set(\"currentUsername\", `user_${suffix}`);",
+                                                  "pm.environment.set(\"negativeProductId\", pm.environment.get(\"negativeProductId\") || \"999999999\");",
+                                                  "pm.environment.set(\"negativeOrderId\", pm.environment.get(\"negativeOrderId\") || \"999999999\");"
+                                              ]
+                                 }
+                  },
+                  {
+                      "listen":  "test",
+                      "script":  {
+                                     "type":  "text/javascript",
+                                     "exec":  [
+                                                  "// Codex shared test script",
+                                                  "pm.test(\"No server error\", () =\u003e { pm.expect(pm.response.code).to.be.below(500); });",
+                                                  "pm.test(\"Response time \u003c 2000ms\", () =\u003e { pm.expect(pm.response.responseTime).to.be.below(2000); });",
+                                                  "pm.test(\"Response is JSON when body exists\", () =\u003e {",
+                                                  "  if (pm.response.text()) pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                                                  "});",
+                                                  "",
+                                                  "if (pm.response.text() \u0026\u0026 (pm.response.headers.get(\"Content-Type\") || \"\").includes(\"application/json\")) {",
+                                                  "  const json = pm.response.json();",
+                                                  "  const data = json.data || json;",
+                                                  "  const url = pm.request.url.toString();",
+                                                  "  const requestName = pm.info.requestName.toLowerCase();",
+                                                  "",
+                                                  "  if (data.accessToken) {",
+                                                  "    if (requestName.includes(\"admin\")) pm.environment.set(\"adminAccessToken\", data.accessToken);",
+                                                  "    else pm.environment.set(\"accessToken\", data.accessToken);",
+                                                  "  }",
+                                                  "  if (data.refreshToken) pm.environment.set(\"refreshToken\", data.refreshToken);",
+                                                  "  if (data.user \u0026\u0026 data.user.id) pm.environment.set(\"userId\", data.user.id);",
+                                                  "",
+                                                  "  const id = data.id || data.productId || data.orderId || data.addressId || data.cartItemId || data.guestCartId;",
+                                                  "  if (id) pm.environment.set(\"currentResourceId\", id);",
+                                                  "",
+                                                  "  if (id \u0026\u0026 url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+                                                  "  if (id \u0026\u0026 url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+                                                  "  if (data.orderCode) { pm.environment.set(\"createdOrderCode\", data.orderCode); pm.environment.set(\"orderCode\", data.orderCode); }",
+                                                  "}"
+                                              ]
+                                 }
+                  }
               ]
-            },
-            "description": "Xác thực email bằng mã OTP được gửi sau khi đăng ký",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"string\",\n  \"otp\": \"string\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// ⚠️ Cần điền OTP thật nhận từ email sau khi đăng ký",
-                  "// Cập nhật biến môi trường 'otpCode' trước khi chạy",
-                  "",
-                  "const email = pm.environment.get(\"registerEmail\") || pm.environment.get(\"testEmail\");",
-                  "const otp = pm.environment.get(\"otpCode\") || \"123456\"; // thay OTP thật vào đây",
-                  "",
-                  "pm.request.body.raw = JSON.stringify({",
-                  "    email: email,",
-                  "    otp: otp",
-                  "});",
-                  "",
-                  "console.log(\"🔑 Xác thực email:\", email, \"| OTP:\", otp);"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// ✅ TC01 - Xác thực OTP hợp lệ → 200",
-                  "pm.test(\"TC01 - Xác thực email thành công (200)\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "// ✅ TC02 - Response time",
-                  "pm.test(\"TC02 - Response time dưới 3000ms\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});",
-                  "",
-                  "if (pm.response.code === 200) {",
-                  "    const json = pm.response.json();",
-                  "    pm.test(\"TC03 - Response có message xác nhận\", function () {",
-                  "        pm.expect(json).to.have.any.keys(\"message\", \"success\", \"data\");",
-                  "    });",
-                  "    console.log(\"✅ Email đã được xác thực\");",
-                  "}",
-                  "",
-                  "// ❌ TC04 - OTP sai → expect 400/401",
-                  "// Body: { \"email\": \"...\", \"otp\": \"000000\" } → phải trả lỗi",
-                  "",
-                  "// ❌ TC05 - OTP hết hạn → expect 400/410",
-                  "// (OTP thường hết hạn sau 5-10 phút)",
-                  "",
-                  "// ❌ TC06 - Email không tồn tại → expect 404/400"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Đăng ký tài khoản mới",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/auth/register",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "register"
-              ]
-            },
-            "description": "Tạo một tài khoản khách hàng mới",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"username\": \"string\",\n  \"fullName\": \"string\",\n  \"email\": \"string\",\n  \"phoneNumber\": \"string\",\n  \"gender\": \"string\",\n  \"dateOfBirth\": \"string\",\n  \"password\": \"string\",\n  \"confirmPassword\": \"string\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// Tạo email ngẫu nhiên để tránh trùng lặp khi chạy nhiều lần",
-                  "const timestamp = Date.now();",
-                  "const testEmail = `testuser_${timestamp}@example.com`;",
-                  "const testUsername = `testuser_${timestamp}`;",
-                  "",
-                  "pm.environment.set(\"registerEmail\", testEmail);",
-                  "pm.environment.set(\"registerUsername\", testUsername);",
-                  "pm.environment.set(\"registerPassword\", \"Password@123\");",
-                  "",
-                  "// Cập nhật body với dữ liệu ngẫu nhiên",
-                  "pm.request.body.raw = JSON.stringify({",
-                  "    username: testUsername,",
-                  "    fullName: \"Test User \" + timestamp,",
-                  "    email: testEmail,",
-                  "    phoneNumber: \"0901234567\",",
-                  "    gender: \"MALE\",",
-                  "    dateOfBirth: \"2000-01-01\",",
-                  "    password: \"Password@123\",",
-                  "    confirmPassword: \"Password@123\"",
-                  "});",
-                  "",
-                  "console.log(\"📧 Đăng ký với email:\", testEmail);"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// ✅ TC01 - Đăng ký thành công → 200 hoặc 201",
-                  "pm.test(\"TC01 - Đăng ký thành công (200/201)\", function () {",
-                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
-                  "});",
-                  "",
-                  "// ✅ TC02 - Response time",
-                  "pm.test(\"TC02 - Response time dưới 3000ms\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});",
-                  "",
-                  "if (pm.response.code === 200 || pm.response.code === 201) {",
-                  "    const json = pm.response.json();",
-                  "",
-                  "    // ✅ TC03 - Response có data",
-                  "    pm.test(\"TC03 - Response có trường data hoặc message\", function () {",
-                  "        pm.expect(json).to.have.any.keys(\"data\", \"message\", \"success\");",
-                  "    });",
-                  "",
-                  "    // ✅ TC04 - Lưu lại email để dùng tiếp ở verify-email",
-                  "    console.log(\"✅ Đăng ký thành công, email:\", pm.environment.get(\"registerEmail\"));",
-                  "    console.log(\"📌 Tiếp theo: Gọi 'Xác thực email đăng ký' với email này + OTP nhận qua mail\");",
-                  "}",
-                  "",
-                  "// ❌ TC05 - Đăng ký với email đã tồn tại → expect 4xx",
-                  "// (Test case này cần chạy request lần 2 sau khi đã đăng ký xong)",
-                  "",
-                  "// ❌ TC06 - Validation: password không khớp confirmPassword",
-                  "// Body mẫu: { \"password\": \"abc\", \"confirmPassword\": \"xyz\" } → expect 400"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Đăng ký tài khoản Admin",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/auth/register/admin",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "register",
-                "admin"
-              ]
-            },
-            "description": "Tạo một tài khoản admin mới",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"username\": \"string\",\n  \"fullName\": \"string\",\n  \"email\": \"string\",\n  \"phoneNumber\": \"string\",\n  \"gender\": \"string\",\n  \"dateOfBirth\": \"string\",\n  \"password\": \"string\",\n  \"confirmPassword\": \"string\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const timestamp = Date.now();",
-                  "const adminEmail = `admin_${timestamp}@example.com`;",
-                  "pm.environment.set(\"adminRegisterEmail\", adminEmail);",
-                  "",
-                  "pm.request.body.raw = JSON.stringify({",
-                  "    username: `admin_${timestamp}`,",
-                  "    fullName: \"Admin Test \" + timestamp,",
-                  "    email: adminEmail,",
-                  "    phoneNumber: \"0909999888\",",
-                  "    gender: \"MALE\",",
-                  "    dateOfBirth: \"1990-05-15\",",
-                  "    password: \"Admin@123456\",",
-                  "    confirmPassword: \"Admin@123456\"",
-                  "});",
-                  "",
-                  "console.log(\"👤 Đăng ký admin với email:\", adminEmail);"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// ✅ TC01 - Đăng ký admin thành công",
-                  "pm.test(\"TC01 - Đăng ký admin trả về 200/201\", function () {",
-                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
-                  "});",
-                  "",
-                  "// ✅ TC02 - Response time",
-                  "pm.test(\"TC02 - Response time dưới 3000ms\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});",
-                  "",
-                  "if (pm.response.code === 200 || pm.response.code === 201) {",
-                  "    const json = pm.response.json();",
-                  "    pm.test(\"TC03 - Response body hợp lệ\", function () {",
-                  "        pm.expect(json).to.be.an(\"object\");",
-                  "    });",
-                  "    console.log(\"✅ Admin registered:\", pm.environment.get(\"adminRegisterEmail\"));",
-                  "}",
-                  "",
-                  "// ❌ TC04 - Thiếu trường bắt buộc → 400",
-                  "// ❌ TC05 - Email không đúng format → 400",
-                  "// ❌ TC06 - Password quá ngắn / không đủ mạnh → 400"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Làm mới access token",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/auth/refresh",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "refresh"
-              ]
-            },
-            "description": "Sử dụng refresh token để lấy access token mới",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"refreshToken\": \"string\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const refreshToken = pm.environment.get(\"refreshToken\");",
-                  "if (!refreshToken) {",
-                  "    console.warn(\"⚠️ Chưa có refreshToken trong environment. Hãy chạy 'Đăng nhập' trước.\");",
-                  "}",
-                  "",
-                  "pm.request.body.raw = JSON.stringify({",
-                  "    refreshToken: refreshToken || \"\"",
-                  "});",
-                  "",
-                  "console.log(\"🔄 Làm mới token...\");"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// ✅ TC01 - Refresh token hợp lệ → 200",
-                  "pm.test(\"TC01 - Làm mới token thành công (200)\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "// ✅ TC02 - Response time",
-                  "pm.test(\"TC02 - Response time dưới 3000ms\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});",
-                  "",
-                  "if (pm.response.code === 200) {",
-                  "    const json = pm.response.json();",
-                  "",
-                  "    // ✅ TC03 - Có accessToken mới trong response",
-                  "    pm.test(\"TC03 - Response chứa accessToken mới\", function () {",
-                  "        const newToken = json.accessToken || json.data?.accessToken || json.token;",
-                  "        pm.expect(newToken).to.not.be.undefined;",
-                  "        pm.expect(newToken).to.not.be.empty;",
-                  "",
-                  "        // 💾 Cập nhật accessToken mới",
-                  "        pm.environment.set(\"accessToken\", newToken);",
-                  "        console.log(\"✅ accessToken đã được cập nhật mới\");",
-                  "    });",
-                  "",
-                  "    // ✅ TC04 - accessToken mới phải khác token cũ (nếu có)",
-                  "    pm.test(\"TC04 - Token mới có định dạng JWT hợp lệ\", function () {",
-                  "        const token = pm.environment.get(\"accessToken\");",
-                  "        pm.expect(token.split(\".\").length).to.equal(3);",
-                  "    });",
-                  "}",
-                  "",
-                  "// ❌ TC05 - refreshToken không hợp lệ → 401",
-                  "// Body: { \"refreshToken\": \"invalid.token.here\" }",
-                  "",
-                  "// ❌ TC06 - refreshToken hết hạn → 401/403",
-                  "// ❌ TC07 - Body rỗng → 400"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Đăng xuất",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/auth/logout",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "logout"
-              ]
-            },
-            "description": "Kết thúc phiên đăng nhập"
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const token = pm.environment.get(\"accessToken\");",
-                  "if (!token) {",
-                  "    console.warn(\"⚠️ Chưa có accessToken. Hãy chạy 'Đăng nhập' trước.\");",
-                  "}",
-                  "console.log(\"👋 Đăng xuất...\");"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// ✅ TC01 - Đăng xuất thành công → 200",
-                  "pm.test(\"TC01 - Đăng xuất thành công (200)\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "// ✅ TC02 - Response time",
-                  "pm.test(\"TC02 - Response time dưới 2000ms\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-                  "});",
-                  "",
-                  "if (pm.response.code === 200) {",
-                  "    // 🧹 Xóa token khỏi environment sau khi logout",
-                  "    pm.environment.set(\"accessToken\", \"\");",
-                  "    pm.environment.set(\"refreshToken\", \"\");",
-                  "    console.log(\"🧹 Token đã được xóa khỏi environment\");",
-                  "}",
-                  "",
-                  "// ❌ TC03 - Logout khi chưa đăng nhập (không có token) → 401",
-                  "// ❌ TC04 - Dùng lại token sau khi logout → 401 (token đã bị blacklist)"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Đăng nhập",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "login"
-              ]
-            },
-            "description": "Đăng nhập bằng username hoặc email và mật khẩu",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"usernameOrEmail\": \"string\",\n  \"password\": \"string\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// Dùng biến môi trường testEmail & testPassword",
-                  "// Đảm bảo tài khoản đã được tạo và xác thực email trước",
-                  "",
-                  "pm.request.body.raw = JSON.stringify({",
-                  "    usernameOrEmail: pm.environment.get(\"testEmail\"),",
-                  "    password: pm.environment.get(\"testPassword\")",
-                  "});",
-                  "",
-                  "console.log(\"🔐 Đăng nhập với:\", pm.environment.get(\"testEmail\"));"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// ✅ TC01 - Login thành công → 200",
-                  "pm.test(\"TC01 - Đăng nhập thành công (200)\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "// ✅ TC02 - Response time",
-                  "pm.test(\"TC02 - Response time dưới 3000ms\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});",
-                  "",
-                  "if (pm.response.code === 200) {",
-                  "    const json = pm.response.json();",
-                  "",
-                  "    // ✅ TC03 - Response có accessToken",
-                  "    pm.test(\"TC03 - Response chứa accessToken\", function () {",
-                  "        const token = json.accessToken",
-                  "            || json.data?.accessToken",
-                  "            || json.token",
-                  "            || json.data?.token;",
-                  "        pm.expect(token).to.not.be.undefined;",
-                  "        pm.expect(token).to.not.be.empty;",
-                  "",
-                  "        // 💾 Lưu token vào environment để các request khác dùng",
-                  "        pm.environment.set(\"accessToken\", token);",
-                  "        console.log(\"💾 accessToken đã lưu vào environment\");",
-                  "    });",
-                  "",
-                  "    // ✅ TC04 - Response có refreshToken",
-                  "    pm.test(\"TC04 - Response chứa refreshToken\", function () {",
-                  "        const refreshToken = json.refreshToken",
-                  "            || json.data?.refreshToken;",
-                  "        if (refreshToken) {",
-                  "            pm.environment.set(\"refreshToken\", refreshToken);",
-                  "            console.log(\"💾 refreshToken đã lưu vào environment\");",
-                  "        }",
-                  "        // Không fail nếu không có refreshToken (một số API không trả về ngay)",
-                  "        pm.expect(true).to.be.true;",
-                  "    });",
-                  "",
-                  "    // ✅ TC05 - Token có định dạng JWT (3 phần ngăn cách bởi dấu chấm)",
-                  "    pm.test(\"TC05 - accessToken có định dạng JWT hợp lệ\", function () {",
-                  "        const token = pm.environment.get(\"accessToken\");",
-                  "        if (token) {",
-                  "            const parts = token.split(\".\");",
-                  "            pm.expect(parts.length).to.equal(3);",
-                  "        }",
-                  "    });",
-                  "",
-                  "    // ✅ TC06 - Response có thông tin user",
-                  "    pm.test(\"TC06 - Response chứa thông tin người dùng\", function () {",
-                  "        const hasUser = json.user || json.data?.user",
-                  "            || json.userId || json.data?.userId",
-                  "            || json.email || json.data?.email;",
-                  "        pm.expect(hasUser).to.not.be.undefined;",
-                  "    });",
-                  "",
-                  "    // Lưu userId nếu có",
-                  "    const userId = json.userId || json.data?.userId || json.user?.id || json.data?.user?.id;",
-                  "    if (userId) {",
-                  "        pm.environment.set(\"userId\", userId);",
-                  "        console.log(\"💾 userId đã lưu:\", userId);",
-                  "    }",
-                  "}",
-                  "",
-                  "// ❌ TC07 - Sai mật khẩu → 401",
-                  "// Body: { \"usernameOrEmail\": \"...\", \"password\": \"SaiMatKhau123\" }",
-                  "",
-                  "// ❌ TC08 - Email không tồn tại → 401/404",
-                  "// Body: { \"usernameOrEmail\": \"khongtontai@abc.com\", \"password\": \"...\" }",
-                  "",
-                  "// ❌ TC09 - Thiếu password → 400",
-                  "// Body: { \"usernameOrEmail\": \"...\" }",
-                  "",
-                  "// ❌ TC10 - Body rỗng → 400"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Xác thực OTP và đặt lại mật khẩu",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/auth/forgot-password/verify",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "forgot-password",
-                "verify"
-              ]
-            },
-            "description": "Xác thực mã OTP và cập nhật mật khẩu mới",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"string\",\n  \"otp\": \"string\",\n  \"newPassword\": \"string\",\n  \"confirmPassword\": \"string\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// ⚠️ Cập nhật biến 'otpCode' trong environment với OTP thật từ email",
-                  "const email = pm.environment.get(\"testEmail\");",
-                  "const otp = pm.environment.get(\"otpCode\") || \"123456\";",
-                  "const newPass = \"NewPassword@456\";",
-                  "",
-                  "pm.request.body.raw = JSON.stringify({",
-                  "    email: email,",
-                  "    otp: otp,",
-                  "    newPassword: newPass,",
-                  "    confirmPassword: newPass",
-                  "});",
-                  "",
-                  "pm.environment.set(\"testPassword\", newPass); // cập nhật lại mật khẩu mới",
-                  "console.log(\"🔐 Đặt lại mật khẩu cho:\", email);"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// ✅ TC01 - Đặt lại mật khẩu thành công → 200",
-                  "pm.test(\"TC01 - Đặt lại mật khẩu thành công (200)\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "// ✅ TC02 - Response time",
-                  "pm.test(\"TC02 - Response time dưới 3000ms\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});",
-                  "",
-                  "if (pm.response.code === 200) {",
-                  "    const json = pm.response.json();",
-                  "    pm.test(\"TC03 - Response có thông báo thành công\", function () {",
-                  "        pm.expect(json).to.have.any.keys(\"message\", \"success\", \"data\");",
-                  "    });",
-                  "    console.log(\"✅ Mật khẩu đã được đặt lại. Biến testPassword đã được cập nhật\");",
-                  "    console.log(\"📌 Tiếp theo: Chạy lại 'Đăng nhập' với mật khẩu mới để xác nhận\");",
-                  "}",
-                  "",
-                  "// ❌ TC04 - OTP sai → 400/401",
-                  "// ❌ TC05 - newPassword không khớp confirmPassword → 400",
-                  "// ❌ TC06 - Mật khẩu mới quá yếu (không đủ độ phức tạp) → 400",
-                  "// ❌ TC07 - OTP đã dùng rồi (OTP only use once) → 400"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Yêu cầu đặt lại mật khẩu",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/auth/forgot-password/request",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "forgot-password",
-                "request"
-              ]
-            },
-            "description": "Gửi OTP đến email để đặt lại mật khẩu",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"string\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const email = pm.environment.get(\"testEmail\") || \"test@example.com\";",
-                  "pm.request.body.raw = JSON.stringify({ email: email });",
-                  "console.log(\"📧 Gửi OTP đặt lại mật khẩu tới:\", email);"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// ✅ TC01 - Gửi yêu cầu thành công → 200",
-                  "pm.test(\"TC01 - Yêu cầu đặt lại mật khẩu thành công (200)\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "// ✅ TC02 - Response time",
-                  "pm.test(\"TC02 - Response time dưới 5000ms (có gửi email)\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(5000);",
-                  "});",
-                  "",
-                  "if (pm.response.code === 200) {",
-                  "    const json = pm.response.json();",
-                  "    pm.test(\"TC03 - Response có thông báo thành công\", function () {",
-                  "        pm.expect(json).to.have.any.keys(\"message\", \"success\", \"data\");",
-                  "    });",
-                  "    console.log(\"✅ OTP đã được gửi tới email. Kiểm tra hộp thư và lưu OTP vào biến 'otpCode'\");",
-                  "    console.log(\"📌 Tiếp theo: Gọi 'Xác thực OTP và đặt lại mật khẩu'\");",
-                  "}",
-                  "",
-                  "// ❌ TC04 - Email không tồn tại trong hệ thống → 404/400",
-                  "// Body: { \"email\": \"khongton@tai.com\" }",
-                  "",
-                  "// ❌ TC05 - Email không đúng format → 400",
-                  "// Body: { \"email\": \"not-an-email\" }",
-                  "",
-                  "// ❌ TC06 - Body rỗng → 400"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Bắt đầu đăng nhập bằng Google",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/auth/login/google",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "login",
-                "google"
-              ]
-            },
-            "description": "Redirect người dùng tới Google OAuth2 login"
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// ✅ TC01 - Endpoint hoạt động → 200 hoặc 302 (redirect)",
-                  "pm.test(\"TC01 - Google login endpoint hoạt động (200/302)\", function () {",
-                  "    pm.expect(pm.response.code).to.be.oneOf([200, 302, 301]);",
-                  "});",
-                  "",
-                  "// ✅ TC02 - Response time",
-                  "pm.test(\"TC02 - Response time dưới 3000ms\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});",
-                  "",
-                  "// ℹ️ Lưu ý: Endpoint này redirect sang Google OAuth2",
-                  "// Không thể test toàn bộ flow Google OAuth trong Postman",
-                  "// Chỉ kiểm tra endpoint có phản hồi đúng hay không",
-                  "if (pm.response.code === 302 || pm.response.code === 301) {",
-                  "    const location = pm.response.headers.get(\"Location\");",
-                  "    pm.test(\"TC03 - Redirect tới Google OAuth URL\", function () {",
-                  "        pm.expect(location).to.include(\"google\");",
-                  "    });",
-                  "    console.log(\"🔗 Redirect URL:\", location);",
-                  "} else {",
-                  "    pm.test(\"TC03 - Response body hợp lệ\", function () {",
-                  "        pm.expect(pm.response.text()).to.not.be.empty;",
-                  "    });",
-                  "}"
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "User",
-      "item": [
-        {
-          "name": "Cập nhật thông tin cá nhân",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/user/profile",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "user",
-                "profile"
-              ]
-            },
-            "description": "Cập nhật họ tên và số điện thoại",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"fullName\": \"string\",\n  \"phoneNumber\": \"string\",\n  \"gender\": \"string\",\n  \"dateOfBirth\": \"string\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const token = pm.environment.get(\"accessToken\");",
-                  "if (!token) {",
-                  "    console.warn(\"⚠️ Chưa có accessToken. Hãy chạy 'Đăng nhập' trước.\");",
-                  "}",
-                  "",
-                  "pm.request.body.raw = JSON.stringify({",
-                  "    fullName: \"Updated Name \" + Date.now(),",
-                  "    phoneNumber: \"0912345678\",",
-                  "    gender: \"MALE\",",
-                  "    dateOfBirth: \"1995-06-15\"",
-                  "});",
-                  "",
-                  "console.log(\"✏️ Cập nhật thông tin cá nhân...\");"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// ✅ TC01 - Cập nhật thành công → 200",
-                  "pm.test(\"TC01 - Cập nhật thông tin thành công (200)\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "// ✅ TC02 - Response time",
-                  "pm.test(\"TC02 - Response time dưới 3000ms\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});",
-                  "",
-                  "if (pm.response.code === 200) {",
-                  "    const json = pm.response.json();",
-                  "    const user = json.data || json.user || json;",
-                  "",
-                  "    pm.test(\"TC03 - Response body hợp lệ\", function () {",
-                  "        pm.expect(json).to.be.an(\"object\");",
-                  "        pm.expect(json).to.have.any.keys(\"data\", \"message\", \"success\", \"fullName\");",
-                  "    });",
-                  "",
-                  "    // ✅ TC04 - fullName đã được cập nhật",
-                  "    pm.test(\"TC04 - fullName trong response khớp với dữ liệu đã gửi\", function () {",
-                  "        const reqBody = JSON.parse(pm.request.body.raw);",
-                  "        const resName = user.fullName || json.fullName;",
-                  "        if (resName) {",
-                  "            pm.expect(resName).to.equal(reqBody.fullName);",
-                  "        } else {",
-                  "            pm.expect(true).to.be.true;",
-                  "        }",
-                  "    });",
-                  "",
-                  "    console.log(\"✅ Profile đã được cập nhật\");",
-                  "}",
-                  "",
-                  "// ❌ TC05 - Không có token → 401",
-                  "// ❌ TC06 - phoneNumber không đúng format → 400",
-                  "// ❌ TC07 - dateOfBirth không đúng format → 400"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Đổi mật khẩu",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/user/password",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "user",
-                "password"
-              ]
-            },
-            "description": "Cập nhật mật khẩu hiện tại sang mật khẩu mới",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"currentPassword\": \"string\",\n  \"newPassword\": \"string\",\n  \"confirmPassword\": \"string\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const token = pm.environment.get(\"accessToken\");",
-                  "if (!token) {",
-                  "    console.warn(\"⚠️ Chưa có accessToken. Hãy chạy 'Đăng nhập' trước.\");",
-                  "}",
-                  "",
-                  "const currentPass = pm.environment.get(\"testPassword\") || \"Password@123\";",
-                  "const newPass = \"NewPass@789\";",
-                  "",
-                  "pm.request.body.raw = JSON.stringify({",
-                  "    currentPassword: currentPass,",
-                  "    newPassword: newPass,",
-                  "    confirmPassword: newPass",
-                  "});",
-                  "",
-                  "// Lưu mật khẩu mới để dùng cho các lần login sau",
-                  "pm.environment.set(\"testPassword\", newPass);",
-                  "console.log(\"🔒 Đổi mật khẩu...\");"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// ✅ TC01 - Đổi mật khẩu thành công → 200",
-                  "pm.test(\"TC01 - Đổi mật khẩu thành công (200)\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "// ✅ TC02 - Response time",
-                  "pm.test(\"TC02 - Response time dưới 3000ms\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});",
-                  "",
-                  "if (pm.response.code === 200) {",
-                  "    const json = pm.response.json();",
-                  "    pm.test(\"TC03 - Response có thông báo thành công\", function () {",
-                  "        pm.expect(json).to.have.any.keys(\"message\", \"success\", \"data\");",
-                  "    });",
-                  "    console.log(\"✅ Mật khẩu đã được đổi. Biến testPassword đã cập nhật mật khẩu mới\");",
-                  "    console.log(\"📌 Chạy lại 'Đăng nhập' để lấy token mới với mật khẩu vừa đổi\");",
-                  "}",
-                  "",
-                  "// ❌ TC04 - currentPassword sai → 400/401",
-                  "// Body: { \"currentPassword\": \"SaiMatKhau\", \"newPassword\": \"...\", \"confirmPassword\": \"...\" }",
-                  "",
-                  "// ❌ TC05 - newPassword không khớp confirmPassword → 400",
-                  "// Body: { \"newPassword\": \"abc\", \"confirmPassword\": \"xyz\" }",
-                  "",
-                  "// ❌ TC06 - Mật khẩu mới trùng mật khẩu cũ → 400 (nếu có rule này)",
-                  "// ❌ TC07 - Mật khẩu mới quá yếu → 400",
-                  "// ❌ TC08 - Không có token → 401"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Lấy thông tin người dùng hiện tại",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/user/me",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "user",
-                "me"
-              ]
-            },
-            "description": "Trả về thông tin chi tiết của người dùng đang đăng nhập",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            }
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const token = pm.environment.get(\"accessToken\");",
-                  "if (!token) {",
-                  "    console.warn(\"⚠️ Chưa có accessToken. Hãy chạy 'Đăng nhập' trước.\");",
-                  "}"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// ✅ TC01 - Lấy thông tin thành công → 200",
-                  "pm.test(\"TC01 - Lấy thông tin user thành công (200)\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "// ✅ TC02 - Response time",
-                  "pm.test(\"TC02 - Response time dưới 2000ms\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-                  "});",
-                  "",
-                  "if (pm.response.code === 200) {",
-                  "    const json = pm.response.json();",
-                  "    const user = json.data || json.user || json;",
-                  "",
-                  "    // ✅ TC03 - Có các trường cơ bản",
-                  "    pm.test(\"TC03 - Response chứa email\", function () {",
-                  "        const email = user.email || json.email;",
-                  "        pm.expect(email).to.not.be.undefined;",
-                  "        pm.expect(email).to.not.be.empty;",
-                  "    });",
-                  "",
-                  "    pm.test(\"TC04 - Response chứa username hoặc fullName\", function () {",
-                  "        const name = user.username || user.fullName || user.name",
-                  "            || json.username || json.fullName;",
-                  "        pm.expect(name).to.not.be.undefined;",
-                  "    });",
-                  "",
-                  "    pm.test(\"TC05 - Response chứa userId hoặc id\", function () {",
-                  "        const id = user.id || user.userId || json.id;",
-                  "        pm.expect(id).to.not.be.undefined;",
-                  "        if (id) pm.environment.set(\"userId\", id);",
-                  "    });",
-                  "",
-                  "    // ✅ TC06 - Kiểm tra email khớp với email đã login",
-                  "    pm.test(\"TC06 - Email khớp với tài khoản đang đăng nhập\", function () {",
-                  "        const expectedEmail = pm.environment.get(\"testEmail\");",
-                  "        const actualEmail = user.email || json.email;",
-                  "        if (expectedEmail && actualEmail) {",
-                  "            pm.expect(actualEmail).to.equal(expectedEmail);",
-                  "        } else {",
-                  "            pm.expect(true).to.be.true; // skip nếu không có để so sánh",
-                  "        }",
-                  "    });",
-                  "",
-                  "    console.log(\"👤 User info:\", JSON.stringify(user, null, 2));",
-                  "}",
-                  "",
-                  "// ❌ TC07 - Không có token → 401",
-                  "// ❌ TC08 - Token hết hạn → 401",
-                  "// ❌ TC09 - Token không hợp lệ → 401"
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Health",
-      "item": [
-        {
-          "name": "Kiểm tra trạng thái API",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/health",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "health"
-              ]
-            },
-            "description": "Trả về trạng thái hoạt động của API"
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// ✅ TC01 - Health Check: API phải trả về 200",
-                  "pm.test(\"TC01 - Status code là 200 OK\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "// ✅ TC02 - Response time hợp lý",
-                  "pm.test(\"TC02 - Response time dưới 2000ms\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-                  "});",
-                  "",
-                  "// ✅ TC03 - Response có body",
-                  "pm.test(\"TC03 - Response body không rỗng\", function () {",
-                  "    pm.expect(pm.response.text()).to.not.be.empty;",
-                  "});",
-                  "",
-                  "// ✅ TC04 - Content-Type trả về",
-                  "pm.test(\"TC04 - Content-Type là JSON hoặc text\", function () {",
-                  "    const ct = pm.response.headers.get(\"Content-Type\");",
-                  "    pm.expect(ct).to.not.be.null;",
-                  "});",
-                  "",
-                  "// Log status",
-                  "console.log(\"🏥 Health check - Status:\", pm.response.code, \"| Time:\", pm.response.responseTime + \"ms\");"
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    }
-  ],
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "{{baseUrl}}"
-    }
-  ],
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "{{accessToken}}",
-        "type": "string"
-      }
-    ]
-  }
 }

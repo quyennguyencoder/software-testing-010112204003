@@ -1,782 +1,933 @@
-{
-  "info": {
-    "_postman_id": "fb429033-332c-4774-8d01-c786b739cc33",
-    "name": "📱 [Member 2] Product View - Public",
-    "description": "Các API xem sản phẩm công khai, tìm kiếm, lọc, thương hiệu & danh mục (18 endpoints)",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "item": [
-    {
-      "name": "ProductView API",
-      "item": [
-        {
-          "name": "Lọc sản phẩm đa tiêu chí",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products/filter",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "products",
-                "filter"
+﻿{
+    "info":  {
+                 "_postman_id":  "fb429033-332c-4774-8d01-c786b739cc33",
+                 "name":  "📱 [Member 2] Product View - Public",
+                 "description":  "Các API xem sản phẩm công khai, tìm kiếm, lọc, thương hiệu \u0026 danh mục (18 endpoints)",
+                 "schema":  "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+             },
+    "item":  [
+                 {
+                     "name":  "ProductView API",
+                     "item":  [
+                                  {
+                                      "name":  "Lọc sản phẩm đa tiêu chí",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/products/filter",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "products",
+                                                                               "filter"
+                                                                           ]
+                                                              },
+                                                      "description":  "Lọc sản phẩm theo nhiều tiêu chí cùng lúc: danh mục, thương hiệu, giá, RAM, storage, pin, màn hình, OS, đánh giá, trạng thái kho",
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"categoryIds\": [\n    1\n  ],\n  \"brandIds\": [\n    1\n  ],\n  \"minPrice\": 5000000,\n  \"maxPrice\": 30000000,\n  \"ramOptions\": [\n    \"string\"\n  ],\n  \"storageOptions\": [\n    \"string\"\n  ],\n  \"minBattery\": 4000,\n  \"maxBattery\": 6000,\n  \"screenSizeOptions\": [\n    \"string\"\n  ],\n  \"osOptions\": [\n    \"string\"\n  ],\n  \"minRating\": 4.0,\n  \"maxRating\": 4.5,\n  \"inStockOnly\": true,\n  \"hasDiscountOnly\": true,\n  \"sortBy\": \"price\",\n  \"sortDirection\": \"asc\",\n  \"page\": 0,\n  \"size\": 20\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "So sánh sản phẩm",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/products/compare",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "products",
+                                                                               "compare"
+                                                                           ]
+                                                              },
+                                                      "description":  "So sánh thông số kỹ thuật và giá của nhiều sản phẩm (tối đa 4 sản phẩm)",
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "[\n  1\n]",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Xem chi tiết sản phẩm",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/products/{{productId}}",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "products",
+                                                                               ":id"
+                                                                           ],
+                                                                  "variable":  [
+                                                                                   {
+                                                                                       "key":  "id",
+                                                                                       "value":  "",
+                                                                                       "description":  "ID sản phẩm"
+                                                                                   }
+                                                                               ]
+                                                              },
+                                                      "description":  "Lấy thông tin chi tiết của một sản phẩm bao gồm thông số kỹ thuật, các phiên bản, hình ảnh,giá,..."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Xem sản phẩm liên quan",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/products/{{productId}}/related",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "products",
+                                                                               ":id",
+                                                                               "related"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "limit",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số lượng giới hạn sản phẩm (không pagination)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "page",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số trang (bắt đầu từ 0)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "size",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số sản phẩm mỗi trang",
+                                                                                    "disabled":  true
+                                                                                }
+                                                                            ],
+                                                                  "variable":  [
+                                                                                   {
+                                                                                       "key":  "id",
+                                                                                       "value":  "",
+                                                                                       "description":  "ID sản phẩm"
+                                                                                   }
+                                                                               ]
+                                                              },
+                                                      "description":  "Lấy danh sách sản phẩm liên quan (cùng danh mục, chênh lệch giá ≤ 6 triệu). Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Tìm kiếm sản phẩm theo từ khóa",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/products/search",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "products",
+                                                                               "search"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "keyword",
+                                                                                    "value":  "",
+                                                                                    "description":  "Từ khóa tìm kiếm",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "sortBy",
+                                                                                    "value":  "",
+                                                                                    "description":  "Sắp xếp theo (name, price, rating, created_date)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "sortDirection",
+                                                                                    "value":  "",
+                                                                                    "description":  "Hướng sắp xếp (asc, desc)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "page",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số trang (bắt đầu từ 0)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "size",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số sản phẩm mỗi trang",
+                                                                                    "disabled":  true
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "API cho phép người dùng tìm kiếm sản phẩm theo từ khóa và sắp xếp theo nhiều tiêu chí"
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Xem sản phẩm đang giảm giá",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/products/on-sale",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "products",
+                                                                               "on-sale"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "limit",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số lượng giới hạn sản phẩm (không pagination)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "page",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số trang (bắt đầu từ 0)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "size",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số sản phẩm mỗi trang",
+                                                                                    "disabled":  true
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Lấy danh sách sản phẩm đang giảm giá (có mã giảm giá) sắp xếp theo số tiền giảm. Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Xem sản phẩm mới nhất",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/products/new-arrivals",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "products",
+                                                                               "new-arrivals"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "limit",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số lượng giới hạn sản phẩm (không pagination)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "page",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số trang (bắt đầu từ 0)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "size",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số sản phẩm mỗi trang",
+                                                                                    "disabled":  true
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Lấy danh sách sản phẩm mới ra mắt sắp xếp theo ngày thêm. Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Lọc sản phẩm theo lưu trữ",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/products/filter/storage",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "products",
+                                                                               "filter",
+                                                                               "storage"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "storageOptions",
+                                                                                    "value":  "",
+                                                                                    "description":  "Danh sách dung lượng lưu trữ cần lọc",
+                                                                                    "disabled":  false
+                                                                                },
+                                                                                {
+                                                                                    "key":  "limit",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số lượng giới hạn sản phẩm (không pagination)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "page",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số trang (bắt đầu từ 0)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "size",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số sản phẩm mỗi trang",
+                                                                                    "disabled":  true
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Lọc sản phẩm theo dung lượng lưu trữ (GB). Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Lọc sản phẩm theo kích thước màn hình",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/products/filter/screen",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "products",
+                                                                               "filter",
+                                                                               "screen"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "screenSizeOptions",
+                                                                                    "value":  "",
+                                                                                    "description":  "Danh sách kích thước màn hình cần lọc",
+                                                                                    "disabled":  false
+                                                                                },
+                                                                                {
+                                                                                    "key":  "limit",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số lượng giới hạn sản phẩm (không pagination)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "page",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số trang (bắt đầu từ 0)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "size",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số sản phẩm mỗi trang",
+                                                                                    "disabled":  true
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Lọc sản phẩm theo kích thước màn hình (inch). Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Lọc sản phẩm theo RAM",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/products/filter/ram",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "products",
+                                                                               "filter",
+                                                                               "ram"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "ramOptions",
+                                                                                    "value":  "",
+                                                                                    "description":  "Danh sách RAM cần lọc",
+                                                                                    "disabled":  false
+                                                                                },
+                                                                                {
+                                                                                    "key":  "limit",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số lượng giới hạn sản phẩm (không pagination)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "page",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số trang (bắt đầu từ 0)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "size",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số sản phẩm mỗi trang",
+                                                                                    "disabled":  true
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Lọc sản phẩm theo cấu hình RAM. Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Lọc sản phẩm theo hệ điều hành",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/products/filter/os",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "products",
+                                                                               "filter",
+                                                                               "os"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "osOptions",
+                                                                                    "value":  "",
+                                                                                    "description":  "Danh sách hệ điều hành cần lọc",
+                                                                                    "disabled":  false
+                                                                                },
+                                                                                {
+                                                                                    "key":  "limit",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số lượng giới hạn sản phẩm (không pagination)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "page",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số trang (bắt đầu từ 0)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "size",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số sản phẩm mỗi trang",
+                                                                                    "disabled":  true
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Lọc sản phẩm theo hệ điều hành (iOS, Android, v.v.). Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Lọc sản phẩm theo pin",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/products/filter/battery",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "products",
+                                                                               "filter",
+                                                                               "battery"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "minBattery",
+                                                                                    "value":  "",
+                                                                                    "description":  "Dung lượng pin tối thiểu",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "maxBattery",
+                                                                                    "value":  "",
+                                                                                    "description":  "Dung lượng pin tối đa",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "limit",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số lượng giới hạn sản phẩm (không pagination)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "page",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số trang (bắt đầu từ 0)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "size",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số sản phẩm mỗi trang",
+                                                                                    "disabled":  true
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Lọc sản phẩm theo dung lượng pin (mAh). Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Xem sản phẩm nổi bật",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/products/featured",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "products",
+                                                                               "featured"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "limit",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số lượng giới hạn sản phẩm (không pagination)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "page",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số trang (bắt đầu từ 0)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "size",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số sản phẩm mỗi trang",
+                                                                                    "disabled":  true
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Lấy danh sách sản phẩm nổi bật (đánh giá \u003e= 4.5, đã bán \u003e= 100). Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Xem sản phẩm theo danh mục",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/products/category/{{categoryId}}",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "products",
+                                                                               "category",
+                                                                               ":categoryId"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "sortBy",
+                                                                                    "value":  "",
+                                                                                    "description":  "Sắp xếp theo",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "sortDirection",
+                                                                                    "value":  "",
+                                                                                    "description":  "Hướng sắp xếp",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "page",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số trang",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "size",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số sản phẩm mỗi trang",
+                                                                                    "disabled":  true
+                                                                                }
+                                                                            ],
+                                                                  "variable":  [
+                                                                                   {
+                                                                                       "key":  "categoryId",
+                                                                                       "value":  "",
+                                                                                       "description":  "ID danh mục"
+                                                                                   }
+                                                                               ]
+                                                              },
+                                                      "description":  "Lấy danh sách sản phẩm thuộc một danh mục cụ thể, bao gồm thông tin danh mục con và bộ lọc"
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Xem sản phẩm bán chạy",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/products/best-selling",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "products",
+                                                                               "best-selling"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "limit",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số lượng giới hạn sản phẩm (không pagination)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "page",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số trang (bắt đầu từ 0)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "size",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số sản phẩm mỗi trang",
+                                                                                    "disabled":  true
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Lấy danh sách sản phẩm bán chạy nhất theo lượt bán. Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "Brand (Public)",
+                     "item":  [
+                                  {
+                                      "name":  "Lấy danh sách tất cả thương hiệu",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/brands",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "brands"
+                                                                           ]
+                                                              },
+                                                      "description":  "Trả về danh sách tất cả thương hiệu, sắp xếp theo tên. **API này là công khai, không cần xác thực.**"
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Lấy chi tiết thương hiệu theo ID",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/brands/{{brandId}}",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "brands",
+                                                                               ":id"
+                                                                           ],
+                                                                  "variable":  [
+                                                                                   {
+                                                                                       "key":  "id",
+                                                                                       "value":  "",
+                                                                                       "description":  "ID của thương hiệu"
+                                                                                   }
+                                                                               ]
+                                                              },
+                                                      "description":  "Trả về thông tin chi tiết của một thương hiệu. **API này là công khai, không cần xác thực.**"
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "Category (Public)",
+                     "item":  [
+                                  {
+                                      "name":  "Lấy danh sách danh mục theo parentId",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/categories",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "categories"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "parentId",
+                                                                                    "value":  "",
+                                                                                    "description":  "ID của danh mục cha (null để lấy danh mục gốc)",
+                                                                                    "disabled":  true
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Trả về danh sách danh mục. Nếu parentId=null hoặc không truyền: trả về danh mục gốc. Nếu parentId=\u003cid\u003e: trả về danh mục con của parent đó. **API này là công khai, không cần xác thực.**"
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  }
+                              ]
+                 }
+             ],
+    "variable":  [
+                     {
+                         "key":  "baseUrl",
+                         "value":  "{{baseUrl}}"
+                     },
+                     {
+                         "key":  "expectedStatus",
+                         "value":  "",
+                         "type":  "string"
+                     },
+                     {
+                         "key":  "currentResourceId",
+                         "value":  "",
+                         "type":  "string"
+                     },
+                     {
+                         "key":  "currentEmail",
+                         "value":  "",
+                         "type":  "string"
+                     },
+                     {
+                         "key":  "currentUsername",
+                         "value":  "",
+                         "type":  "string"
+                     }
+                 ],
+    "auth":  {
+                 "type":  "bearer",
+                 "bearer":  [
+                                {
+                                    "key":  "token",
+                                    "value":  "{{accessToken}}",
+                                    "type":  "string"
+                                }
+                            ]
+             },
+    "event":  [
+                  {
+                      "listen":  "prerequest",
+                      "script":  {
+                                     "type":  "text/javascript",
+                                     "exec":  [
+                                                  "// Codex shared prerequest script",
+                                                  "const suffix = Date.now().toString();",
+                                                  "pm.environment.set(\"uniqueSuffix\", suffix);",
+                                                  "",
+                                                  "if (!pm.environment.get(\"userPassword\")) pm.environment.set(\"userPassword\", \"Password@123\");",
+                                                  "if (!pm.environment.get(\"adminPassword\")) pm.environment.set(\"adminPassword\", \"Password@123\");",
+                                                  "",
+                                                  "pm.environment.set(\"currentEmail\", `user_${suffix}@test.com`);",
+                                                  "pm.environment.set(\"currentUsername\", `user_${suffix}`);",
+                                                  "pm.environment.set(\"negativeProductId\", pm.environment.get(\"negativeProductId\") || \"999999999\");",
+                                                  "pm.environment.set(\"negativeOrderId\", pm.environment.get(\"negativeOrderId\") || \"999999999\");"
+                                              ]
+                                 }
+                  },
+                  {
+                      "listen":  "test",
+                      "script":  {
+                                     "type":  "text/javascript",
+                                     "exec":  [
+                                                  "// Codex shared test script",
+                                                  "pm.test(\"No server error\", () =\u003e { pm.expect(pm.response.code).to.be.below(500); });",
+                                                  "pm.test(\"Response time \u003c 2000ms\", () =\u003e { pm.expect(pm.response.responseTime).to.be.below(2000); });",
+                                                  "pm.test(\"Response is JSON when body exists\", () =\u003e {",
+                                                  "  if (pm.response.text()) pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                                                  "});",
+                                                  "",
+                                                  "if (pm.response.text() \u0026\u0026 (pm.response.headers.get(\"Content-Type\") || \"\").includes(\"application/json\")) {",
+                                                  "  const json = pm.response.json();",
+                                                  "  const data = json.data || json;",
+                                                  "  const url = pm.request.url.toString();",
+                                                  "  const requestName = pm.info.requestName.toLowerCase();",
+                                                  "",
+                                                  "  if (data.accessToken) {",
+                                                  "    if (requestName.includes(\"admin\")) pm.environment.set(\"adminAccessToken\", data.accessToken);",
+                                                  "    else pm.environment.set(\"accessToken\", data.accessToken);",
+                                                  "  }",
+                                                  "  if (data.refreshToken) pm.environment.set(\"refreshToken\", data.refreshToken);",
+                                                  "  if (data.user \u0026\u0026 data.user.id) pm.environment.set(\"userId\", data.user.id);",
+                                                  "",
+                                                  "  const id = data.id || data.productId || data.orderId || data.addressId || data.cartItemId || data.guestCartId;",
+                                                  "  if (id) pm.environment.set(\"currentResourceId\", id);",
+                                                  "",
+                                                  "  if (id \u0026\u0026 url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+                                                  "  if (id \u0026\u0026 url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+                                                  "  if (data.orderCode) { pm.environment.set(\"createdOrderCode\", data.orderCode); pm.environment.set(\"orderCode\", data.orderCode); }",
+                                                  "}"
+                                              ]
+                                 }
+                  }
               ]
-            },
-            "description": "Lọc sản phẩm theo nhiều tiêu chí cùng lúc: danh mục, thương hiệu, giá, RAM, storage, pin, màn hình, OS, đánh giá, trạng thái kho",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"categoryIds\": [\n    1\n  ],\n  \"brandIds\": [\n    1\n  ],\n  \"minPrice\": 5000000,\n  \"maxPrice\": 30000000,\n  \"ramOptions\": [\n    \"string\"\n  ],\n  \"storageOptions\": [\n    \"string\"\n  ],\n  \"minBattery\": 4000,\n  \"maxBattery\": 6000,\n  \"screenSizeOptions\": [\n    \"string\"\n  ],\n  \"osOptions\": [\n    \"string\"\n  ],\n  \"minRating\": 4.0,\n  \"maxRating\": 4.5,\n  \"inStockOnly\": true,\n  \"hasDiscountOnly\": true,\n  \"sortBy\": \"price\",\n  \"sortDirection\": \"asc\",\n  \"page\": 0,\n  \"size\": 20\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "So sánh sản phẩm",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products/compare",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "products",
-                "compare"
-              ]
-            },
-            "description": "So sánh thông số kỹ thuật và giá của nhiều sản phẩm (tối đa 4 sản phẩm)",
-            "body": {
-              "mode": "raw",
-              "raw": "[\n  1\n]",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Xem chi tiết sản phẩm",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products/{id}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "products",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "",
-                  "description": "ID sản phẩm"
-                }
-              ]
-            },
-            "description": "Lấy thông tin chi tiết của một sản phẩm bao gồm thông số kỹ thuật, các phiên bản, hình ảnh,giá,..."
-          },
-          "response": []
-        },
-        {
-          "name": "Xem sản phẩm liên quan",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products/{id}/related",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "products",
-                ":id",
-                "related"
-              ],
-              "query": [
-                {
-                  "key": "limit",
-                  "value": "",
-                  "description": "Số lượng giới hạn sản phẩm (không pagination)",
-                  "disabled": true
-                },
-                {
-                  "key": "page",
-                  "value": "",
-                  "description": "Số trang (bắt đầu từ 0)",
-                  "disabled": true
-                },
-                {
-                  "key": "size",
-                  "value": "",
-                  "description": "Số sản phẩm mỗi trang",
-                  "disabled": true
-                }
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "",
-                  "description": "ID sản phẩm"
-                }
-              ]
-            },
-            "description": "Lấy danh sách sản phẩm liên quan (cùng danh mục, chênh lệch giá ≤ 6 triệu). Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
-          },
-          "response": []
-        },
-        {
-          "name": "Tìm kiếm sản phẩm theo từ khóa",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products/search",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "products",
-                "search"
-              ],
-              "query": [
-                {
-                  "key": "keyword",
-                  "value": "",
-                  "description": "Từ khóa tìm kiếm",
-                  "disabled": true
-                },
-                {
-                  "key": "sortBy",
-                  "value": "",
-                  "description": "Sắp xếp theo (name, price, rating, created_date)",
-                  "disabled": true
-                },
-                {
-                  "key": "sortDirection",
-                  "value": "",
-                  "description": "Hướng sắp xếp (asc, desc)",
-                  "disabled": true
-                },
-                {
-                  "key": "page",
-                  "value": "",
-                  "description": "Số trang (bắt đầu từ 0)",
-                  "disabled": true
-                },
-                {
-                  "key": "size",
-                  "value": "",
-                  "description": "Số sản phẩm mỗi trang",
-                  "disabled": true
-                }
-              ]
-            },
-            "description": "API cho phép người dùng tìm kiếm sản phẩm theo từ khóa và sắp xếp theo nhiều tiêu chí"
-          },
-          "response": []
-        },
-        {
-          "name": "Xem sản phẩm đang giảm giá",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products/on-sale",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "products",
-                "on-sale"
-              ],
-              "query": [
-                {
-                  "key": "limit",
-                  "value": "",
-                  "description": "Số lượng giới hạn sản phẩm (không pagination)",
-                  "disabled": true
-                },
-                {
-                  "key": "page",
-                  "value": "",
-                  "description": "Số trang (bắt đầu từ 0)",
-                  "disabled": true
-                },
-                {
-                  "key": "size",
-                  "value": "",
-                  "description": "Số sản phẩm mỗi trang",
-                  "disabled": true
-                }
-              ]
-            },
-            "description": "Lấy danh sách sản phẩm đang giảm giá (có mã giảm giá) sắp xếp theo số tiền giảm. Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
-          },
-          "response": []
-        },
-        {
-          "name": "Xem sản phẩm mới nhất",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products/new-arrivals",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "products",
-                "new-arrivals"
-              ],
-              "query": [
-                {
-                  "key": "limit",
-                  "value": "",
-                  "description": "Số lượng giới hạn sản phẩm (không pagination)",
-                  "disabled": true
-                },
-                {
-                  "key": "page",
-                  "value": "",
-                  "description": "Số trang (bắt đầu từ 0)",
-                  "disabled": true
-                },
-                {
-                  "key": "size",
-                  "value": "",
-                  "description": "Số sản phẩm mỗi trang",
-                  "disabled": true
-                }
-              ]
-            },
-            "description": "Lấy danh sách sản phẩm mới ra mắt sắp xếp theo ngày thêm. Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
-          },
-          "response": []
-        },
-        {
-          "name": "Lọc sản phẩm theo lưu trữ",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products/filter/storage",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "products",
-                "filter",
-                "storage"
-              ],
-              "query": [
-                {
-                  "key": "storageOptions",
-                  "value": "",
-                  "description": "Danh sách dung lượng lưu trữ cần lọc",
-                  "disabled": false
-                },
-                {
-                  "key": "limit",
-                  "value": "",
-                  "description": "Số lượng giới hạn sản phẩm (không pagination)",
-                  "disabled": true
-                },
-                {
-                  "key": "page",
-                  "value": "",
-                  "description": "Số trang (bắt đầu từ 0)",
-                  "disabled": true
-                },
-                {
-                  "key": "size",
-                  "value": "",
-                  "description": "Số sản phẩm mỗi trang",
-                  "disabled": true
-                }
-              ]
-            },
-            "description": "Lọc sản phẩm theo dung lượng lưu trữ (GB). Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
-          },
-          "response": []
-        },
-        {
-          "name": "Lọc sản phẩm theo kích thước màn hình",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products/filter/screen",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "products",
-                "filter",
-                "screen"
-              ],
-              "query": [
-                {
-                  "key": "screenSizeOptions",
-                  "value": "",
-                  "description": "Danh sách kích thước màn hình cần lọc",
-                  "disabled": false
-                },
-                {
-                  "key": "limit",
-                  "value": "",
-                  "description": "Số lượng giới hạn sản phẩm (không pagination)",
-                  "disabled": true
-                },
-                {
-                  "key": "page",
-                  "value": "",
-                  "description": "Số trang (bắt đầu từ 0)",
-                  "disabled": true
-                },
-                {
-                  "key": "size",
-                  "value": "",
-                  "description": "Số sản phẩm mỗi trang",
-                  "disabled": true
-                }
-              ]
-            },
-            "description": "Lọc sản phẩm theo kích thước màn hình (inch). Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
-          },
-          "response": []
-        },
-        {
-          "name": "Lọc sản phẩm theo RAM",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products/filter/ram",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "products",
-                "filter",
-                "ram"
-              ],
-              "query": [
-                {
-                  "key": "ramOptions",
-                  "value": "",
-                  "description": "Danh sách RAM cần lọc",
-                  "disabled": false
-                },
-                {
-                  "key": "limit",
-                  "value": "",
-                  "description": "Số lượng giới hạn sản phẩm (không pagination)",
-                  "disabled": true
-                },
-                {
-                  "key": "page",
-                  "value": "",
-                  "description": "Số trang (bắt đầu từ 0)",
-                  "disabled": true
-                },
-                {
-                  "key": "size",
-                  "value": "",
-                  "description": "Số sản phẩm mỗi trang",
-                  "disabled": true
-                }
-              ]
-            },
-            "description": "Lọc sản phẩm theo cấu hình RAM. Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
-          },
-          "response": []
-        },
-        {
-          "name": "Lọc sản phẩm theo hệ điều hành",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products/filter/os",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "products",
-                "filter",
-                "os"
-              ],
-              "query": [
-                {
-                  "key": "osOptions",
-                  "value": "",
-                  "description": "Danh sách hệ điều hành cần lọc",
-                  "disabled": false
-                },
-                {
-                  "key": "limit",
-                  "value": "",
-                  "description": "Số lượng giới hạn sản phẩm (không pagination)",
-                  "disabled": true
-                },
-                {
-                  "key": "page",
-                  "value": "",
-                  "description": "Số trang (bắt đầu từ 0)",
-                  "disabled": true
-                },
-                {
-                  "key": "size",
-                  "value": "",
-                  "description": "Số sản phẩm mỗi trang",
-                  "disabled": true
-                }
-              ]
-            },
-            "description": "Lọc sản phẩm theo hệ điều hành (iOS, Android, v.v.). Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
-          },
-          "response": []
-        },
-        {
-          "name": "Lọc sản phẩm theo pin",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products/filter/battery",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "products",
-                "filter",
-                "battery"
-              ],
-              "query": [
-                {
-                  "key": "minBattery",
-                  "value": "",
-                  "description": "Dung lượng pin tối thiểu",
-                  "disabled": true
-                },
-                {
-                  "key": "maxBattery",
-                  "value": "",
-                  "description": "Dung lượng pin tối đa",
-                  "disabled": true
-                },
-                {
-                  "key": "limit",
-                  "value": "",
-                  "description": "Số lượng giới hạn sản phẩm (không pagination)",
-                  "disabled": true
-                },
-                {
-                  "key": "page",
-                  "value": "",
-                  "description": "Số trang (bắt đầu từ 0)",
-                  "disabled": true
-                },
-                {
-                  "key": "size",
-                  "value": "",
-                  "description": "Số sản phẩm mỗi trang",
-                  "disabled": true
-                }
-              ]
-            },
-            "description": "Lọc sản phẩm theo dung lượng pin (mAh). Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
-          },
-          "response": []
-        },
-        {
-          "name": "Xem sản phẩm nổi bật",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products/featured",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "products",
-                "featured"
-              ],
-              "query": [
-                {
-                  "key": "limit",
-                  "value": "",
-                  "description": "Số lượng giới hạn sản phẩm (không pagination)",
-                  "disabled": true
-                },
-                {
-                  "key": "page",
-                  "value": "",
-                  "description": "Số trang (bắt đầu từ 0)",
-                  "disabled": true
-                },
-                {
-                  "key": "size",
-                  "value": "",
-                  "description": "Số sản phẩm mỗi trang",
-                  "disabled": true
-                }
-              ]
-            },
-            "description": "Lấy danh sách sản phẩm nổi bật (đánh giá >= 4.5, đã bán >= 100). Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
-          },
-          "response": []
-        },
-        {
-          "name": "Xem sản phẩm theo danh mục",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products/category/{categoryId}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "products",
-                "category",
-                ":categoryId"
-              ],
-              "query": [
-                {
-                  "key": "sortBy",
-                  "value": "",
-                  "description": "Sắp xếp theo",
-                  "disabled": true
-                },
-                {
-                  "key": "sortDirection",
-                  "value": "",
-                  "description": "Hướng sắp xếp",
-                  "disabled": true
-                },
-                {
-                  "key": "page",
-                  "value": "",
-                  "description": "Số trang",
-                  "disabled": true
-                },
-                {
-                  "key": "size",
-                  "value": "",
-                  "description": "Số sản phẩm mỗi trang",
-                  "disabled": true
-                }
-              ],
-              "variable": [
-                {
-                  "key": "categoryId",
-                  "value": "",
-                  "description": "ID danh mục"
-                }
-              ]
-            },
-            "description": "Lấy danh sách sản phẩm thuộc một danh mục cụ thể, bao gồm thông tin danh mục con và bộ lọc"
-          },
-          "response": []
-        },
-        {
-          "name": "Xem sản phẩm bán chạy",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products/best-selling",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "products",
-                "best-selling"
-              ],
-              "query": [
-                {
-                  "key": "limit",
-                  "value": "",
-                  "description": "Số lượng giới hạn sản phẩm (không pagination)",
-                  "disabled": true
-                },
-                {
-                  "key": "page",
-                  "value": "",
-                  "description": "Số trang (bắt đầu từ 0)",
-                  "disabled": true
-                },
-                {
-                  "key": "size",
-                  "value": "",
-                  "description": "Số sản phẩm mỗi trang",
-                  "disabled": true
-                }
-              ]
-            },
-            "description": "Lấy danh sách sản phẩm bán chạy nhất theo lượt bán. Sử dụng limit để lấy N sản phẩm đầu tiên, hoặc dùng page/size để phân trang"
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Brand (Public)",
-      "item": [
-        {
-          "name": "Lấy danh sách tất cả thương hiệu",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/brands",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "brands"
-              ]
-            },
-            "description": "Trả về danh sách tất cả thương hiệu, sắp xếp theo tên. **API này là công khai, không cần xác thực.**"
-          },
-          "response": []
-        },
-        {
-          "name": "Lấy chi tiết thương hiệu theo ID",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/brands/{id}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "brands",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "",
-                  "description": "ID của thương hiệu"
-                }
-              ]
-            },
-            "description": "Trả về thông tin chi tiết của một thương hiệu. **API này là công khai, không cần xác thực.**"
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Category (Public)",
-      "item": [
-        {
-          "name": "Lấy danh sách danh mục theo parentId",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/categories",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "categories"
-              ],
-              "query": [
-                {
-                  "key": "parentId",
-                  "value": "",
-                  "description": "ID của danh mục cha (null để lấy danh mục gốc)",
-                  "disabled": true
-                }
-              ]
-            },
-            "description": "Trả về danh sách danh mục. Nếu parentId=null hoặc không truyền: trả về danh mục gốc. Nếu parentId=<id>: trả về danh mục con của parent đó. **API này là công khai, không cần xác thực.**"
-          },
-          "response": []
-        }
-      ]
-    }
-  ],
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "{{baseUrl}}"
-    }
-  ],
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "{{accessToken}}",
-        "type": "string"
-      }
-    ]
-  }
 }
