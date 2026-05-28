@@ -23,8 +23,8 @@
       "listen": "prerequest",
       "script": {
         "type": "text/javascript",
+        "requests": {},
         "exec": [
-          "// Codex shared prerequest script",
           "const suffix = Date.now().toString();",
           "pm.environment.set(\"uniqueSuffix\", suffix);",
           "",
@@ -42,8 +42,8 @@
       "listen": "test",
       "script": {
         "type": "text/javascript",
+        "requests": {},
         "exec": [
-          "// Codex shared test script",
           "pm.test(\"No server error\", () => { pm.expect(pm.response.code).to.be.below(500); });",
           "pm.test(\"Response time < 2000ms\", () => { pm.expect(pm.response.responseTime).to.be.below(2000); });",
           "pm.test(\"Response is JSON when body exists\", () => {",

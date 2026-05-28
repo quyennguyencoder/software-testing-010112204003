@@ -1,106 +1,104 @@
 ﻿{
-    "info":  {
-                 "_postman_id":  "5137f3f8-462d-4ad5-b650-1b216d205776",
-                 "name":  "🔐 [Leader] Authentication \u0026 User",
-                 "description":  "Leader Collection - Authentication, User Profile \u0026 Health Check\nDành cho Leader: Các API cơ bản nhất, dễ kiểm thử (13 endpoints)",
-                 "schema":  "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-             },
-
-    "variable":  [
-                     {
-                         "key":  "baseUrl",
-                         "value":  "{{baseUrl}}"
-                     },
-                     {
-                         "key":  "expectedStatus",
-                         "value":  "",
-                         "type":  "string"
-                     },
-                     {
-                         "key":  "currentResourceId",
-                         "value":  "",
-                         "type":  "string"
-                     },
-                     {
-                         "key":  "currentEmail",
-                         "value":  "",
-                         "type":  "string"
-                     },
-                     {
-                         "key":  "currentUsername",
-                         "value":  "",
-                         "type":  "string"
-                     }
-                 ],
-    "auth":  {
-                 "type":  "bearer",
-                 "bearer":  [
-                                {
-                                    "key":  "token",
-                                    "value":  "{{accessToken}}",
-                                    "type":  "string"
-                                }
-                            ]
-             },
-    "event":  [
-                  {
-                      "listen":  "prerequest",
-                      "script":  {
-                                     "type":  "text/javascript",
-                                     "exec":  [
-                                                  "const suffix = Date.now().toString();",
-                                                  "pm.environment.set(\"uniqueSuffix\", suffix);",
-                                                  "",
-                                                  "if (!pm.environment.get(\"userPassword\")) pm.environment.set(\"userPassword\", \"Password@123\");",
-                                                  "if (!pm.environment.get(\"adminPassword\")) pm.environment.set(\"adminPassword\", \"Password@123\");",
-                                                  "",
-                                                  "pm.environment.set(\"currentEmail\", `user_${suffix}@test.com`);",
-                                                  "pm.environment.set(\"currentUsername\", `user_${suffix}`);",
-                                                  "pm.environment.set(\"negativeProductId\", pm.environment.get(\"negativeProductId\") || \"999999999\");",
-                                                  "pm.environment.set(\"negativeOrderId\", pm.environment.get(\"negativeOrderId\") || \"999999999\");"
-                                              ]
-                                 }
-                  },
-                  {
-                      "listen":  "test",
-                      "script":  {
-                                     "type":  "text/javascript",
-                                     "exec":  [
-                                                  "pm.test(\"No server error\", () =\u003e { pm.expect(pm.response.code).to.be.below(500); });",
-                                                  "pm.test(\"Response time \u003c 2000ms\", () =\u003e { pm.expect(pm.response.responseTime).to.be.below(2000); });",
-                                                  "pm.test(\"Response is JSON when body exists\", () =\u003e {",
-                                                  "  if (pm.response.text()) pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
-                                                  "});",
-                                                  "",
-                                                  "if (pm.response.text() \u0026\u0026 (pm.response.headers.get(\"Content-Type\") || \"\").includes(\"application/json\")) {",
-                                                  "  const json = pm.response.json();",
-                                                  "  const data = json.data || json;",
-                                                  "  const url = pm.request.url.toString();",
-                                                  "  const requestName = pm.info.requestName.toLowerCase();",
-                                                  "",
-                                                  "  if (data.accessToken) {",
-                                                  "    if (requestName.includes(\"admin\")) pm.environment.set(\"adminAccessToken\", data.accessToken);",
-                                                  "    else pm.environment.set(\"accessToken\", data.accessToken);",
-                                                  "  }",
-                                                  "  if (data.refreshToken) pm.environment.set(\"refreshToken\", data.refreshToken);",
-                                                  "  if (data.user \u0026\u0026 data.user.id) pm.environment.set(\"userId\", data.user.id);",
-                                                  "",
-                                                  "  const id = data.id || data.productId || data.orderId || data.addressId || data.cartItemId || data.guestCartId;",
-                                                  "  if (id) pm.environment.set(\"currentResourceId\", id);",
-                                                  "",
-                                                  "  if (id \u0026\u0026 url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-                                                  "  if (id \u0026\u0026 url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-                                                  "  if (id \u0026\u0026 url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-                                                  "  if (id \u0026\u0026 url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-                                                  "  if (id \u0026\u0026 url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-                                                  "  if (id \u0026\u0026 url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-                                                  "  if (id \u0026\u0026 url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-                                                  "  if (id \u0026\u0026 url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-                                                  "  if (id \u0026\u0026 url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-                                                  "  if (data.orderCode) { pm.environment.set(\"createdOrderCode\", data.orderCode); pm.environment.set(\"orderCode\", data.orderCode); }",
-                                                  "}"
-                                              ]
-                                 }
-                  }
-              ]
+  "info": {
+    "_postman_id": "81d11ef8-63c0-4a10-b70e-7d3d3fd6564e",
+    "name": "🔐 [Leader] Authentication & User",
+    "description": "Leader Collection - Authentication, User Profile & Health Check\nDành cho Leader: Các API cơ bản nhất, dễ kiểm thử (13 endpoints)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "46988351",
+    "_collection_link": "https://go.postman.co/collection/46988351-81d11ef8-63c0-4a10-b70e-7d3d3fd6564e?source=collection_link"
+  },
+  "item": [],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const suffix = Date.now().toString();",
+          "pm.environment.set(\"uniqueSuffix\", suffix);",
+          "",
+          "if (!pm.environment.get(\"userPassword\")) pm.environment.set(\"userPassword\", \"Password@123\");",
+          "if (!pm.environment.get(\"adminPassword\")) pm.environment.set(\"adminPassword\", \"Password@123\");",
+          "",
+          "pm.environment.set(\"currentEmail\", `user_${suffix}@test.com`);",
+          "pm.environment.set(\"currentUsername\", `user_${suffix}`);",
+          "pm.environment.set(\"negativeProductId\", pm.environment.get(\"negativeProductId\") || \"999999999\");",
+          "pm.environment.set(\"negativeOrderId\", pm.environment.get(\"negativeOrderId\") || \"999999999\");"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test(\"No server error\", () => { pm.expect(pm.response.code).to.be.below(500); });",
+          "pm.test(\"Response time < 2000ms\", () => { pm.expect(pm.response.responseTime).to.be.below(2000); });",
+          "pm.test(\"Response is JSON when body exists\", () => {",
+          "  if (pm.response.text()) pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+          "});",
+          "",
+          "if (pm.response.text() && (pm.response.headers.get(\"Content-Type\") || \"\").includes(\"application/json\")) {",
+          "  const json = pm.response.json();",
+          "  const data = json.data || json;",
+          "  const url = pm.request.url.toString();",
+          "  const requestName = pm.info.requestName.toLowerCase();",
+          "",
+          "  if (data.accessToken) {",
+          "    if (requestName.includes(\"admin\")) pm.environment.set(\"adminAccessToken\", data.accessToken);",
+          "    else pm.environment.set(\"accessToken\", data.accessToken);",
+          "  }",
+          "  if (data.refreshToken) pm.environment.set(\"refreshToken\", data.refreshToken);",
+          "  if (data.user && data.user.id) pm.environment.set(\"userId\", data.user.id);",
+          "",
+          "  const id = data.id || data.productId || data.orderId || data.addressId || data.cartItemId || data.guestCartId;",
+          "  if (id) pm.environment.set(\"currentResourceId\", id);",
+          "",
+          "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+          "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+          "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+          "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+          "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+          "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+          "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+          "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+          "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+          "  if (data.orderCode) { pm.environment.set(\"createdOrderCode\", data.orderCode); pm.environment.set(\"orderCode\", data.orderCode); }",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "{{baseUrl}}"
+    },
+    {
+      "key": "expectedStatus",
+      "value": ""
+    },
+    {
+      "key": "currentResourceId",
+      "value": ""
+    },
+    {
+      "key": "currentEmail",
+      "value": ""
+    },
+    {
+      "key": "currentUsername",
+      "value": ""
+    }
+  ]
 }
