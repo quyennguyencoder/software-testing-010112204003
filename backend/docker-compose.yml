@@ -1,5 +1,4 @@
 services:
-  # 1. DATABASE
   postgres:
     image: postgres:17
     container_name: phonehub-postgres
@@ -20,7 +19,7 @@ services:
     networks:
       - phonehub-net
 
-  # 2. REDIS
+
   redis:
     image: redis:8
     container_name: phonehub-redis
