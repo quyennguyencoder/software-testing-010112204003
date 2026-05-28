@@ -1,1866 +1,986 @@
 {
-  "info": {
-    "_postman_id": "8de47d52-75e3-4d40-92e0-41f5a92cdcee",
-    "name": "🛠️ [Member 3] Admin - Product, Brand, Category",
-    "description": "Quản lý sản phẩm, thương hiệu, danh mục từ phía Admin (16 endpoints)",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "49201715",
-    "_collection_link": "https://go.postman.co/collection/49201715-8de47d52-75e3-4d40-92e0-41f5a92cdcee?source=collection_link"
-  },
-  "item": [
-    {
-      "name": "Product Management",
-      "item": [
-        {
-          "name": "Đăng nhập Admin",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// Kiểm tra chắc chắn API gọi thành công (Status 200)\r",
-                  "pm.test(\"Đăng nhập thành công với mã 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "// Chuyển phản hồi của Backend thành đối tượng JSON\r",
-                  "var jsonData = pm.response.json();\r",
-                  "\r",
-                  "// Tìm đúng đường dẫn đến chỗ giấu Token và lưu lại\r",
-                  "if (jsonData && jsonData.data && jsonData.data.accessToken) {\r",
-                  "    var token = jsonData.data.accessToken;\r",
-                  "    \r",
-                  "    // Lưu Token vào biến môi trường tên là \"adminAccessToken\"\r",
-                  "    pm.environment.set(\"adminAccessToken\", token);\r",
-                  "    \r",
-                  "    // In ra console để tự tin là đã lưu thành công\r",
-                  "    console.log(\"Hệ thống đã tự động chộp được Token: \" + token);\r",
-                  "} else {\r",
-                  "    console.log(\"Lỗi: Không tìm thấy accessToken trong phản hồi!\");\r",
-                  "}"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "accept",
-                "value": "*/*"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"usernameOrEmail\": \"admin\",\r\n  \"password\": \"Password@123\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "login"
+    "info":  {
+                 "_postman_id":  "19340e89-a202-40b3-911b-f7ce1d3f0009",
+                 "name":  "🛠️ [Member 3] Admin - Product, Brand, Category",
+                 "description":  "Quản lý sản phẩm, thương hiệu, danh mục từ phía Admin (16 endpoints)",
+                 "schema":  "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+             },
+    "item":  [
+                 {
+                     "name":  "Product Management",
+                     "item":  [
+                                  {
+                                      "name":  "Lấy chi tiết sản phẩm (Admin)",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/admin/products/{{createdProductId}}",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "admin",
+                                                                               "products",
+                                                                               ":id"
+                                                                           ],
+                                                                  "variable":  [
+                                                                                   {
+                                                                                       "key":  "id",
+                                                                                       "value":  "",
+                                                                                       "description":  "ID của sản phẩm"
+                                                                                   }
+                                                                               ]
+                                                              },
+                                                      "description":  "Lấy thông tin chi tiết của một sản phẩm theo ID",
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{accessToken}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Cập nhật sản phẩm (Admin)",
+                                      "request":  {
+                                                      "method":  "PUT",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/admin/products/{{createdProductId}}",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "admin",
+                                                                               "products",
+                                                                               ":id"
+                                                                           ],
+                                                                  "variable":  [
+                                                                                   {
+                                                                                       "key":  "id",
+                                                                                       "value":  "",
+                                                                                       "description":  "ID của sản phẩm"
+                                                                                   }
+                                                                               ]
+                                                              },
+                                                      "description":  "Cập nhật thông tin sản phẩm đã tồn tại",
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{accessToken}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"thumbnailUrl\": \"string\",\n  \"categoryId\": 1,\n  \"brandId\": 1,\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"string\",\n      \"price\": 1,\n      \"stockQuantity\": 1\n    }\n  ],\n  \"metadata\": {}\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Xóa sản phẩm (Admin - Soft Delete)",
+                                      "request":  {
+                                                      "method":  "DELETE",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/admin/products/{{createdProductId}}",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "admin",
+                                                                               "products",
+                                                                               ":id"
+                                                                           ],
+                                                                  "variable":  [
+                                                                                   {
+                                                                                       "key":  "id",
+                                                                                       "value":  "",
+                                                                                       "description":  "ID của sản phẩm"
+                                                                                   }
+                                                                               ]
+                                                              },
+                                                      "description":  "Xóa mềm sản phẩm, có thể khôi phục sau này",
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{accessToken}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Xem danh sách tất cả sản phẩm (Admin)",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/admin/products",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "admin",
+                                                                               "products"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "keyword",
+                                                                                    "value":  "",
+                                                                                    "description":  "Từ khóa tìm kiếm (tên, SKU, mô tả)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "categoryId",
+                                                                                    "value":  "",
+                                                                                    "description":  "Lọc theo category ID",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "brandId",
+                                                                                    "value":  "",
+                                                                                    "description":  "Lọc theo brand ID",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "minPrice",
+                                                                                    "value":  "",
+                                                                                    "description":  "Giá tối thiểu",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "maxPrice",
+                                                                                    "value":  "",
+                                                                                    "description":  "Giá tối đa",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "sortBy",
+                                                                                    "value":  "",
+                                                                                    "description":  "Sắp xếp theo (name, price, stock, createdAt)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "sortDirection",
+                                                                                    "value":  "",
+                                                                                    "description":  "Hướng sắp xếp (asc, desc)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "page",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số trang",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "size",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số items/trang",
+                                                                                    "disabled":  true
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Lấy danh sách sản phẩm với tùy chọn lọc, tìm kiếm và sắp xếp. Nếu không truyền tham số gì thì mặc định trả về tất cả sản phẩm đang hoạt động.",
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{accessToken}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Tạo sản phẩm mới (Admin)",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/admin/products",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "admin",
+                                                                               "products"
+                                                                           ]
+                                                              },
+                                                      "description":  "Tạo một sản phẩm mới trong hệ thống",
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{accessToken}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"thumbnailUrl\": \"string\",\n  \"categoryId\": 1,\n  \"brandId\": 1,\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"string\",\n      \"price\": 1,\n      \"stockQuantity\": 1\n    }\n  ],\n  \"metadata\": {},\n  \"images\": [\n    {\n      \"imageUrl\": \"string\",\n      \"imageOrder\": 1,\n      \"isPrimary\": true\n    }\n  ]\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Khôi phục sản phẩm đã xóa (Admin)",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/admin/products/{{createdProductId}}/restore",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "admin",
+                                                                               "products",
+                                                                               ":id",
+                                                                               "restore"
+                                                                           ],
+                                                                  "variable":  [
+                                                                                   {
+                                                                                       "key":  "id",
+                                                                                       "value":  "",
+                                                                                       "description":  "ID của sản phẩm"
+                                                                                   }
+                                                                               ]
+                                                              },
+                                                      "description":  "Khôi phục sản phẩm đã bị xóa mềm",
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{accessToken}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Quản lý hình ảnh sản phẩm (Admin)",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/admin/products/{{createdProductId}}/images",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "admin",
+                                                                               "products",
+                                                                               ":id",
+                                                                               "images"
+                                                                           ],
+                                                                  "variable":  [
+                                                                                   {
+                                                                                       "key":  "id",
+                                                                                       "value":  "",
+                                                                                       "description":  "ID của sản phẩm"
+                                                                                   }
+                                                                               ]
+                                                              },
+                                                      "description":  "Thêm, cập nhật hoặc sắp xếp lại hình ảnh sản phẩm. Sẽ thay thế toàn bộ ảnh hiện tại.",
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{accessToken}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"images\": [\n    {\n      \"imageUrl\": \"string\",\n      \"imageOrder\": 1,\n      \"isPrimary\": true\n    }\n  ]\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Lấy metadata sản phẩm lớn hơn giá",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/admin/products/metadata/greater-than-price",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "admin",
+                                                                               "products",
+                                                                               "metadata",
+                                                                               "greater-than-price"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "price",
+                                                                                    "value":  "",
+                                                                                    "description":  "Giá trị so sánh",
+                                                                                    "disabled":  false
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Lấy danh sách metadata sản phẩm có giá lớn hơn giá trị được chỉ định",
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{accessToken}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Lấy danh sách sản phẩm đã xóa mềm (Admin)",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/admin/products/deleted",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "admin",
+                                                                               "products",
+                                                                               "deleted"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "keyword",
+                                                                                    "value":  "",
+                                                                                    "description":  "Từ khóa tìm kiếm (tên, SKU, mô tả)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "categoryId",
+                                                                                    "value":  "",
+                                                                                    "description":  "Lọc theo category ID",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "brandId",
+                                                                                    "value":  "",
+                                                                                    "description":  "Lọc theo brand ID",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "sortBy",
+                                                                                    "value":  "",
+                                                                                    "description":  "Sắp xếp theo (name, price, stock, createdAt)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "sortDirection",
+                                                                                    "value":  "",
+                                                                                    "description":  "Hướng sắp xếp (asc, desc)",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "page",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số trang",
+                                                                                    "disabled":  true
+                                                                                },
+                                                                                {
+                                                                                    "key":  "size",
+                                                                                    "value":  "",
+                                                                                    "description":  "Số items/trang",
+                                                                                    "disabled":  true
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Lấy tất cả sản phẩm đã bị xóa mềm (isDeleted=true)",
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{accessToken}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Xóa hình ảnh sản phẩm (Admin)",
+                                      "request":  {
+                                                      "method":  "DELETE",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/admin/products/{{createdProductId}}/images/{{imageId}}",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "admin",
+                                                                               "products",
+                                                                               ":id",
+                                                                               "images",
+                                                                               ":imageId"
+                                                                           ],
+                                                                  "variable":  [
+                                                                                   {
+                                                                                       "key":  "id",
+                                                                                       "value":  "",
+                                                                                       "description":  "ID của sản phẩm"
+                                                                                   },
+                                                                                   {
+                                                                                       "key":  "imageId",
+                                                                                       "value":  "",
+                                                                                       "description":  "ID của hình ảnh"
+                                                                                   }
+                                                                               ]
+                                                              },
+                                                      "description":  "Xóa một hình ảnh cụ thể của sản phẩm",
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{accessToken}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "Admin Brand",
+                     "item":  [
+                                  {
+                                      "name":  "[ADMIN] Cập nhật thương hiệu",
+                                      "request":  {
+                                                      "method":  "PUT",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/admin/brands/{{createdBrandId}}",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "admin",
+                                                                               "brands",
+                                                                               ":id"
+                                                                           ],
+                                                                  "variable":  [
+                                                                                   {
+                                                                                       "key":  "id",
+                                                                                       "value":  "",
+                                                                                       "description":  "ID của thương hiệu cần cập nhật"
+                                                                                   }
+                                                                               ]
+                                                              },
+                                                      "description":  "Cập nhật thông tin của thương hiệu đã tồn tại. Kiểm tra trùng tên (loại trừ chính nó). **Yêu cầu quyền ADMIN.**",
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{accessToken}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"name\": \"{{brandName}}\",\n  \"description\": \"Brand created by Postman test\",\n  \"logoUrl\": \"https://example.com/logo.png\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "[ADMIN] Xóa thương hiệu",
+                                      "request":  {
+                                                      "method":  "DELETE",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/admin/brands/{{createdBrandId}}",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "admin",
+                                                                               "brands",
+                                                                               ":id"
+                                                                           ],
+                                                                  "variable":  [
+                                                                                   {
+                                                                                       "key":  "id",
+                                                                                       "value":  "",
+                                                                                       "description":  "ID của thương hiệu cần xóa"
+                                                                                   }
+                                                                               ]
+                                                              },
+                                                      "description":  "Xóa thương hiệu theo ID. Kiểm tra ràng buộc trước khi xóa: Không cho phép xóa nếu thương hiệu có sản phẩm liên kết. **Yêu cầu quyền ADMIN.**",
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{accessToken}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "[ADMIN] Tạo thương hiệu mới",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/admin/brands",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "admin",
+                                                                               "brands"
+                                                                           ]
+                                                              },
+                                                      "description":  "Tạo một thương hiệu mới. Kiểm tra trùng tên. **Yêu cầu quyền ADMIN.**",
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{accessToken}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"name\": \"{{brandName}}\",\n  \"description\": \"Brand created by Postman test\",\n  \"logoUrl\": \"https://example.com/logo.png\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  }
+                              ],
+                     "auth":  {
+                                  "type":  "bearer",
+                                  "bearer":  [
+                                                 {
+                                                     "key":  "token",
+                                                     "value":  "{{adminAccessToken}}",
+                                                     "type":  "string"
+                                                 }
+                                             ]
+                              }
+                 },
+                 {
+                     "name":  "Admin Category",
+                     "item":  [
+                                  {
+                                      "name":  "[ADMIN] Cập nhật danh mục",
+                                      "request":  {
+                                                      "method":  "PUT",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/admin/categories/{{createdCategoryId}}",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "admin",
+                                                                               "categories",
+                                                                               ":id"
+                                                                           ],
+                                                                  "variable":  [
+                                                                                   {
+                                                                                       "key":  "id",
+                                                                                       "value":  "",
+                                                                                       "description":  "ID của danh mục cần cập nhật"
+                                                                                   }
+                                                                               ]
+                                                              },
+                                                      "description":  "Cập nhật thông tin của danh mục đã tồn tại. Kiểm tra trùng tên trong cùng cấp parentId (loại trừ chính nó). Không cho phép đặt danh mục làm cha của chính nó. **Yêu cầu quyền ADMIN.**",
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{accessToken}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"name\": \"{{categoryName}}\",\n  \"description\": \"Category created by Postman test\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "[ADMIN] Xóa danh mục",
+                                      "request":  {
+                                                      "method":  "DELETE",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/admin/categories/{{createdCategoryId}}",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "admin",
+                                                                               "categories",
+                                                                               ":id"
+                                                                           ],
+                                                                  "variable":  [
+                                                                                   {
+                                                                                       "key":  "id",
+                                                                                       "value":  "",
+                                                                                       "description":  "ID của danh mục cần xóa"
+                                                                                   }
+                                                                               ]
+                                                              },
+                                                      "description":  "Xóa danh mục theo ID. Kiểm tra ràng buộc trước khi xóa: Không cho phép xóa nếu danh mục có danh mục con hoặc có sản phẩm liên kết. **Yêu cầu quyền ADMIN.**",
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{accessToken}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "[ADMIN] Tạo danh mục mới",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{baseUrl}}/api/v1/admin/categories",
+                                                                  "host":  [
+                                                                               "{{baseUrl}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "admin",
+                                                                               "categories"
+                                                                           ]
+                                                              },
+                                                      "description":  "Tạo một danh mục mới. Nếu parentId=null: tạo danh mục gốc. Nếu parentId=\u003cid\u003e: tạo danh mục con. Kiểm tra trùng tên trong cùng cấp parentId. **Yêu cầu quyền ADMIN.**",
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{accessToken}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"name\": \"{{categoryName}}\",\n  \"description\": \"Category created by Postman test\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  }
+                              ],
+                     "auth":  {
+                                  "type":  "bearer",
+                                  "bearer":  [
+                                                 {
+                                                     "key":  "token",
+                                                     "value":  "{{adminAccessToken}}",
+                                                     "type":  "string"
+                                                 }
+                                             ]
+                              }
+                 }
+             ],
+    "variable":  [
+                     {
+                         "key":  "baseUrl",
+                         "value":  "{{baseUrl}}"
+                     },
+                     {
+                         "key":  "expectedStatus",
+                         "value":  "",
+                         "type":  "string"
+                     },
+                     {
+                         "key":  "currentResourceId",
+                         "value":  "",
+                         "type":  "string"
+                     },
+                     {
+                         "key":  "currentEmail",
+                         "value":  "",
+                         "type":  "string"
+                     },
+                     {
+                         "key":  "currentUsername",
+                         "value":  "",
+                         "type":  "string"
+                     }
+                 ],
+    "auth":  {
+                 "type":  "bearer",
+                 "bearer":  [
+                                {
+                                    "key":  "token",
+                                    "value":  "{{accessToken}}",
+                                    "type":  "string"
+                                }
+                            ]
+             },
+    "event":  [
+                  {
+                      "listen":  "prerequest",
+                      "script":  {
+                                     "type":  "text/javascript",
+                                     "exec":  [
+                                                  "const suffix = Date.now().toString();",
+                                                  "pm.environment.set(\"uniqueSuffix\", suffix);",
+                                                  "",
+                                                  "if (!pm.environment.get(\"userPassword\")) pm.environment.set(\"userPassword\", \"Password@123\");",
+                                                  "if (!pm.environment.get(\"adminPassword\")) pm.environment.set(\"adminPassword\", \"Password@123\");",
+                                                  "",
+                                                  "pm.environment.set(\"currentEmail\", `user_${suffix}@test.com`);",
+                                                  "pm.environment.set(\"currentUsername\", `user_${suffix}`);",
+                                                  "pm.environment.set(\"negativeProductId\", pm.environment.get(\"negativeProductId\") || \"999999999\");",
+                                                  "pm.environment.set(\"negativeOrderId\", pm.environment.get(\"negativeOrderId\") || \"999999999\");"
+                                              ]
+                                 }
+                  },
+                  {
+                      "listen":  "test",
+                      "script":  {
+                                     "type":  "text/javascript",
+                                     "exec":  [
+                                                  "pm.test(\"No server error\", () =\u003e { pm.expect(pm.response.code).to.be.below(500); });",
+                                                  "pm.test(\"Response time \u003c 2000ms\", () =\u003e { pm.expect(pm.response.responseTime).to.be.below(2000); });",
+                                                  "pm.test(\"Response is JSON when body exists\", () =\u003e {",
+                                                  "  if (pm.response.text()) pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
+                                                  "});",
+                                                  "",
+                                                  "if (pm.response.text() \u0026\u0026 (pm.response.headers.get(\"Content-Type\") || \"\").includes(\"application/json\")) {",
+                                                  "  const json = pm.response.json();",
+                                                  "  const data = json.data || json;",
+                                                  "  const url = pm.request.url.toString();",
+                                                  "  const requestName = pm.info.requestName.toLowerCase();",
+                                                  "",
+                                                  "  if (data.accessToken) {",
+                                                  "    if (requestName.includes(\"admin\")) pm.environment.set(\"adminAccessToken\", data.accessToken);",
+                                                  "    else pm.environment.set(\"accessToken\", data.accessToken);",
+                                                  "  }",
+                                                  "  if (data.refreshToken) pm.environment.set(\"refreshToken\", data.refreshToken);",
+                                                  "  if (data.user \u0026\u0026 data.user.id) pm.environment.set(\"userId\", data.user.id);",
+                                                  "",
+                                                  "  const id = data.id || data.productId || data.orderId || data.addressId || data.cartItemId || data.guestCartId;",
+                                                  "  if (id) pm.environment.set(\"currentResourceId\", id);",
+                                                  "",
+                                                  "  if (id \u0026\u0026 url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+                                                  "  if (id \u0026\u0026 url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+                                                  "  if (id \u0026\u0026 url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+                                                  "  if (data.orderCode) { pm.environment.set(\"createdOrderCode\", data.orderCode); pm.environment.set(\"orderCode\", data.orderCode); }",
+                                                  "}"
+                                              ]
+                                 }
+                  }
               ]
-            },
-            "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:8081/api/v1/auth/login' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"usernameOrEmail\": \"user1\",\r\n  \"password\": \"User123456\"\r\n}'"
-          },
-          "response": []
-        },
-        {
-          "name": "Đăng nhập User",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// Kiểm tra chắc chắn API gọi thành công (Status 200)\r",
-                  "pm.test(\"Đăng nhập User thành công với mã 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "// Chuyển phản hồi của Backend thành đối tượng JSON\r",
-                  "var jsonData = pm.response.json();\r",
-                  "\r",
-                  "// Tìm đúng đường dẫn đến chỗ giấu Token và lưu lại\r",
-                  "if (jsonData && jsonData.data && jsonData.data.accessToken) {\r",
-                  "    var token = jsonData.data.accessToken;\r",
-                  "    \r",
-                  "    // Lưu vào biến \"accessToken\"\r",
-                  "    pm.environment.set(\"accessToken\", token);\r",
-                  "    \r",
-                  "    // In ra console để dễ debug trên CI\r",
-                  "    console.log(\"Hệ thống đã tự động chộp được Token của User thường: \" + token);\r",
-                  "} else {\r",
-                  "    console.log(\"Lỗi: Không tìm thấy accessToken trong phản hồi!\");\r",
-                  "}"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "accept",
-                "value": "*/*"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"usernameOrEmail\": \"user\",\r\n  \"password\": \"Password@123\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "login"
-              ]
-            },
-            "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:8081/api/v1/auth/login' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"usernameOrEmail\": \"user1\",\r\n  \"password\": \"User123456\"\r\n}'"
-          },
-          "response": []
-        },
-        {
-          "name": "[ADM01] Test không có Token",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Bị chặn ở ngoài cửa với mã 401\", function () {\r",
-                  "    pm.response.to.have.status(401);\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "1"
-                }
-              ]
-            },
-            "description": "Lấy thông tin chi tiết của một sản phẩm theo ID"
-          },
-          "response": []
-        },
-        {
-          "name": "[ADM02] Test Token User thường",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"User thường không đủ quyền, phải trả về 403\", function () {\r",
-                  "    pm.response.to.have.status(403);\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "1"
-                }
-              ]
-            },
-            "description": "Lấy thông tin chi tiết của một sản phẩm theo ID"
-          },
-          "response": []
-        },
-        {
-          "name": "Lấy chi tiết sản phẩm (Admin)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// Test Case 01: Kiểm tra mã trạng thái HTTP (HTTP Status Code)\r",
-                  "pm.test(\"TC01: Mã trạng thái phản hồi phải là 200 OK\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "// Test Case 02: Kiểm tra hiệu năng API (Response Time)\r",
-                  "pm.test(\"TC02: Thời gian phản hồi phải dưới 500ms để đảm bảo hiệu suất\", function () {\r",
-                  "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
-                  "});\r",
-                  "\r",
-                  "// Test Case 03: Kiểm định cấu trúc vỏ phản hồi (Response Wrapper/Payload)\r",
-                  "pm.test(\"TC03: Phản hồi phải tuân thủ chuẩn định dạng API của hệ thống\", function () {\r",
-                  "    var jsonData = pm.response.json();\r",
-                  "    \r",
-                  "    // Xác thực các cờ trạng thái (Status Flags)\r",
-                  "    pm.expect(jsonData.success).to.be.true;\r",
-                  "    pm.expect(jsonData.status).to.eql(200);\r",
-                  "    \r",
-                  "    // Xác thực sự tồn tại của đối tượng mang dữ liệu chính (Data Payload)\r",
-                  "    pm.expect(jsonData).to.have.property(\"data\");\r",
-                  "});\r",
-                  "\r",
-                  "// Test Case 04: Kiểm định tính toàn vẹn của dữ liệu thực thể (Entity Data Integrity)\r",
-                  "pm.test(\"TC04: Đối tượng Product phải chứa đầy đủ các thuộc tính bắt buộc\", function () {\r",
-                  "    var jsonData = pm.response.json();\r",
-                  "    \r",
-                  "    // Trích xuất đối tượng Product từ payload\r",
-                  "    var product = jsonData.data; \r",
-                  "    \r",
-                  "    // Xác thực các trường thông tin cơ bản\r",
-                  "    pm.expect(product).to.have.property('id');\r",
-                  "    pm.expect(product).to.have.property('name');\r",
-                  "    \r",
-                  "    // Xác thực kiểu dữ liệu của các thuộc tính danh sách (Collections/Arrays)\r",
-                  "    pm.expect(product.templates).to.be.an('array');\r",
-                  "    pm.expect(product.images).to.be.an('array');\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "10"
-                }
-              ]
-            },
-            "description": "Lấy thông tin chi tiết của một sản phẩm theo ID"
-          },
-          "response": []
-        },
-        {
-          "name": "[FAIL] Lấy chi tiết sản phẩm - ID không tồn tại",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// ID không có thật thì Backend bắt buộc phải trả về mã 404 Not Found\r",
-                  "pm.test(\"1. Mã trạng thái phản hồi phải là 404 Not Found\", function () {\r",
-                  "    pm.response.to.have.status(404);\r",
-                  "});\r",
-                  "\r",
-                  "// Kiểm tra cấu trúc lỗi trả về xem có rõ ràng không\r",
-                  "pm.test(\"2. Hệ thống phải báo success = false và có message thông báo lỗi\", function () {\r",
-                  "    var jsonData = pm.response.json();\r",
-                  "    pm.expect(jsonData.success).to.be.false;\r",
-                  "    pm.expect(jsonData.message).to.include(\"Không tìm thấy\");\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "35"
-                }
-              ]
-            },
-            "description": "Lấy thông tin chi tiết của một sản phẩm theo ID"
-          },
-          "response": []
-        },
-        {
-          "name": "[FAIL] Lấy chi tiết sản phẩm - Sai định dạng ID",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// Truyền chữ vào ô số thì Backend phải chặn ngay từ đầu bằng mã 400 Bad Request\r",
-                  "pm.test(\"1. Mã trạng thái phản hồi phải là 400 Bad Request\", function () {\r",
-                  "    pm.response.to.have.status(400);\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "abc",
-                  "description": "ID của sản phẩm"
-                }
-              ]
-            },
-            "description": "Lấy thông tin chi tiết của một sản phẩm theo ID"
-          },
-          "response": []
-        },
-        {
-          "name": "Cập nhật sản phẩm (Admin)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "\r",
-                  "var jsonData = pm.response.json();\r",
-                  "\r",
-                  "// 1. Kiểm tra Mã trạng thái\r",
-                  "pm.test(\"TC01: Mã trạng thái phản hồi phải là 200 OK\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "// 2. Kiểm tra Thời gian phản hồi\r",
-                  "pm.test(\"TC02: Thời gian phản hồi phải dưới 500ms để đảm bảo hiệu suất\", function () {\r",
-                  "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
-                  "});\r",
-                  "\r",
-                  "// 3. Kiểm tra Cấu trúc JSON chung\r",
-                  "pm.test(\"TC03: Hệ thống phải báo success = true và có thông báo thành công\", function () {\r",
-                  "    pm.expect(jsonData.success).to.be.true;\r",
-                  "    pm.expect(jsonData.status).to.eql(200);\r",
-                  "    pm.expect(jsonData.message).to.eql(\"Cập nhật sản phẩm thành công\");\r",
-                  "});\r",
-                  "\r",
-                  "// 4. Kiểm tra Tính chính xác của dữ liệu \r",
-                  "pm.test(\"TC04: Dữ liệu trả về phải chứa đúng ID và Tên sản phẩm vừa cập nhật\", function () {\r",
-                  "    pm.expect(jsonData.data.id).to.eql(10); \r",
-                  "    pm.expect(jsonData.data.name).to.eql(\"Xiaomi Redmi Pad\");\r",
-                  "    pm.expect(jsonData.data).to.be.an('object');\r",
-                  "    pm.expect(jsonData.data).to.have.property('description');\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Xiaomi Redmi Pad\",\n  \"description\": \"string\",\n  \"thumbnailUrl\": \"string\",\n  \"categoryId\": 1,\n  \"brandId\": 1,\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"XIAOMI-PADSE-528-MINT\",\n      \"price\": 1,\n      \"stockQuantity\": 1\n    }\n  ],\n  \"metadata\": {}\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "10",
-                  "description": "ID của sản phẩm"
-                }
-              ]
-            },
-            "description": "Cập nhật thông tin sản phẩm đã tồn tại"
-          },
-          "response": []
-        },
-        {
-          "name": "[FAIL] Cập nhật sản phẩm - Biến thể rỗng",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Backend chặn không cho phép biến thể rỗng (Mã 400)\", function () {\r",
-                  "    pm.response.to.have.status(400);\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Xiaomi Redmi Pad\",\n  \"description\": \"string\",\n  \"thumbnailUrl\": \"string\",\n  \"categoryId\": 1,\n  \"brandId\": 1,\n  \"status\": true,\n  \"templates\": [],\n  \"metadata\": {}\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "10",
-                  "description": "ID của sản phẩm"
-                }
-              ]
-            },
-            "description": "Cập nhật thông tin sản phẩm đã tồn tại"
-          },
-          "response": []
-        },
-        {
-          "name": "[FAIL] Cập nhật sản phẩm - Xóa hẳn Key bắt buộc (name)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Backend phải bắt lỗi thiếu trường Name (Trả mã 400)\", function () {\r",
-                  "    pm.response.to.have.status(400);\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"description\": \"string\",\n  \"thumbnailUrl\": \"string\",\n  \"categoryId\": 1,\n  \"brandId\": 1,\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"XIAOMI-PADSE-528-MINT\",\n      \"price\": 1,\n      \"stockQuantity\": 1\n    }\n  ],\n  \"metadata\": {}\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "10",
-                  "description": "ID của sản phẩm"
-                }
-              ]
-            },
-            "description": "Cập nhật thông tin sản phẩm đã tồn tại"
-          },
-          "response": []
-        },
-        {
-          "name": "[FAIL] Cập nhật sản phẩm - Sai Category/Brand ID",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// Kiểm tra mã trạng thái phải là 400 Bad Request\r",
-                  "pm.test(\"Backend phải chặn lại và trả mã 400\", function () {\r",
-                  "    pm.response.to.have.status(400);\r",
-                  "});\r",
-                  "\r",
-                  "// Nâng cao (Tùy chọn): Kiểm tra xem Backend có trả về câu chửi đúng không\r",
-                  "var jsonData = pm.response.json();\r",
-                  "pm.test(\"Có thông báo lỗi rõ ràng\", function () {\r",
-                  "    pm.expect(jsonData.success).to.be.false;\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Xiaomi Redmi Pad\",\n  \"description\": \"string\",\n  \"thumbnailUrl\": \"string\",\n  \"categoryId\": 99,\n  \"brandId\": 99,\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"XIAOMI-PADSE-528-MINT\",\n      \"price\": 1,\n      \"stockQuantity\": 1\n    }\n  ],\n  \"metadata\": {}\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "10",
-                  "description": "ID của sản phẩm"
-                }
-              ]
-            },
-            "description": "Cập nhật thông tin sản phẩm đã tồn tại"
-          },
-          "response": []
-        },
-        {
-          "name": "[FAIL] Cập nhật sản phẩm - Giá trị âm",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// Kiểm tra mã trạng thái phải là 400 Bad Request\r",
-                  "pm.test(\"Backend phải chặn lại và trả mã 400\", function () {\r",
-                  "    pm.response.to.have.status(400);\r",
-                  "});\r",
-                  "\r",
-                  "var jsonData = pm.response.json();\r",
-                  "pm.test(\"Có thông báo lỗi rõ ràng\", function () {\r",
-                  "    pm.expect(jsonData.success).to.be.false;\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Xiaomi Redmi Pad\",\n  \"description\": \"string\",\n  \"thumbnailUrl\": \"string\",\n  \"categoryId\": 1,\n  \"brandId\": 1,\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"XIAOMI-PADSE-528-MINT\",\n      \"price\": -50000,\n      \"stockQuantity\": -10\n    }\n  ],\n  \"metadata\": {}\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "10",
-                  "description": "ID của sản phẩm"
-                }
-              ]
-            },
-            "description": "Cập nhật thông tin sản phẩm đã tồn tại"
-          },
-          "response": []
-        },
-        {
-          "name": "[FAIL] Cập nhật sản phẩm - Bỏ trống tên",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var jsonData = pm.response.json();\r",
-                  "\r",
-                  "pm.test(\"TC01: Phải chặn lại với mã lỗi 400 Bad Request\", function () {\r",
-                  "    pm.response.to.have.status(400);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"TC02: Phải bắt được lỗi dữ liệu đầu vào (Validation)\", function () {\r",
-                  "    pm.expect(jsonData.success).to.be.false;\r",
-                  "    \r",
-                  "    // Móc thẳng vào trong ruột: jsonData -> data -> name\r",
-                  "    pm.expect(jsonData.data.name).to.include(\"5-200 ký tự\");\r",
-                  "});\r",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"\",\n  \"description\": \"string\",\n  \"thumbnailUrl\": \"string\",\n  \"categoryId\": 1,\n  \"brandId\": 1,\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"XIAOMI-PADSE-528-MINT\",\n      \"price\": 1,\n      \"stockQuantity\": 1\n    }\n  ],\n  \"metadata\": {}\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "10",
-                  "description": "ID của sản phẩm"
-                }
-              ]
-            },
-            "description": "Cập nhật thông tin sản phẩm đã tồn tại"
-          },
-          "response": []
-        },
-        {
-          "name": "[FAIL] Cập nhật sản phẩm - ID không tồn tại",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var jsonData = pm.response.json();\r",
-                  "\r",
-                  "pm.test(\"TC01: Phải trả về mã lỗi 404 Not Found\", function () {\r",
-                  "    pm.response.to.have.status(404);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"TC02: Hệ thống phải báo success = false\", function () {\r",
-                  "    pm.expect(jsonData.success).to.be.false;\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"TC03: Có thông báo không tìm thấy sản phẩm\", function () {\r",
-                  "    pm.expect(jsonData.message).to.be.a('string');\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Xiaomi Redmi Pad\",\n  \"description\": \"string\",\n  \"thumbnailUrl\": \"string\",\n  \"categoryId\": 1,\n  \"brandId\": 1,\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"XIAOMI-PADSE-528-MINT\",\n      \"price\": 1,\n      \"stockQuantity\": 1\n    }\n  ],\n  \"metadata\": {}\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "100",
-                  "description": "ID của sản phẩm"
-                }
-              ]
-            },
-            "description": "Cập nhật thông tin sản phẩm đã tồn tại"
-          },
-          "response": []
-        },
-        {
-          "name": "[FAIL] Cập nhật sản phẩm - Trùng tên sản phẩm",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var jsonData = pm.response.json();\r",
-                  "\r",
-                  "pm.test(\"TC01: Phải trả về mã lỗi 400 Bad Request\", function () {\r",
-                  "    pm.response.to.have.status(400);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"TC02: Hệ thống phải báo success = false\", function () {\r",
-                  "    pm.expect(jsonData.success).to.be.false;\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"TC03: Thông báo lỗi phải chỉ ra việc trùng lặp tên\", function () {\r",
-                  "    pm.expect(jsonData.message).to.include(\"đã tồn tại\");\r",
-                  "}); \r",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Xiaomi Redmi Pad\",\n  \"description\": \"string\",\n  \"thumbnailUrl\": \"string\",\n  \"categoryId\": 1,\n  \"brandId\": 1,\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"XIAOMI-PADSE-528-MINT\",\n      \"price\": 1,\n      \"stockQuantity\": 1\n    }\n  ],\n  \"metadata\": {}\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "11",
-                  "description": "ID của sản phẩm"
-                }
-              ]
-            },
-            "description": "Cập nhật thông tin sản phẩm đã tồn tại"
-          },
-          "response": []
-        },
-        {
-          "name": "Xóa sản phẩm (Admin - Soft Delete)",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "",
-                  "description": "ID của sản phẩm"
-                }
-              ]
-            },
-            "description": "Xóa mềm sản phẩm, có thể khôi phục sau này"
-          },
-          "response": []
-        },
-        {
-          "name": "Xem danh sách tất cả sản phẩm (Admin)",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products"
-              ],
-              "query": [
-                {
-                  "key": "keyword",
-                  "value": "",
-                  "description": "Từ khóa tìm kiếm (tên, SKU, mô tả)",
-                  "disabled": true
-                },
-                {
-                  "key": "categoryId",
-                  "value": "",
-                  "description": "Lọc theo category ID",
-                  "disabled": true
-                },
-                {
-                  "key": "brandId",
-                  "value": "",
-                  "description": "Lọc theo brand ID",
-                  "disabled": true
-                },
-                {
-                  "key": "minPrice",
-                  "value": "",
-                  "description": "Giá tối thiểu",
-                  "disabled": true
-                },
-                {
-                  "key": "maxPrice",
-                  "value": "",
-                  "description": "Giá tối đa",
-                  "disabled": true
-                },
-                {
-                  "key": "sortBy",
-                  "value": "",
-                  "description": "Sắp xếp theo (name, price, stock, createdAt)",
-                  "disabled": true
-                },
-                {
-                  "key": "sortDirection",
-                  "value": "",
-                  "description": "Hướng sắp xếp (asc, desc)",
-                  "disabled": true
-                },
-                {
-                  "key": "page",
-                  "value": "",
-                  "description": "Số trang",
-                  "disabled": true
-                },
-                {
-                  "key": "size",
-                  "value": "",
-                  "description": "Số items/trang",
-                  "disabled": true
-                }
-              ]
-            },
-            "description": "Lấy danh sách sản phẩm với tùy chọn lọc, tìm kiếm và sắp xếp. Nếu không truyền tham số gì thì mặc định trả về tất cả sản phẩm đang hoạt động."
-          },
-          "response": []
-        },
-        {
-          "name": "Tạo sản phẩm mới (Admin)",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"thumbnailUrl\": \"string\",\n  \"categoryId\": 1,\n  \"brandId\": 1,\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"string\",\n      \"price\": 1,\n      \"stockQuantity\": 1\n    }\n  ],\n  \"metadata\": {},\n  \"images\": [\n    {\n      \"imageUrl\": \"string\",\n      \"imageOrder\": 1,\n      \"isPrimary\": true\n    }\n  ]\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products"
-              ]
-            },
-            "description": "Tạo một sản phẩm mới trong hệ thống"
-          },
-          "response": []
-        },
-        {
-          "name": "Khôi phục sản phẩm đã xóa (Admin)",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/:id/restore",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id",
-                "restore"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "",
-                  "description": "ID của sản phẩm"
-                }
-              ]
-            },
-            "description": "Khôi phục sản phẩm đã bị xóa mềm"
-          },
-          "response": []
-        },
-        {
-          "name": "Quản lý hình ảnh sản phẩm (Admin)",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"images\": [\n    {\n      \"imageUrl\": \"string\",\n      \"imageOrder\": 1,\n      \"isPrimary\": true\n    }\n  ]\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/:id/images",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id",
-                "images"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "",
-                  "description": "ID của sản phẩm"
-                }
-              ]
-            },
-            "description": "Thêm, cập nhật hoặc sắp xếp lại hình ảnh sản phẩm. Sẽ thay thế toàn bộ ảnh hiện tại."
-          },
-          "response": []
-        },
-        {
-          "name": "Lấy metadata sản phẩm lớn hơn giá",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/metadata/greater-than-price?price=",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                "metadata",
-                "greater-than-price"
-              ],
-              "query": [
-                {
-                  "key": "price",
-                  "value": "",
-                  "description": "Giá trị so sánh"
-                }
-              ]
-            },
-            "description": "Lấy danh sách metadata sản phẩm có giá lớn hơn giá trị được chỉ định"
-          },
-          "response": []
-        },
-        {
-          "name": "Lấy danh sách sản phẩm đã xóa mềm (Admin)",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/deleted",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                "deleted"
-              ],
-              "query": [
-                {
-                  "key": "keyword",
-                  "value": "",
-                  "description": "Từ khóa tìm kiếm (tên, SKU, mô tả)",
-                  "disabled": true
-                },
-                {
-                  "key": "categoryId",
-                  "value": "",
-                  "description": "Lọc theo category ID",
-                  "disabled": true
-                },
-                {
-                  "key": "brandId",
-                  "value": "",
-                  "description": "Lọc theo brand ID",
-                  "disabled": true
-                },
-                {
-                  "key": "sortBy",
-                  "value": "",
-                  "description": "Sắp xếp theo (name, price, stock, createdAt)",
-                  "disabled": true
-                },
-                {
-                  "key": "sortDirection",
-                  "value": "",
-                  "description": "Hướng sắp xếp (asc, desc)",
-                  "disabled": true
-                },
-                {
-                  "key": "page",
-                  "value": "",
-                  "description": "Số trang",
-                  "disabled": true
-                },
-                {
-                  "key": "size",
-                  "value": "",
-                  "description": "Số items/trang",
-                  "disabled": true
-                }
-              ]
-            },
-            "description": "Lấy tất cả sản phẩm đã bị xóa mềm (isDeleted=true)"
-          },
-          "response": []
-        },
-        {
-          "name": "Xóa hình ảnh sản phẩm (Admin)",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/:id/images/:imageId",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id",
-                "images",
-                ":imageId"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "",
-                  "description": "ID của sản phẩm"
-                },
-                {
-                  "key": "imageId",
-                  "value": "",
-                  "description": "ID của hình ảnh"
-                }
-              ]
-            },
-            "description": "Xóa một hình ảnh cụ thể của sản phẩm"
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Admin Brand",
-      "item": [
-        {
-          "name": "[ADMIN] Cập nhật thương hiệu",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"logoUrl\": \"string\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/brands/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "brands",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "",
-                  "description": "ID của thương hiệu cần cập nhật"
-                }
-              ]
-            },
-            "description": "Cập nhật thông tin của thương hiệu đã tồn tại. Kiểm tra trùng tên (loại trừ chính nó). **Yêu cầu quyền ADMIN.**"
-          },
-          "response": []
-        },
-        {
-          "name": "[ADMIN] Xóa thương hiệu",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/brands/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "brands",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "",
-                  "description": "ID của thương hiệu cần xóa"
-                }
-              ]
-            },
-            "description": "Xóa thương hiệu theo ID. Kiểm tra ràng buộc trước khi xóa: Không cho phép xóa nếu thương hiệu có sản phẩm liên kết. **Yêu cầu quyền ADMIN.**"
-          },
-          "response": []
-        },
-        {
-          "name": "[ADMIN] Tạo thương hiệu mới",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"logoUrl\": \"string\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/brands",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "brands"
-              ]
-            },
-            "description": "Tạo một thương hiệu mới. Kiểm tra trùng tên. **Yêu cầu quyền ADMIN.**"
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Admin Category",
-      "item": [
-        {
-          "name": "[ADMIN] Cập nhật danh mục",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"parentId\": 1\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/categories/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "categories",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "",
-                  "description": "ID của danh mục cần cập nhật"
-                }
-              ]
-            },
-            "description": "Cập nhật thông tin của danh mục đã tồn tại. Kiểm tra trùng tên trong cùng cấp parentId (loại trừ chính nó). Không cho phép đặt danh mục làm cha của chính nó. **Yêu cầu quyền ADMIN.**"
-          },
-          "response": []
-        },
-        {
-          "name": "[ADMIN] Xóa danh mục",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/categories/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "categories",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "",
-                  "description": "ID của danh mục cần xóa"
-                }
-              ]
-            },
-            "description": "Xóa danh mục theo ID. Kiểm tra ràng buộc trước khi xóa: Không cho phép xóa nếu danh mục có danh mục con hoặc có sản phẩm liên kết. **Yêu cầu quyền ADMIN.**"
-          },
-          "response": []
-        },
-        {
-          "name": "[ADMIN] Tạo danh mục mới",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{adminAccessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"parentId\": 1\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/categories",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "categories"
-              ]
-            },
-            "description": "Tạo một danh mục mới. Nếu parentId=null: tạo danh mục gốc. Nếu parentId=<id>: tạo danh mục con. Kiểm tra trùng tên trong cùng cấp parentId. **Yêu cầu quyền ADMIN.**"
-          },
-          "response": []
-        }
-      ]
-    }
-  ],
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "{{adminAccessToken}}",
-        "type": "string"
-      }
-    ]
-  },
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "packages": {},
-        "requests": {},
-        "exec": [
-          ""
-        ]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "packages": {},
-        "requests": {},
-        "exec": [
-          ""
-        ]
-      }
-    }
-  ],
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "{{baseUrl}}"
-    }
-  ]
 }

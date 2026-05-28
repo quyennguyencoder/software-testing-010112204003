@@ -226,7 +226,14 @@ jobs:
           if-no-files-found: ignore
 
       - name: Create Jira issue - assign to ${{ matrix.member }}
-        if: steps.newman.outputs.status == 'failed' && env.JIRA_BASE_URL != '' && env.JIRA_EMAIL != '' && env.JIRA_API_TOKEN != '' && env.JIRA_PROJECT_KEY != ''
+        if: >
+          steps.newman.outputs.status == 'failed' &&
+          github.event_name == 'push' &&
+          (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') &&
+          env.JIRA_BASE_URL != '' &&
+          env.JIRA_EMAIL != '' &&
+          env.JIRA_API_TOKEN != '' &&
+          env.JIRA_PROJECT_KEY != ''
         env:
           ASSIGNEE_ACCOUNT_ID: ${{ env[matrix.jira_assignee_env] }}
           COLLECTION_NAME: ${{ matrix.collection }}
