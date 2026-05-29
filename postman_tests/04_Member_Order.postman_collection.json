@@ -1,7 +1,6 @@
 {
   "info": {
-    "_postman_id": "e11dee61-793c-4563-9b4b-c766fd9ece08",
-    "name": "📦 [Member 4] Order & Public Tracking",
+    "name": "📦 [Member 4] Order & Public Tracking - 1",
     "description": "Quản lý đơn hàng phía khách hàng và tra cứu đơn hàng công khai (14 endpoints)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -16,11 +15,23 @@
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json"
+                "value": "application/json",
+                "disabled": false,
+                "type": "default"
               }
             ],
+            "auth": {
+              "type": "bearer",
+              "bearer": {
+                "key": "token",
+                "value": "{{accessToken}}",
+                "type": "string"
+              }
+            },
+            "description": "Tạo đơn hàng với danh sách sản phẩm. Hỗ trợ COD, VNPay, Bank Transfer.",
             "url": {
               "raw": "{{baseUrl}}/api/v1/orders",
+              "protocol": "",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -28,22 +39,13 @@
                 "api",
                 "v1",
                 "orders"
-              ]
-            },
-            "description": "Tạo đơn hàng với danh sách sản phẩm. Hỗ trợ COD, VNPay, Bank Transfer.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
+              ],
+              "query": [],
+              "variable": []
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"string\",\n  \"recipientName\": \"string\",\n  \"phoneNumber\": \"string\",\n  \"shippingAddress\": \"string\",\n  \"shippingFee\": 1,\n  \"shippingUnit\": \"string\",\n  \"note\": \"string\",\n  \"paymentMethod\": \"string\",\n  \"promotionId\": \"string\",\n  \"freeshippingPromotionId\": \"string\",\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 1\n    }\n  ]\n}",
+              "raw": "{\n  \"email\": \"test@gmail.com\",\n  \"recipientName\": \"Nguyen Van A\",\n  \"phoneNumber\": \"0909123456\",\n  \"shippingAddress\": \"TP HCM\",\n  \"shippingFee\": 30000,\n  \"shippingUnit\": \"GHN\",\n  \"note\": \"Giao buổi sáng\",\n  \"paymentMethod\": \"COD\",\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 1\n    }\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -51,15 +53,55 @@
               }
             }
           },
-          "response": []
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  "pm.test(\"Status should be 201\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(201);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Success should be true\", function() {",
+                  "    pm.expect(body.success).to.equal(true);",
+                  "});",
+                  "",
+                  "pm.test(\"Order ID exists\", function() {",
+                  "    pm.expect(body.data.orderId).to.not.equal(null);",
+                  "});",
+                  "",
+                  "pm.environment.set(\"orderId\", body.data.orderId);",
+                  "pm.environment.set(\"orderCode\", body.data.orderCode);",
+                  "",
+                  "console.log(\"Saved orderId:\", body.data.orderId);",
+                  "console.log(\"Saved orderCode:\", body.data.orderCode);"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Hủy đơn hàng",
           "request": {
             "method": "POST",
             "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": {
+                "key": "token",
+                "value": "{{accessToken}}",
+                "type": "string"
+              }
+            },
+            "description": "Khách hàng tự hủy đơn hàng của mình.  Chỉ có thể hủy đơn hàng ở trạng thái 'Chờ xác nhận'.",
             "url": {
               "raw": "{{baseUrl}}/api/v1/orders/{orderId}/cancel",
+              "protocol": "",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -67,9 +109,10 @@
                 "api",
                 "v1",
                 "orders",
-                ":orderId",
+                "{orderId}",
                 "cancel"
               ],
+              "query": [],
               "variable": [
                 {
                   "key": "orderId",
@@ -77,28 +120,47 @@
                   "description": "ID đơn hàng"
                 }
               ]
-            },
-            "description": "Khách hàng tự hủy đơn hàng của mình.  Chỉ có thể hủy đơn hàng ở trạng thái 'Chờ xác nhận'.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
             }
           },
-          "response": []
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Cancel success\", function() {",
+                  "    pm.expect(body.success).to.equal(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Lấy thông tin đơn hàng",
           "request": {
             "method": "GET",
             "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": {
+                "key": "token",
+                "value": "{{accessToken}}",
+                "type": "string"
+              }
+            },
+            "description": "User chỉ có thể xem đơn hàng của chính mình",
             "url": {
               "raw": "{{baseUrl}}/api/v1/orders/{orderId}",
+              "protocol": "",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -106,37 +168,56 @@
                 "api",
                 "v1",
                 "orders",
-                ":orderId"
+                "{orderId}"
               ],
+              "query": [],
               "variable": [
                 {
                   "key": "orderId",
-                  "value": "",
-                  "description": ""
-                }
-              ]
-            },
-            "description": "User chỉ có thể xem đơn hàng của chính mình",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
+                  "value": ""
                 }
               ]
             }
           },
-          "response": []
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Order info exists\", function() {",
+                  "    pm.expect(body.data).to.not.equal(null);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Lấy thông tin trạng thái đơn hàng",
           "request": {
             "method": "GET",
             "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": {
+                "key": "token",
+                "value": "{{accessToken}}",
+                "type": "string"
+              }
+            },
+            "description": "Lấy thông tin chi tiết về trạng thái hiện tại và các hành động khả thi",
             "url": {
               "raw": "{{baseUrl}}/api/v1/orders/{orderId}/status-info",
+              "protocol": "",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -144,9 +225,10 @@
                 "api",
                 "v1",
                 "orders",
-                ":orderId",
+                "{orderId}",
                 "status-info"
               ],
+              "query": [],
               "variable": [
                 {
                   "key": "orderId",
@@ -154,28 +236,47 @@
                   "description": "ID đơn hàng"
                 }
               ]
-            },
-            "description": "Lấy thông tin chi tiết về trạng thái hiện tại và các hành động khả thi",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
             }
           },
-          "response": []
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Status exists\", function() {",
+                  "    pm.expect(body.data.status).to.not.equal(null);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Kiểm tra có thể hủy đơn hàng",
           "request": {
             "method": "GET",
             "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": {
+                "key": "token",
+                "value": "{{accessToken}}",
+                "type": "string"
+              }
+            },
+            "description": "Kiểm tra xem đơn hàng có thể bị hủy bởi khách hàng hay không",
             "url": {
               "raw": "{{baseUrl}}/api/v1/orders/{orderId}/can-cancel",
+              "protocol": "",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -183,9 +284,10 @@
                 "api",
                 "v1",
                 "orders",
-                ":orderId",
+                "{orderId}",
                 "can-cancel"
               ],
+              "query": [],
               "variable": [
                 {
                   "key": "orderId",
@@ -193,28 +295,47 @@
                   "description": "ID đơn hàng"
                 }
               ]
-            },
-            "description": "Kiểm tra xem đơn hàng có thể bị hủy bởi khách hàng hay không",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
             }
           },
-          "response": []
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Can cancel field exists\", function() {",
+                  "    pm.expect(body.data.canCancel).to.not.equal(null);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Xem lịch sử đơn hàng của tôi",
           "request": {
             "method": "GET",
             "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": {
+                "key": "token",
+                "value": "{{accessToken}}",
+                "type": "string"
+              }
+            },
+            "description": "Lấy danh sách tất cả đơn hàng của khách hàng hiện tại, sắp xếp theo ngày tạo mới nhất",
             "url": {
               "raw": "{{baseUrl}}/api/v1/orders/my-orders",
+              "protocol": "",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -223,29 +344,50 @@
                 "v1",
                 "orders",
                 "my-orders"
-              ]
-            },
-            "description": "Lấy danh sách tất cả đơn hàng của khách hàng hiện tại, sắp xếp theo ngày tạo mới nhất",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
+              ],
+              "query": [],
+              "variable": []
             }
           },
-          "response": []
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"History list exists\", function() {",
+                  "    pm.expect(body.data).to.not.equal(null);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Xem lịch sử đơn hàng (có phân trang)",
           "request": {
             "method": "GET",
             "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": {
+                "key": "token",
+                "value": "{{accessToken}}",
+                "type": "string"
+              }
+            },
+            "description": "Lấy danh sách đơn hàng của khách hàng với phân trang và sắp xếp",
             "url": {
               "raw": "{{baseUrl}}/api/v1/orders/my-orders/paginated",
+              "protocol": "",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -260,50 +402,66 @@
                 {
                   "key": "page",
                   "value": "",
-                  "description": "Số trang (bắt đầu từ 0)",
-                  "disabled": true
+                  "description": "Số trang (bắt đầu từ 0)"
                 },
                 {
                   "key": "size",
                   "value": "",
-                  "description": "Số lượng đơn hàng mỗi trang",
-                  "disabled": true
+                  "description": "Số lượng đơn hàng mỗi trang"
                 },
                 {
                   "key": "sortBy",
                   "value": "",
-                  "description": "Trường sắp xếp",
-                  "disabled": true
+                  "description": "Trường sắp xếp"
                 },
                 {
                   "key": "sortDir",
                   "value": "",
-                  "description": "Hướng sắp xếp (asc/desc)",
-                  "disabled": true
+                  "description": "Hướng sắp xếp (asc/desc)"
                 }
-              ]
-            },
-            "description": "Lấy danh sách đơn hàng của khách hàng với phân trang và sắp xếp",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
+              ],
+              "variable": []
             }
           },
-          "response": []
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"History list exists\", function() {",
+                  "    pm.expect(body.data).to.not.equal(null);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Đếm số đơn hàng của tôi",
           "request": {
             "method": "GET",
             "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": {
+                "key": "token",
+                "value": "{{accessToken}}",
+                "type": "string"
+              }
+            },
+            "description": "Lấy tổng số đơn hàng của khách hàng hiện tại",
             "url": {
               "raw": "{{baseUrl}}/api/v1/orders/my-orders/count",
+              "protocol": "",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -313,29 +471,50 @@
                 "orders",
                 "my-orders",
                 "count"
-              ]
-            },
-            "description": "Lấy tổng số đơn hàng của khách hàng hiện tại",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
+              ],
+              "query": [],
+              "variable": []
             }
           },
-          "response": []
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Pagination data exists\", function() {",
+                  "    pm.expect(body.data).to.not.equal(null);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Lọc đơn hàng theo trạng thái",
           "request": {
             "method": "GET",
             "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": {
+                "key": "token",
+                "value": "{{accessToken}}",
+                "type": "string"
+              }
+            },
+            "description": "Lấy danh sách đơn hàng của khách hàng theo trạng thái cụ thể",
             "url": {
               "raw": "{{baseUrl}}/api/v1/orders/my-orders/by-status",
+              "protocol": "",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -350,24 +529,33 @@
                 {
                   "key": "status",
                   "value": "",
-                  "description": "Trạng thái đơn hàng",
-                  "disabled": false
+                  "description": "Trạng thái đơn hàng"
                 }
-              ]
-            },
-            "description": "Lấy danh sách đơn hàng của khách hàng theo trạng thái cụ thể",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
+              ],
+              "variable": []
             }
           },
-          "response": []
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Filtered data exists\", function() {",
+                  "    pm.expect(body.data).to.not.equal(null);",
+                  "});"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -381,11 +569,18 @@
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json"
+                "value": "application/json",
+                "disabled": false,
+                "type": "default"
               }
             ],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Kiểm tra mã đơn và email có khớp không trước khi tra cứu chi tiết",
             "url": {
               "raw": "{{baseUrl}}/api/v1/public/orders/validate-access",
+              "protocol": "",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -395,12 +590,13 @@
                 "public",
                 "orders",
                 "validate-access"
-              ]
+              ],
+              "query": [],
+              "variable": []
             },
-            "description": "Kiểm tra mã đơn và email có khớp không trước khi tra cứu chi tiết",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"orderCode\": \"ORD-001\",\n  \"email\": \"huong.tran@gmail. com\"\n}",
+              "raw": "{\n  \"orderCode\": \"ORD_260528162336\",\n  \"email\": \"test@example.com\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -408,7 +604,27 @@
               }
             }
           },
-          "response": []
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Permission checked\", function() {",
+                  "    pm.expect(body.success).to.equal(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Tra cứu đơn hàng công khai",
@@ -417,11 +633,18 @@
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json"
+                "value": "application/json",
+                "disabled": false,
+                "type": "default"
               }
             ],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Tra cứu trạng thái đơn hàng bằng mã đơn và email khách hàng.  Không cần đăng nhập.",
             "url": {
               "raw": "{{baseUrl}}/api/v1/public/orders/track",
+              "protocol": "",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -431,9 +654,10 @@
                 "public",
                 "orders",
                 "track"
-              ]
+              ],
+              "query": [],
+              "variable": []
             },
-            "description": "Tra cứu trạng thái đơn hàng bằng mã đơn và email khách hàng.  Không cần đăng nhập.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"orderCode\": \"ORD-001\",\n  \"email\": \"huong.tran@gmail. com\"\n}",
@@ -444,15 +668,40 @@
               }
             }
           },
-          "response": []
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Tracking data exists\", function() {",
+                  "    pm.expect(body.data).to.not.equal(null);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Hướng dẫn tra cứu đơn hàng",
           "request": {
             "method": "GET",
             "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Lấy thông tin hướng dẫn cách tra cứu đơn hàng và các câu hỏi thường gặp",
             "url": {
               "raw": "{{baseUrl}}/api/v1/public/orders/tracking-guide",
+              "protocol": "",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -462,19 +711,39 @@
                 "public",
                 "orders",
                 "tracking-guide"
-              ]
-            },
-            "description": "Lấy thông tin hướng dẫn cách tra cứu đơn hàng và các câu hỏi thường gặp"
+              ],
+              "query": [],
+              "variable": []
+            }
           },
-          "response": []
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Thống kê tra cứu đơn hàng",
           "request": {
             "method": "GET",
             "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Lấy thống kê về tình hình đơn hàng (dành cho admin hoặc hiển thị công khai)",
             "url": {
               "raw": "{{baseUrl}}/api/v1/public/orders/statistics",
+              "protocol": "",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -484,19 +753,45 @@
                 "public",
                 "orders",
                 "statistics"
-              ]
-            },
-            "description": "Lấy thống kê về tình hình đơn hàng (dành cho admin hoặc hiển thị công khai)"
+              ],
+              "query": [],
+              "variable": []
+            }
           },
-          "response": []
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Statistics exists\", function() {",
+                  "    pm.expect(body.data).to.not.equal(null);",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Tra cứu nhanh bằng mã đơn",
           "request": {
             "method": "GET",
             "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Tra cứu trạng thái cơ bản chỉ bằng mã đơn hàng (thông tin hạn chế để bảo mật)",
             "url": {
               "raw": "{{baseUrl}}/api/v1/public/orders/quick-track/{orderCode}",
+              "protocol": "",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -506,8 +801,9 @@
                 "public",
                 "orders",
                 "quick-track",
-                ":orderCode"
+                "{orderCode}"
               ],
+              "query": [],
               "variable": [
                 {
                   "key": "orderCode",
@@ -515,10 +811,29 @@
                   "description": "Mã đơn hàng"
                 }
               ]
-            },
-            "description": "Tra cứu trạng thái cơ bản chỉ bằng mã đơn hàng (thông tin hạn chế để bảo mật)"
+            }
           },
-          "response": []
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Quick tracking exists\", function() {",
+                  "    pm.expect(body.data).to.not.equal(null);",
+                  "});"
+                ]
+              }
+            }
+          ]
         }
       ]
     }
@@ -526,17 +841,13 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "{{baseUrl}}"
+      "value": "{{baseUrl}}",
+      "type": "default"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "default"
     }
-  ],
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "{{accessToken}}",
-        "type": "string"
-      }
-    ]
-  }
+  ]
 }
