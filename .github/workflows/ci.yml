@@ -3,8 +3,7 @@
 on:
   push:
     branches:
-      - main
-      - develop
+      - "**"
   pull_request:
     branches:
       - main
@@ -229,7 +228,6 @@ jobs:
         if: >
           steps.newman.outputs.status == 'failed' &&
           github.event_name == 'push' &&
-          (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') &&
           env.JIRA_BASE_URL != '' &&
           env.JIRA_EMAIL != '' &&
           env.JIRA_API_TOKEN != '' &&
