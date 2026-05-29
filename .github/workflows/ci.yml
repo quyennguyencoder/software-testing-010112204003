@@ -242,6 +242,7 @@ jobs:
           const fs = require('fs');
           const path = require('path');
 
+          async function main() {
           const jiraBaseUrl = process.env.JIRA_BASE_URL.replace(/\/$/, '');
           const auth = Buffer.from(`${process.env.JIRA_EMAIL}:${process.env.JIRA_API_TOKEN}`).toString('base64');
           const collection = process.env.COLLECTION_NAME;
@@ -364,6 +365,12 @@ jobs:
             });
             console.log(`Created Jira issue ${created.key} for ${requestName}`);
           }
+          }
+
+          main().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
           NODE
 
       - name: Fail job if tests failed
