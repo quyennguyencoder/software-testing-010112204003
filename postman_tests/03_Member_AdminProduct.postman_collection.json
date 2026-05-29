@@ -1,13 +1,290 @@
-﻿{
+{
   "info": {
-    "_postman_id": "d2bc79f8-236a-43af-84a9-6c2f944e0db3",
+    "_postman_id": "ed6d0bae-1c64-43ca-9cb1-2ea432b546be",
     "name": "🛠️ [Member 3] Admin - Product, Brand, Category",
     "description": "Quản lý sản phẩm, thương hiệu, danh mục từ phía Admin (16 endpoints)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "46988351",
-    "_collection_link": "https://go.postman.co/collection/46988351-d2bc79f8-236a-43af-84a9-6c2f944e0db3?source=collection_link"
+    "_exporter_id": "49201715",
+    "_collection_link": "https://go.postman.co/collection/49201715-ed6d0bae-1c64-43ca-9cb1-2ea432b546be?source=collection_link"
   },
-  "item": [],
+  "item": [
+    {
+      "name": "Product Managenment",
+      "item": [
+        {
+          "name": "Đăng nhập Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Kiểm tra chắc chắn API gọi thành công (Status 200)\r",
+                  "pm.test(\"Đăng nhập thành công với mã 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Chuyển phản hồi của Backend thành đối tượng JSON\r",
+                  "var jsonData = pm.response.json();\r",
+                  "\r",
+                  "// Tìm đúng đường dẫn đến chỗ giấu Token và lưu lại\r",
+                  "if (jsonData && jsonData.data && jsonData.data.accessToken) {\r",
+                  "    var token = jsonData.data.accessToken;\r",
+                  "    \r",
+                  "    // Lưu Token vào biến môi trường tên là \"adminAccessToken\"\r",
+                  "    pm.environment.set(\"adminAccessToken\", token);\r",
+                  "    \r",
+                  "    // In ra console để tự tin là đã lưu thành công\r",
+                  "    console.log(\"Hệ thống đã tự động chộp được Token: \" + token);\r",
+                  "} else {\r",
+                  "    console.log(\"Lỗi: Không tìm thấy accessToken trong phản hồi!\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"usernameOrEmail\": \"admin\",\r\n  \"password\": \"Password@123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:8081/api/v1/auth/login' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"usernameOrEmail\": \"user1\",\r\n  \"password\": \"User123456\"\r\n}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Đăng nhập User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Kiểm tra chắc chắn API gọi thành công (Status 200)\r",
+                  "pm.test(\"Đăng nhập User thành công với mã 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Chuyển phản hồi của Backend thành đối tượng JSON\r",
+                  "var jsonData = pm.response.json();\r",
+                  "\r",
+                  "// Tìm đúng đường dẫn đến chỗ giấu Token và lưu lại\r",
+                  "if (jsonData && jsonData.data && jsonData.data.accessToken) {\r",
+                  "    var token = jsonData.data.accessToken;\r",
+                  "    \r",
+                  "    // Lưu vào biến \"accessToken\"\r",
+                  "    pm.environment.set(\"accessToken\", token);\r",
+                  "    \r",
+                  "    // In ra console để dễ debug trên CI\r",
+                  "    console.log(\"Hệ thống đã tự động chộp được Token của User thường: \" + token);\r",
+                  "} else {\r",
+                  "    console.log(\"Lỗi: Không tìm thấy accessToken trong phản hồi!\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "accept",
+                "value": "*/*"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"usernameOrEmail\": \"user\",\r\n  \"password\": \"Password@123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:8081/api/v1/auth/login' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"usernameOrEmail\": \"user1\",\r\n  \"password\": \"User123456\"\r\n}'"
+          },
+          "response": []
+        },
+        {
+          "name": "[ADM01] Test không có Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Bị chặn ở ngoài cửa với mã 401\", function () {\r",
+                  "    pm.response.to.have.status(401);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "products",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Lấy thông tin chi tiết của một sản phẩm theo ID"
+          },
+          "response": []
+        },
+        {
+          "name": "[ADM02] Test Token User thường",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User thường không đủ quyền, phải trả về 403\", function () {\r",
+                  "    pm.response.to.have.status(403);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "products",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Lấy thông tin chi tiết của một sản phẩm theo ID"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
   "auth": {
     "type": "bearer",
     "bearer": [
