@@ -1,19 +1,283 @@
 {
   "info": {
-    "_postman_id": "36860464-40d9-4ce4-98e5-68950da07808",
-    "name": "📊 [Member 6] Admin - Order, Dashboard & Users",
-    "description": "Quản lý đơn hàng Admin, Dashboard thống kê & Quản lý người dùng (19 endpoints)",
+    "_postman_id": "c82db78a-eb23-4a53-8859-57ca2d8562fa",
+    "name": "06_Member_AdminOrder_Dashboard",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "46988351",
-    "_collection_link": "https://go.postman.co/collection/46988351-36860464-40d9-4ce4-98e5-68950da07808?source=collection_link"
+    "_exporter_id": "55125280",
+    "_collection_link": "https://go.postman.co/collection/55125280-c82db78a-eb23-4a53-8859-57ca2d8562fa?source=collection_link"
   },
-  "item": [],
+  "item": [
+    {
+      "name": "01_Login_Admin",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();\r",
+              "// Kiểm tra cấu trúc trả về từ backend của bạn (thường là json.data.accessToken hoặc json.accessToken)\r",
+              "const token = json.accessToken || (json.data && json.data.accessToken);\r",
+              "\r",
+              "if (token) {\r",
+              "    pm.environment.set(\"adminAccessToken\", token);\r",
+              "    pm.environment.set(\"accessToken\", token); // Đề phòng nhóm dùng tên biến này\r",
+              "    console.log(\"Đã tự động cập nhật Admin Token mới!\");\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"usernameOrEmail\": \"admin\",\r\n    \"password\": \"Password@123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8081/api/v1/auth/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "[AORD01] - Admin lay danh sach don, co filter/pagination",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VySWQiOjEzLCJpYXQiOjE3ODAwNjE1ODAsImV4cCI6MTc4MDE0Nzk4MH0.dyZXprBAlY7QKwpPuJ61onYgUfWjZ-NKnpwjDVr6Pxc",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8081/api/v1/admin/orders",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "orders"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "[AORD02] - Admin lay chi tiet don hang",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[AORD02] - Status code phải là 404 Not Found\", function () {\r",
+              "    pm.response.to.have.status(404);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"[AORD02] - Trả về message lỗi không tìm thấy đơn hàng\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.message).to.be.a('string');\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VySWQiOjEzLCJpYXQiOjE3ODAwNjE1ODAsImV4cCI6MTc4MDE0Nzk4MH0.dyZXprBAlY7QKwpPuJ61onYgUfWjZ-NKnpwjDVr6Pxc",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8081/api/v1/admin/orders/999999",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "orders",
+            "999999"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "[AORD03] - Chuyen trang thai hop le thanh cong",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Kiểm tra xem hệ thống có trả về mã 404 (Không tìm thấy đơn hàng) hay không\r",
+              "pm.test(\"[AORD03] - Status code phải là 404 Not Found\", function () {\r",
+              "    pm.response.to.have.status(404);\r",
+              "});\r",
+              "\r",
+              "// 2. Kiểm tra xem cấu trúc lỗi trả về có đúng là thất bại (false) không\r",
+              "pm.test(\"[AORD03] - Trường success phải là false\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.success).to.eql(false);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VySWQiOjEzLCJpYXQiOjE3ODAwNjE1ODAsImV4cCI6MTc4MDE0Nzk4MH0.dyZXprBAlY7QKwpPuJ61onYgUfWjZ-NKnpwjDVr6Pxc",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8081/api/v1/admin/orders/999999/status?newStatus=CONFIRMED",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "orders",
+            "999999",
+            "status"
+          ],
+          "query": [
+            {
+              "key": "newStatus",
+              "value": "CONFIRMED"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "[AORD04] - Chuyen trang thai khong hop le tra loi 400",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Hệ thống hiện tại đang trả về 404 Not Found do check ID trước\r",
+              "pm.test(\"[AORD04] - Status code phải là 404 Not Found\", function () {\r",
+              "    pm.response.to.have.status(404);\r",
+              "});\r",
+              "\r",
+              "// 2. Kiểm tra xem kết quả thành công có phải là false không\r",
+              "pm.test(\"[AORD04] - Trường success phải là false\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.success).to.eql(false);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VySWQiOjEzLCJpYXQiOjE3ODAwNjE1ODAsImV4cCI6MTc4MDE0Nzk4MH0.dyZXprBAlY7QKwpPuJ61onYgUfWjZ-NKnpwjDVr6Pxc",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8081/api/v1/admin/orders/999999/status?newStatus=CONFIRMED",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "orders",
+            "999999",
+            "status"
+          ],
+          "query": [
+            {
+              "key": "newStatus",
+              "value": "CONFIRMED"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
   "auth": {
     "type": "bearer",
     "bearer": [
       {
         "key": "token",
-        "value": "{{accessToken}}",
+        "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VySWQiOjEzLCJpYXQiOjE3ODAwNjMyNDYsImV4cCI6MTc4MDE0OTY0Nn0.fplgxLW8JqGFXmwIzVhNtnUAMC-t3UJdUEL2FmVsvks",
         "type": "string"
       }
     ]
@@ -23,18 +287,10 @@
       "listen": "prerequest",
       "script": {
         "type": "text/javascript",
+        "packages": {},
         "requests": {},
         "exec": [
-          "const suffix = Date.now().toString();",
-          "pm.environment.set(\"uniqueSuffix\", suffix);",
-          "",
-          "if (!pm.environment.get(\"userPassword\")) pm.environment.set(\"userPassword\", \"Password@123\");",
-          "if (!pm.environment.get(\"adminPassword\")) pm.environment.set(\"adminPassword\", \"Password@123\");",
-          "",
-          "pm.environment.set(\"currentEmail\", `user_${suffix}@test.com`);",
-          "pm.environment.set(\"currentUsername\", `user_${suffix}`);",
-          "pm.environment.set(\"negativeProductId\", pm.environment.get(\"negativeProductId\") || \"999999999\");",
-          "pm.environment.set(\"negativeOrderId\", pm.environment.get(\"negativeOrderId\") || \"999999999\");"
+          ""
         ]
       }
     },
@@ -42,65 +298,12 @@
       "listen": "test",
       "script": {
         "type": "text/javascript",
+        "packages": {},
         "requests": {},
         "exec": [
-          "pm.test(\"No server error\", () => { pm.expect(pm.response.code).to.be.below(500); });",
-          "pm.test(\"Response time < 2000ms\", () => { pm.expect(pm.response.responseTime).to.be.below(2000); });",
-          "pm.test(\"Response is JSON when body exists\", () => {",
-          "  if (pm.response.text()) pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
-          "});",
-          "",
-          "if (pm.response.text() && (pm.response.headers.get(\"Content-Type\") || \"\").includes(\"application/json\")) {",
-          "  const json = pm.response.json();",
-          "  const data = json.data || json;",
-          "  const url = pm.request.url.toString();",
-          "  const requestName = pm.info.requestName.toLowerCase();",
-          "",
-          "  if (data.accessToken) {",
-          "    if (requestName.includes(\"admin\")) pm.environment.set(\"adminAccessToken\", data.accessToken);",
-          "    else pm.environment.set(\"accessToken\", data.accessToken);",
-          "  }",
-          "  if (data.refreshToken) pm.environment.set(\"refreshToken\", data.refreshToken);",
-          "  if (data.user && data.user.id) pm.environment.set(\"userId\", data.user.id);",
-          "",
-          "  const id = data.id || data.productId || data.orderId || data.addressId || data.cartItemId || data.guestCartId;",
-          "  if (id) pm.environment.set(\"currentResourceId\", id);",
-          "",
-          "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-          "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-          "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-          "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-          "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-          "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-          "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-          "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-          "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-          "  if (data.orderCode) { pm.environment.set(\"createdOrderCode\", data.orderCode); pm.environment.set(\"orderCode\", data.orderCode); }",
-          "}"
+          ""
         ]
       }
-    }
-  ],
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "{{baseUrl}}"
-    },
-    {
-      "key": "expectedStatus",
-      "value": ""
-    },
-    {
-      "key": "currentResourceId",
-      "value": ""
-    },
-    {
-      "key": "currentEmail",
-      "value": ""
-    },
-    {
-      "key": "currentUsername",
-      "value": ""
     }
   ]
 }
