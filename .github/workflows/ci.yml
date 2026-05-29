@@ -338,7 +338,7 @@ jobs:
             const testCaseLabel = sanitizeLabel(`tc-${testCaseId}`);
             const collectionLabel = sanitizeLabel(`collection-${collection}`);
             const jql = `project = ${process.env.JIRA_PROJECT_KEY} AND labels = "postman-ci" AND labels = "${testCaseLabel}" AND labels = "${collectionLabel}" AND statusCategory != Done`;
-            const searchUrl = `${jiraBaseUrl}/rest/api/3/search?jql=${encodeURIComponent(jql)}&maxResults=1&fields=key,summary`;
+            const searchUrl = `${jiraBaseUrl}/rest/api/3/search/jql?jql=${encodeURIComponent(jql)}&maxResults=1&fields=key,summary`;
             const existing = await jiraFetch(searchUrl);
 
             if ((existing.issues || []).length > 0) {
