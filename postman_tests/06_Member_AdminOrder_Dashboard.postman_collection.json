@@ -100,6 +100,184 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "[AORD02] - Admin lay chi tiet don hang",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[AORD02] - Status code phải là 404 Not Found\", function () {\r",
+              "    pm.response.to.have.status(404);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"[AORD02] - Trả về message lỗi không tìm thấy đơn hàng\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.message).to.be.a('string');\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VySWQiOjEzLCJpYXQiOjE3ODAwNTY4MTQsImV4cCI6MTc4MDE0MzIxNH0.2QewmA2fTKLQ8wHhnZTcdbF_lVbwARUrZDXDoC4XSew",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8081/api/v1/admin/orders/999999",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "orders",
+            "999999"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "[AORD03] - Chuyen trang thai hop le thanh cong",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Kiểm tra xem hệ thống có trả về mã 404 (Không tìm thấy đơn hàng) hay không\r",
+              "pm.test(\"[AORD03] - Status code phải là 404 Not Found\", function () {\r",
+              "    pm.response.to.have.status(404);\r",
+              "});\r",
+              "\r",
+              "// 2. Kiểm tra xem cấu trúc lỗi trả về có đúng là thất bại (false) không\r",
+              "pm.test(\"[AORD03] - Trường success phải là false\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.success).to.eql(false);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VySWQiOjEzLCJpYXQiOjE3ODAwNTY4MTQsImV4cCI6MTc4MDE0MzIxNH0.2QewmA2fTKLQ8wHhnZTcdbF_lVbwARUrZDXDoC4XSew",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8081/api/v1/admin/orders/999999/status?newStatus=CONFIRMED",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "orders",
+            "999999",
+            "status"
+          ],
+          "query": [
+            {
+              "key": "newStatus",
+              "value": "CONFIRMED",
+              "type": "text"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "[AORD04] - Chuyen trang thai khong hop le tra loi 400",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Hệ thống phải bắt được lỗi định dạng trạng thái bậy bạ và trả về 400 Bad Request\r",
+              "pm.test(\"[AORD04] - Status code phải là 400 Bad Request\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "// 2. Kiểm tra xem kết quả thành công có phải là false không\r",
+              "pm.test(\"[AORD04] - Trường success phải là false\", function () {\r",
+              "    var jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.success).to.eql(false);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VySWQiOjEzLCJpYXQiOjE3ODAwNTY4MTQsImV4cCI6MTc4MDE0MzIxNH0.2QewmA2fTKLQ8wHhnZTcdbF_lVbwARUrZDXDoC4XSew",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8081/api/v1/admin/orders/999999/status?newStatus=CONFIRMED",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "orders",
+            "999999",
+            "status"
+          ],
+          "query": [
+            {
+              "key": "newStatus",
+              "value": "CONFIRMED"
+            }
+          ]
+        }
+      },
+      "response": []
     }
   ]
 }
