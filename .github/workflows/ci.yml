@@ -20,11 +20,11 @@ concurrency:
 env:
   BASE_URL: http://localhost:8081
   POSTGRES_USER: phonehub
-  POSTGRES_PASSWORD: phonehub_password
-  POSTGRES_DB: phonehub_db
+  POSTGRES_PASSWORD: phonehub
+  POSTGRES_DB: phonehub
   DB_HOST: localhost
   DB_USERNAME: phonehub
-  DB_PASSWORD: phonehub_password
+  DB_PASSWORD: phonehub
   REDIS_HOST: localhost
   MAIL_HOST: smtp.example.com
   MAIL_PORT: "587"
@@ -238,7 +238,7 @@ jobs:
           MEMBER_NAME: ${{ matrix.member }}
           GH_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          node <<'NODE'
+          node --input-type=commonjs <<'NODE'
           const fs = require('fs');
           const path = require('path');
 
