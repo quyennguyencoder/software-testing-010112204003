@@ -183,9 +183,17 @@ public class SecurityConfig {
                                 // Trả về 401 Unauthorized cho API requests thay vì redirect đến OAuth2 login
                                 // Điều này giúp Swagger UI và các API clients xử lý lỗi đúng cách
                                 .exceptionHandling(exceptions -> exceptions
+                                                // Xử lý lỗi authentication (401) cho API
                                                 .defaultAuthenticationEntryPointFor(
                                                                 new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
-                                                                request -> request.getRequestURI().startsWith("/api/")))
+                                                                request -> request.getRequestURI().startsWith("/api/"))
+                                                // Xử lý lỗi authorization/permission (403) cho API
+                                                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                                                        response.setStatus(HttpStatus.FORBIDDEN.value());
+                                                        response.setContentType("application/json;charset=UTF-8");
+                                                        response.getWriter().write("{\"status\": 403, " +
+                                                                        "\"message\": \"Access Denied: Bạn không có quyền truy cập tài nguyên này\"}");
+                                                }))
                                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
                 return http.build();
