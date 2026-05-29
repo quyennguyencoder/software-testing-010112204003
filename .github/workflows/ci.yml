@@ -225,7 +225,7 @@ jobs:
             backend.log
           if-no-files-found: ignore
 
-      - name: Create Jira issue - assign to ${{ matrix.member }}
+      - name: Create Jira issues for new failed requests
         if: >
           steps.newman.outputs.status == 'failed' &&
           github.event_name == 'push' &&
@@ -244,80 +244,129 @@ jobs:
           const fs = require('fs');
           const path = require('path');
 
+          const jiraBaseUrl = process.env.JIRA_BASE_URL.replace(/\/$/, '');
+          const auth = Buffer.from(`${process.env.JIRA_EMAIL}:${process.env.JIRA_API_TOKEN}`).toString('base64');
           const collection = process.env.COLLECTION_NAME;
           const member = process.env.MEMBER_NAME;
           const assigneeId = process.env.ASSIGNEE_ACCOUNT_ID || '';
           const runUrl = process.env.GH_RUN_URL;
           const reportFile = path.join('postman_tests', 'reports', `${collection}.json`);
 
-          let failureSummary = 'Cannot read Newman report. Check GitHub Actions artifacts.';
-          if (fs.existsSync(reportFile)) {
-            const report = JSON.parse(fs.readFileSync(reportFile, 'utf8'));
-            const failures = (report.run?.failures || []).slice(0, 15);
-            if (failures.length > 0) {
-              failureSummary = failures
-                .map((f, i) => `${i + 1}. [${f.source?.name || f.parent?.name || 'Unknown request'}]\n   ${f.error?.message || 'Unknown error'}`)
-                .join('\n');
-            } else {
-              failureSummary = 'Newman returned a non-zero exit code, but no specific failure was found. Check artifacts.';
-            }
+          function sanitizeLabel(value) {
+            return String(value)
+              .toLowerCase()
+              .replace(/[^a-z0-9_-]+/g, '-')
+              .replace(/^-+|-+$/g, '')
+              .slice(0, 255);
           }
 
-          const payload = {
-            fields: {
-              project: { key: process.env.JIRA_PROJECT_KEY },
-              issuetype: { name: process.env.JIRA_ISSUE_TYPE || 'Bug' },
-              summary: `[CI] Postman failed - ${collection} (${member})`,
-              description: {
-                type: 'doc', version: 1,
-                content: [
-                  { type: 'heading', attrs: { level: 3 }, content: [{ type: 'text', text: 'Postman API test failure' }] },
-                  {
-                    type: 'bulletList',
-                    content: [
-                      bulletItem(`Collection: ${collection}`),
-                      bulletItem(`Owner: ${member}`),
-                      bulletItem(`CI run: ${runUrl}`)
-                    ]
-                  },
-                  { type: 'heading', attrs: { level: 4 }, content: [{ type: 'text', text: 'Failure details (first 15)' }] },
-                  { type: 'codeBlock', attrs: { language: 'text' }, content: [{ type: 'text', text: failureSummary }] },
-                  { type: 'paragraph', content: [{ type: 'text', text: 'Download the full HTML report from the CI run artifacts.' }] }
-                ]
-              }
-            }
-          };
+          function getTestCaseId(requestName) {
+            const match = String(requestName || '').match(/^([A-Z]+[0-9]+)/);
+            return match ? match[1] : 'unknown';
+          }
 
-          if (assigneeId) payload.fields.assignee = { accountId: assigneeId };
+          async function jiraFetch(url, options = {}) {
+            const response = await fetch(url, {
+              ...options,
+              headers: {
+                Accept: 'application/json',
+                Authorization: `Basic ${auth}`,
+                ...(options.headers || {})
+              }
+            });
+            const text = await response.text();
+            let body = null;
+            try { body = text ? JSON.parse(text) : null; } catch { body = text; }
+            if (!response.ok) throw new Error(`Jira HTTP ${response.status}: ${text}`);
+            return body;
+          }
 
           function bulletItem(text) {
-            return { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] };
+            return {
+              type: 'listItem',
+              content: [{ type: 'paragraph', content: [{ type: 'text', text }] }]
+            };
           }
 
-          fs.writeFileSync('jira-payload.json', JSON.stringify(payload, null, 2));
+          function buildDescription(requestName, errors) {
+            const failureSummary = errors
+              .slice(0, 15)
+              .map((error, index) => `${index + 1}. ${error}`)
+              .join('\n');
+
+            return {
+              type: 'doc', version: 1,
+              content: [
+                { type: 'heading', attrs: { level: 3 }, content: [{ type: 'text', text: 'Postman API test failure' }] },
+                {
+                  type: 'bulletList',
+                  content: [
+                    bulletItem(`Request: ${requestName}`),
+                    bulletItem(`Collection: ${collection}`),
+                    bulletItem(`Owner: ${member}`),
+                    bulletItem(`CI run: ${runUrl}`)
+                  ]
+                },
+                { type: 'heading', attrs: { level: 4 }, content: [{ type: 'text', text: 'Failure details' }] },
+                { type: 'codeBlock', attrs: { language: 'text' }, content: [{ type: 'text', text: failureSummary || 'No failure details found in Newman report.' }] },
+                { type: 'paragraph', content: [{ type: 'text', text: 'Download the full HTML report from the CI run artifacts.' }] }
+              ]
+            };
+          }
+
+          if (!fs.existsSync(reportFile)) throw new Error(`Newman report not found: ${reportFile}`);
+
+          const report = JSON.parse(fs.readFileSync(reportFile, 'utf8'));
+          const failures = report.run?.failures || [];
+          const byRequest = new Map();
+
+          for (const failure of failures) {
+            const requestName = failure.parent?.name || failure.source?.name || 'Unknown request';
+            const assertionName = failure.source?.name || 'Unknown assertion';
+            const message = `${assertionName}: ${failure.error?.message || failure.error?.name || 'Unknown error'}`;
+            if (!byRequest.has(requestName)) byRequest.set(requestName, []);
+            byRequest.get(requestName).push(message);
+          }
+
+          if (byRequest.size === 0) {
+            byRequest.set(`${collection} - Newman failed without request-level failures`, [
+              'Newman returned a non-zero exit code, but no specific request failure was found.'
+            ]);
+          }
+
+          for (const [requestName, errors] of byRequest.entries()) {
+            const testCaseId = getTestCaseId(requestName);
+            const testCaseLabel = sanitizeLabel(`tc-${testCaseId}`);
+            const collectionLabel = sanitizeLabel(`collection-${collection}`);
+            const jql = `project = ${process.env.JIRA_PROJECT_KEY} AND labels = "postman-ci" AND labels = "${testCaseLabel}" AND labels = "${collectionLabel}" AND statusCategory != Done`;
+            const searchUrl = `${jiraBaseUrl}/rest/api/3/search?jql=${encodeURIComponent(jql)}&maxResults=1&fields=key,summary`;
+            const existing = await jiraFetch(searchUrl);
+
+            if ((existing.issues || []).length > 0) {
+              const issue = existing.issues[0];
+              console.log(`Existing Jira issue found for ${requestName}: ${issue.key}. Skip creating duplicate.`);
+              continue;
+            }
+
+            const payload = {
+              fields: {
+                project: { key: process.env.JIRA_PROJECT_KEY },
+                issuetype: { name: process.env.JIRA_ISSUE_TYPE || 'Bug' },
+                summary: `[CI] ${requestName} failed - ${collection}`,
+                description: buildDescription(requestName, errors),
+                labels: ['postman-ci', testCaseLabel, collectionLabel]
+              }
+            };
+            if (assigneeId) payload.fields.assignee = { accountId: assigneeId };
+
+            const created = await jiraFetch(`${jiraBaseUrl}/rest/api/3/issue`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            console.log(`Created Jira issue ${created.key} for ${requestName}`);
+          }
           NODE
-
-          RESPONSE_FILE="jira-response.json"
-          HTTP_STATUS="$(
-            curl --show-error --silent \
-              --request POST \
-              --url "${JIRA_BASE_URL%/}/rest/api/3/issue" \
-              --user "${JIRA_EMAIL}:${JIRA_API_TOKEN}" \
-              --header "Accept: application/json" \
-              --header "Content-Type: application/json" \
-              --data @jira-payload.json \
-              --output "$RESPONSE_FILE" \
-              --write-out "%{http_code}"
-          )"
-
-          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
-            echo "Jira issue created for ${{ matrix.member }}"
-            cat "$RESPONSE_FILE"
-          else
-            echo "Failed to create Jira issue (HTTP $HTTP_STATUS)"
-            cat "$RESPONSE_FILE"
-            exit 1
-          fi
 
       - name: Fail job if tests failed
         if: steps.newman.outputs.status == 'failed'
@@ -373,4 +422,6 @@ jobs:
 
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "Download full HTML reports from this CI run's Artifacts section." >> "$GITHUB_STEP_SUMMARY"
+
+
 

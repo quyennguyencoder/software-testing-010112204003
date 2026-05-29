@@ -40,28 +40,63 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String jwt = extractJwtFromRequest(request);
 
-            if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
-                Long userId = jwtTokenProvider.getUserIdFromToken(jwt);
-
-                User user = userRepository.findById(userId).orElse(null);
-
-                // Only allow ACTIVE users to authenticate
-                if (user != null && user.getStatus() == UserStatus.ACTIVE) {
-                    // Add "ROLE_" prefix for hasRole() to work correctly
-                    SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().name());
-
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            user,
-                            null,
-                            Collections.singletonList(authority));
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    log.info("Authenticated user: {} with authority: {}", user.getEmail(), user.getRole().name());
-                }
+            if (!StringUtils.hasText(jwt)) {
+                log.debug("No JWT token found in request");
+                filterChain.doFilter(request, response);
+                return;
             }
+
+            log.debug("JWT token found, validating...");
+            if (!jwtTokenProvider.validateToken(jwt)) {
+                log.warn("JWT token validation failed");
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            Long userId = jwtTokenProvider.getUserIdFromToken(jwt);
+            log.debug("User ID extracted from token: {}", userId);
+
+            if (userId == null) {
+                log.warn("Could not extract user ID from token");
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            User user = userRepository.findById(userId).orElse(null);
+            if (user == null) {
+                log.warn("User not found in database with ID: {}", userId);
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            // Check user status
+            if (user.getStatus() != UserStatus.ACTIVE) {
+                log.warn("User {} is not ACTIVE. Status: {}", user.getEmail(), user.getStatus());
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            // ✅ Set authentication - Add "ROLE_" prefix for hasRole() to work correctly
+            try {
+                String roleName = user.getRole().name();
+                SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + roleName);
+
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        user,
+                        null,
+                        Collections.singletonList(authority));
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                log.info("✅ Successfully authenticated user: {} with role: {}", user.getEmail(), roleName);
+            } catch (Exception e) {
+                log.error("❌ Failed to create authentication token for user: {}", user.getEmail(), e);
+                filterChain.doFilter(request, response);
+                return;
+            }
+
         } catch (Exception e) {
-            log.error("Cannot set user authentication: {}", e.getMessage());
+            log.error("❌ Unexpected error in JWT filter: {}", e.getMessage(), e);
         }
 
         filterChain.doFilter(request, response);
