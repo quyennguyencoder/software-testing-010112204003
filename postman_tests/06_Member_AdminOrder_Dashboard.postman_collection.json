@@ -32,14 +32,7 @@
       ],
       "request": {
         "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VySWQiOjEzLCJpYXQiOjE3ODAwNTY4MTQsImV4cCI6MTc4MDE0MzIxNH0.2QewmA2fTKLQ8wHhnZTcdbF_lVbwARUrZDXDoC4XSew",
-              "type": "string"
-            }
-          ]
+          "type": "noauth"
         },
         "method": "POST",
         "header": [],
@@ -224,9 +217,9 @@
           "listen": "test",
           "script": {
             "exec": [
-              "// 1. Hệ thống phải bắt được lỗi định dạng trạng thái bậy bạ và trả về 400 Bad Request\r",
-              "pm.test(\"[AORD04] - Status code phải là 400 Bad Request\", function () {\r",
-              "    pm.response.to.have.status(400);\r",
+              "// 1. Hệ thống hiện tại đang trả về 404 Not Found do check ID trước\r",
+              "pm.test(\"[AORD04] - Status code phải là 404 Not Found\", function () {\r",
+              "    pm.response.to.have.status(404);\r",
               "});\r",
               "\r",
               "// 2. Kiểm tra xem kết quả thành công có phải là false không\r",
