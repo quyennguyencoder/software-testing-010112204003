@@ -1301,7 +1301,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"name\": \"Màng hình\",\n  \"description\": \"Cố tình test lỗi Cyclic Dependency - Tự nhận chính mình làm cha\",\n  \"status\": true,\n  \"parentId\": 26\n}",
+          "raw": "{\n  \"name\": \"Màng hình\",\n  \"description\": \"Cố tình test lỗi Cyclic Dependency - Tự nhận chính mình làm cha\",\n  \"status\": true,\n  \"parentId\": {{currentResourceId}}\n}",
           "options": {
             "raw": {
               "language": "json"
