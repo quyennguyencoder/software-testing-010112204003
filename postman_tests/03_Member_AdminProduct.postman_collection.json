@@ -1,13 +1,865 @@
 {
   "info": {
-    "_postman_id": "fdecd3f9-a74e-41e0-a365-77629b245762",
+    "_postman_id": "e10ab804-308c-4ae5-a17b-f8aee93df064",
     "name": "03_Member_AdminProduct",
     "description": "Generated from phonehub_postman_test_cases.xlsx. One request equals one testcase; request name starts with stable testcase ID for CI/Jira deduplication.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "46988351",
-    "_collection_link": "https://go.postman.co/collection/46988351-fdecd3f9-a74e-41e0-a365-77629b245762?source=collection_link"
+    "_exporter_id": "49201715",
+    "_collection_link": "https://go.postman.co/collection/49201715-e10ab804-308c-4ae5-a17b-f8aee93df064?source=collection_link"
   },
-  "item": [],
+  "item": [
+    {
+      "name": "Đăng nhập Admin",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Kiểm tra chắc chắn API gọi thành công (Status 200)\r",
+              "pm.test(\"Đăng nhập thành công với mã 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// Chuyển phản hồi của Backend thành đối tượng JSON\r",
+              "var jsonData = pm.response.json();\r",
+              "\r",
+              "// Tìm đúng đường dẫn đến chỗ giấu Token và lưu lại\r",
+              "if (jsonData && jsonData.data && jsonData.data.accessToken) {\r",
+              "    var token = jsonData.data.accessToken;\r",
+              "    \r",
+              "    // Lưu Token vào biến môi trường tên là \"adminAccessToken\"\r",
+              "    pm.environment.set(\"adminAccessToken\", token);\r",
+              "    \r",
+              "    // In ra console để tự tin là đã lưu thành công\r",
+              "    console.log(\"Hệ thống đã tự động chộp được Token: \" + token);\r",
+              "} else {\r",
+              "    console.log(\"Lỗi: Không tìm thấy accessToken trong phản hồi!\");\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "accept",
+            "value": "*/*"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"usernameOrEmail\": \"admin\",\r\n  \"password\": \"Password@123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "login"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:8081/api/v1/auth/login' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"usernameOrEmail\": \"user1\",\r\n  \"password\": \"User123456\"\r\n}'"
+      },
+      "response": []
+    },
+    {
+      "name": "Đăng nhập User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Kiểm tra chắc chắn API gọi thành công (Status 200)\r",
+              "pm.test(\"Đăng nhập User thành công với mã 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// Chuyển phản hồi của Backend thành đối tượng JSON\r",
+              "var jsonData = pm.response.json();\r",
+              "\r",
+              "// Tìm đúng đường dẫn đến chỗ giấu Token và lưu lại\r",
+              "if (jsonData && jsonData.data && jsonData.data.accessToken) {\r",
+              "    var token = jsonData.data.accessToken;\r",
+              "    \r",
+              "    // Lưu vào biến \"accessToken\"\r",
+              "    pm.environment.set(\"accessToken\", token);\r",
+              "    \r",
+              "    // In ra console để dễ debug trên CI\r",
+              "    console.log(\"Hệ thống đã tự động chộp được Token của User thường: \" + token);\r",
+              "} else {\r",
+              "    console.log(\"Lỗi: Không tìm thấy accessToken trong phản hồi!\");\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "accept",
+            "value": "*/*"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"usernameOrEmail\": \"user\",\r\n  \"password\": \"Password@123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "login"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:8081/api/v1/auth/login' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"usernameOrEmail\": \"user1\",\r\n  \"password\": \"User123456\"\r\n}'"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM01 - Khong token tra 401",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM01\";",
+              "const expectedStatusCodes = [401];",
+              "",
+              "// Lấy ngưỡng thời gian từ môi trường, mặc định 3000ms",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "",
+              "// 1. Kiểm tra mã trạng thái (Quan trọng nhất)",
+              "pm.test(`[${testCaseId}] Hệ thống từ chối truy cập và trả về mã ${expectedStatusCodes.join(\"/\")}`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "// 2. Đảm bảo server không bị crash (không trả về lỗi 5xx)",
+              "pm.test(`[${testCaseId}] Không có lỗi Server (No 5xx errors)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "// 3. Kiểm tra tốc độ phản hồi",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// 4. Nếu có Body trả về, đảm bảo nó là định dạng JSON",
+              "pm.test(`[${testCaseId}] Dữ liệu trả về (nếu có) phải là JSON`, () => {",
+              "    if (pm.response.text()) {",
+              "        pm.expect(contentType).to.include(\"application/json\");",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products?page=0&size=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "TestCaseId: ADM01\nModule: Admin Product/Brand/Category\nType: Auth negative\nAuth: None\nObjective: Khong token tra 401"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM02 - Token user thuong tra 403",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM02\";",
+              "const expectedStatusCodes = [403];",
+              "",
+              "// Lấy ngưỡng thời gian từ môi trường, mặc định 3000ms",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "",
+              "// 1. Kiểm tra mã trạng thái (User thường phải bị chặn với 403)",
+              "pm.test(`[${testCaseId}] User thường bị chặn quyền và trả về mã ${expectedStatusCodes.join(\"/\")}`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "// 2. Đảm bảo server không bị crash ",
+              "pm.test(`[${testCaseId}] Không có lỗi Server (No 5xx errors)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "// 3. Kiểm tra tốc độ phản hồi",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// 4. Nếu có Body trả về, đảm bảo nó là định dạng JSON",
+              "pm.test(`[${testCaseId}] Dữ liệu trả về (nếu có) phải là JSON`, () => {",
+              "    if (pm.response.text()) {",
+              "        pm.expect(contentType).to.include(\"application/json\");",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products?page=0&size=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "TestCaseId: ADM02\nModule: Admin Product/Brand/Category\nType: Auth negative\nAuth: User token\nObjective: Token user thuong tra 403"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM03 - Admin tao category thanh cong",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM03\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "// 1. Kiểm tra mã trạng thái (Tạo thành công)",
+              "pm.test(`[${testCaseId}] Tạo danh mục thành công trả về mã ${expectedStatusCodes.join(\"/\")}`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "// 2. Kiểm tra thời gian phản hồi",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// 3. Kiểm tra dữ liệu và Lưu ID vào Environment",
+              "if (pm.response.code === 200 || pm.response.code === 201) {",
+              "    const jsonData = pm.response.json();",
+              "    ",
+              "    // Đảm bảo dữ liệu trả về nằm trong cục 'data' và có 'id'",
+              "    pm.test(`[${testCaseId}] Trả về thông tin danh mục có chứa ID`, () => {",
+              "        pm.expect(jsonData.data).to.have.property('id');",
+              "    });",
+              "",
+              "    // Lưu cái ID vừa tạo vào biến môi trường 'categoryId' để lát nữa dùng cho API Sửa/Xóa",
+              "    if (jsonData.data && jsonData.data.id) {",
+              "        pm.environment.set(\"categoryId\", jsonData.data.id);",
+              "        console.log(`[${testCaseId}] Đã lưu categoryId:`, jsonData.data.id);",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Máy in\",\n  \"description\": \"Postman test Máy in\",\n  \"status\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/categories",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "categories"
+          ]
+        },
+        "description": "TestCaseId: ADM03\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Admin tao category thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM04 - Ten category rong",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM04\"; ",
+              "const expectedStatusCodes = [400]; // bắt buộc phải là 400",
+              "",
+              "// Lấy ngưỡng thời gian từ môi trường, mặc định 3000ms",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "",
+              "// 1. Kiểm tra mã trạng thái (Quan trọng nhất: Phải chặn lại với mã 400)",
+              "pm.test(`[${testCaseId}] Bắt lỗi tên rỗng, từ chối tạo và trả về mã ${expectedStatusCodes[0]}`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "// 2. Đảm bảo server không bị crash (Không quăng lỗi 5xx)",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý lỗi tốt (Không có lỗi 5xx)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "// 3. Kiểm tra tốc độ phản hồi",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// 4. Đảm bảo Backend trả về câu thông báo lỗi bằng JSON",
+              "pm.test(`[${testCaseId}] Dữ liệu lỗi trả về phải là định dạng JSON`, () => {",
+              "    if (pm.response.text()) {",
+              "        pm.expect(contentType).to.include(\"application/json\");",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"\",\n  \"description\": \"Postman test category\",\n  \"status\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/categories",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "categories"
+          ]
+        },
+        "description": "TestCaseId: ADM04\nModule: Admin Product/Brand/Category\nType: Negative\nAuth: Admin token\nObjective: Ten category rong/trung tra loi"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM04_1 - Ten category trung",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM04_1\"; ",
+              "const expectedStatusCodes = [400]; ",
+              "",
+              "// Lấy ngưỡng thời gian từ môi trường, mặc định 3000ms",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "",
+              "// 1. Kiểm tra mã trạng thái (Quan trọng nhất: Phải chặn lại với mã 400)",
+              "pm.test(`[${testCaseId}] Bắt lỗi tên rỗng, từ chối tạo và trả về mã ${expectedStatusCodes[0]}`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "// 2. Đảm bảo server không bị crash (Không quăng lỗi 5xx)",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý lỗi tốt (Không có lỗi 5xx)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "// 3. Kiểm tra tốc độ phản hồi",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// 4. Đảm bảo Backend trả về câu thông báo lỗi bằng JSON",
+              "pm.test(`[${testCaseId}] Dữ liệu lỗi trả về phải là định dạng JSON`, () => {",
+              "    if (pm.response.text()) {",
+              "        pm.expect(contentType).to.include(\"application/json\");",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Máy in\",\n  \"description\": \"Postman test category\",\n  \"status\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/categories",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "categories"
+          ]
+        },
+        "description": "TestCaseId: ADM04\nModule: Admin Product/Brand/Category\nType: Negative\nAuth: Admin token\nObjective: Ten category rong/trung tra loi"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM04_2 - Tạo danh mục - name quá dài",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM04_2\"; ",
+              "const expectedStatusCodes = [400];",
+              "",
+              "// Lấy ngưỡng thời gian từ môi trường, mặc định 3000ms",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "",
+              "// 1. Kiểm tra mã trạng thái",
+              "pm.test(`[${testCaseId}] Bắt lỗi tên quá dài, từ chối tạo và trả về mã ${expectedStatusCodes[0]}`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "// 2. Đảm bảo server không sập (Có bắt lỗi chứ không quăng 500)",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý lỗi tốt (Không có lỗi 5xx)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "// 3. Kiểm tra tốc độ phản hồi",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// 4. Đảm bảo Backend trả về JSON",
+              "pm.test(`[${testCaseId}] Dữ liệu lỗi trả về phải là định dạng JSON`, () => {",
+              "    if (pm.response.text()) {",
+              "        pm.expect(contentType).to.include(\"application/json\");",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\n  \"description\": \"Postman test category\",\n  \"status\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/categories",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "categories"
+          ]
+        },
+        "description": "TestCaseId: ADM04\nModule: Admin Product/Brand/Category\nType: Negative\nAuth: Admin token\nObjective: Ten category rong/trung tra loi"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM04_3 - Tạo danh mục - Thiếu trường name",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM04_3\"; ",
+              "const expectedStatusCodes = [400]; ",
+              "",
+              "// Lấy ngưỡng thời gian từ môi trường, mặc định 3000ms",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "",
+              "// 1. Kiểm tra mã trạng thái",
+              "pm.test(`[${testCaseId}] Bắt lỗi thiếu trường name, từ chối tạo và trả về mã ${expectedStatusCodes[0]}`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "// 2. Đảm bảo server không sập",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý lỗi tốt (Không có lỗi 5xx)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "// 3. Kiểm tra tốc độ phản hồi",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// 4. Đảm bảo Backend trả về JSON",
+              "pm.test(`[${testCaseId}] Dữ liệu lỗi trả về phải là định dạng JSON`, () => {",
+              "    if (pm.response.text()) {",
+              "        pm.expect(contentType).to.include(\"application/json\");",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"description\": \"Postman test category\",\n  \"status\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/categories",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "categories"
+          ]
+        },
+        "description": "TestCaseId: ADM04\nModule: Admin Product/Brand/Category\nType: Negative\nAuth: Admin token\nObjective: Ten category rong/trung tra loi"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM04_4 - Tạo danh mục - ParentId không tồn tại",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM04_4\"; ",
+              "// Cho phép cả 400 (Bad Request) hoặc 404 (Not Found)",
+              "const expectedStatusCodes = [400, 404]; ",
+              "",
+              "// Lấy ngưỡng thời gian từ môi trường, mặc định 3000ms",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "",
+              "// 1. Kiểm tra mã trạng thái",
+              "pm.test(`[${testCaseId}] Bắt lỗi parentId ảo, từ chối tạo và trả về mã hợp lệ`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "// 2. Đảm bảo server không sập do lỗi Foreign Key Database",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý lỗi tốt (Không có lỗi 5xx)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "// 3. Kiểm tra tốc độ phản hồi",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// 4. Đảm bảo Backend trả về JSON",
+              "pm.test(`[${testCaseId}] Dữ liệu lỗi trả về phải là định dạng JSON`, () => {",
+              "    if (pm.response.text()) {",
+              "        pm.expect(contentType).to.include(\"application/json\");",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Máy in Canon\",\n  \"description\": \"Test gắn parentId ảo không tồn tại trong hệ thống\",\n  \"status\": true,\n  \"parentId\": 999999999\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/categories",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "categories"
+          ]
+        },
+        "description": "TestCaseId: ADM04\nModule: Admin Product/Brand/Category\nType: Negative\nAuth: Admin token\nObjective: Ten category rong/trung tra loi"
+      },
+      "response": []
+    }
+  ],
   "event": [
     {
       "listen": "prerequest",
