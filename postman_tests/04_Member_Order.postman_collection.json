@@ -1,1428 +1,832 @@
 {
   "info": {
-    "_postman_id": "b958785a-fb98-4a7f-b886-3944f205fa3d",
-    "name": "04_Member_Order",
-    "description": "Generated from phonehub_postman_test_cases.xlsx. One request equals one testcase; request name starts with stable testcase ID for CI/Jira deduplication.",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "_postman_id": "f0a67ab7-5c9c-41a6-91ed-53a8381d7d66",
+    "name": "📦 [Member 4] Order & Public Tracking - 1",
+    "description": "Quản lý đơn hàng phía khách hàng và tra cứu đơn hàng công khai (14 endpoints)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "55361097",
+    "_collection_link": "https://go.postman.co/collection/55361097-f0a67ab7-5c9c-41a6-91ed-53a8381d7d66?source=collection_link"
   },
   "item": [
     {
-      "name": "ORD01 - Tao don hang hop le, luu orderId, orderCode",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          },
-          {
-            "key": "Authorization",
-            "value": "Bearer {{accessToken}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/orders",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "orders"
-          ]
-        },
-        "description": "TestCaseId: ORD01\nModule: Order/Public Tracking\nType: Positive\nAuth: User token\nObjective: Tao don hang hop le, luu orderId, orderCode",
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"recipientName\": \"Test Receiver\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"shippingAddress\": \"1 Test Street, HCM\",\n  \"shippingFee\": 30000,\n  \"shippingUnit\": \"GHN\",\n  \"note\": \"Postman test order\",\n  \"paymentMethod\": \"COD\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 1,\n      \"price\": 12990000\n    }\n  ]\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "auth": {
-          "type": "bearer",
-          "bearer": [
+      "name": "Order",
+      "item": [
+        {
+          "name": "Tạo đơn hàng mới",
+          "event": [
             {
-              "key": "token",
-              "value": "{{accessToken}}",
-              "type": "string"
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status should be 201\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(201);",
+                  "});",
+                  "",
+                  "let body;",
+                  "try {",
+                  "    body = pm.response.json();",
+                  "} catch (e) {",
+                  "    console.error(\"Response is not valid JSON or is empty:\", pm.response.text());",
+                  "}",
+                  "",
+                  "if (body) {",
+                  "    pm.test(\"Success should be true\", function() {",
+                  "        pm.expect(body.success).to.equal(true);",
+                  "    });",
+                  "",
+                  "    pm.test(\"Order ID exists\", function() {",
+                  "        pm.expect(body.data.orderId).to.not.equal(null);",
+                  "    });",
+                  "",
+                  "    pm.environment.set(\"orderId\", body.data.orderId);",
+                  "    pm.environment.set(\"orderCode\", body.data.orderCode);",
+                  "",
+                  "    console.log(\"Saved orderId:\", body.data.orderId);",
+                  "    console.log(\"Saved orderCode:\", body.data.orderCode);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
             }
-          ]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const testCaseId = \"ORD01\";",
-              "const expectedStatusCodes = [200, 201];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let responseData = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
-              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
-              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
-          }
-        }
-      ],
-      "response": []
-    },
-    {
-      "name": "ORD02 - Cart/items rong tra 400",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          },
-          {
-            "key": "Authorization",
-            "value": "Bearer {{accessToken}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/orders",
-          "host": [
-            "{{baseUrl}}"
           ],
-          "path": [
-            "api",
-            "v1",
-            "orders"
-          ]
-        },
-        "description": "TestCaseId: ORD02\nModule: Order/Public Tracking\nType: Negative\nAuth: User token\nObjective: Cart/items rong tra 400",
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"recipientName\": \"\",\n  \"phoneNumber\": \"bad-phone\",\n  \"shippingAddress\": \"\",\n  \"shippingFee\": 30000,\n  \"shippingUnit\": \"GHN\",\n  \"note\": \"Postman test order\",\n  \"paymentMethod\": \"COD\",\n  \"items\": []\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{accessToken}}",
-              "type": "string"
-            }
-          ]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const testCaseId = \"ORD02\";",
-              "const expectedStatusCodes = [400];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let responseData = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
-              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
-              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
-          }
-        }
-      ],
-      "response": []
-    },
-    {
-      "name": "ORD03 - Product het hang/vuot stock tra loi",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          },
-          {
-            "key": "Authorization",
-            "value": "Bearer {{accessToken}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/orders",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "orders"
-          ]
-        },
-        "description": "TestCaseId: ORD03\nModule: Order/Public Tracking\nType: Negative\nAuth: User token\nObjective: Product het hang/vuot stock tra loi",
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"recipientName\": \"Test Receiver\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"shippingAddress\": \"1 Test Street, HCM\",\n  \"shippingFee\": 30000,\n  \"shippingUnit\": \"GHN\",\n  \"note\": \"Postman test order\",\n  \"paymentMethod\": \"COD\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 1,\n      \"price\": 12990000\n    }\n  ]\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{accessToken}}",
-              "type": "string"
-            }
-          ]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const testCaseId = \"ORD03\";",
-              "const expectedStatusCodes = [400, 401, 403, 404, 409];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let responseData = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
-              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
-              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
-          }
-        }
-      ],
-      "response": []
-    },
-    {
-      "name": "ORD04 - User chu don xem chi tiet thanh cong",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{accessToken}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/orders/{{orderId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "orders",
-            "{{orderId}}"
-          ]
-        },
-        "description": "TestCaseId: ORD04\nModule: Order/Public Tracking\nType: Positive\nAuth: User token\nObjective: User chu don xem chi tiet thanh cong",
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{accessToken}}",
-              "type": "string"
-            }
-          ]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const testCaseId = \"ORD04\";",
-              "const expectedStatusCodes = [200, 201];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let responseData = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
-              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
-              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
-          }
-        }
-      ],
-      "response": []
-    },
-    {
-      "name": "ORD05 - User khac khong duoc xem don, tra 403/404",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{accessToken}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/orders/{{orderId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "orders",
-            "{{orderId}}"
-          ]
-        },
-        "description": "TestCaseId: ORD05\nModule: Order/Public Tracking\nType: Auth negative\nAuth: User token\nObjective: User khac khong duoc xem don, tra 403/404",
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{accessToken}}",
-              "type": "string"
-            }
-          ]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const testCaseId = \"ORD05\";",
-              "const expectedStatusCodes = [403, 404];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let responseData = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
-              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
-              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
-          }
-        }
-      ],
-      "response": []
-    },
-    {
-      "name": "ORD06 - Lay danh sach don cua user",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{accessToken}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/orders/my-orders",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "orders",
-            "my-orders"
-          ]
-        },
-        "description": "TestCaseId: ORD06\nModule: Order/Public Tracking\nType: Positive\nAuth: User token\nObjective: Lay danh sach don cua user",
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{accessToken}}",
-              "type": "string"
-            }
-          ]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const testCaseId = \"ORD06\";",
-              "const expectedStatusCodes = [200, 201];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let responseData = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
-              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
-              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
-          }
-        }
-      ],
-      "response": []
-    },
-    {
-      "name": "ORD07 - Pagination dung page, size, totalElements",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{accessToken}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/orders/my-orders/paginated",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "orders",
-            "my-orders",
-            "paginated"
-          ]
-        },
-        "description": "TestCaseId: ORD07\nModule: Order/Public Tracking\nType: Positive\nAuth: User token\nObjective: Pagination dung page, size, totalElements",
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{accessToken}}",
-              "type": "string"
-            }
-          ]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const testCaseId = \"ORD07\";",
-              "const expectedStatusCodes = [200, 201];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let responseData = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
-              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
-              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
-          }
-        }
-      ],
-      "response": []
-    },
-    {
-      "name": "ORD08 - Filter theo status hop le",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{accessToken}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/orders/my-orders/by-status",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "orders",
-            "my-orders",
-            "by-status"
-          ]
-        },
-        "description": "TestCaseId: ORD08\nModule: Order/Public Tracking\nType: Positive\nAuth: User token\nObjective: Filter theo status hop le",
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{accessToken}}",
-              "type": "string"
-            }
-          ]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const testCaseId = \"ORD08\";",
-              "const expectedStatusCodes = [200, 201];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let responseData = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
-              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
-              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
-          }
-        }
-      ],
-      "response": []
-    },
-    {
-      "name": "ORD09 - Count don theo trang thai",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{accessToken}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/orders/my-orders/count",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "orders",
-            "my-orders",
-            "count"
-          ]
-        },
-        "description": "TestCaseId: ORD09\nModule: Order/Public Tracking\nType: Positive\nAuth: User token\nObjective: Count don theo trang thai",
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{accessToken}}",
-              "type": "string"
-            }
-          ]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const testCaseId = \"ORD09\";",
-              "const expectedStatusCodes = [200, 201];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let responseData = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
-              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
-              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
-          }
-        }
-      ],
-      "response": []
-    },
-    {
-      "name": "ORD10 - Kiem tra kha nang huy don",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{accessToken}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/orders/{{orderId}}/can-cancel",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "orders",
-            "{{orderId}}",
-            "can-cancel"
-          ]
-        },
-        "description": "TestCaseId: ORD10\nModule: Order/Public Tracking\nType: Positive\nAuth: User token\nObjective: Kiem tra kha nang huy don",
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{accessToken}}",
-              "type": "string"
-            }
-          ]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const testCaseId = \"ORD10\";",
-              "const expectedStatusCodes = [200, 201];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let responseData = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
-              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
-              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
-          }
-        }
-      ],
-      "response": []
-    },
-    {
-      "name": "ORD11 - Huy don o trang thai cho phep thanh cong",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          },
-          {
-            "key": "Authorization",
-            "value": "Bearer {{accessToken}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/orders/{{orderId}}/cancel",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "orders",
-            "{{orderId}}",
-            "cancel"
-          ]
-        },
-        "description": "TestCaseId: ORD11\nModule: Order/Public Tracking\nType: Positive\nAuth: User token\nObjective: Huy don o trang thai cho phep thanh cong",
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"recipientName\": \"Test Receiver\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"shippingAddress\": \"1 Test Street, HCM\",\n  \"shippingFee\": 30000,\n  \"shippingUnit\": \"GHN\",\n  \"note\": \"Postman test order\",\n  \"paymentMethod\": \"COD\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 1,\n      \"price\": 12990000\n    }\n  ]\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{accessToken}}",
-              "type": "string"
-            }
-          ]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const testCaseId = \"ORD11\";",
-              "const expectedStatusCodes = [200, 201];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let responseData = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
-              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
-              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
-          }
-        }
-      ],
-      "response": []
-    },
-    {
-      "name": "ORD12 - Huy don da giao/da huy tra loi",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          },
-          {
-            "key": "Authorization",
-            "value": "Bearer {{accessToken}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/orders/{{orderId}}/cancel",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "orders",
-            "{{orderId}}",
-            "cancel"
-          ]
-        },
-        "description": "TestCaseId: ORD12\nModule: Order/Public Tracking\nType: Negative\nAuth: User token\nObjective: Huy don da giao/da huy tra loi",
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"recipientName\": \"Test Receiver\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"shippingAddress\": \"1 Test Street, HCM\",\n  \"shippingFee\": 30000,\n  \"shippingUnit\": \"GHN\",\n  \"note\": \"Postman test order\",\n  \"paymentMethod\": \"COD\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 1,\n      \"price\": 12990000\n    }\n  ]\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{accessToken}}",
-              "type": "string"
-            }
-          ]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const testCaseId = \"ORD12\";",
-              "const expectedStatusCodes = [400, 401, 403, 404, 409];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let responseData = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
-              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
-              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
-          }
-        }
-      ],
-      "response": []
-    },
-    {
-      "name": "ORD13 - Tra status va lich su trang thai",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{accessToken}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/orders/{{orderId}}/status-info",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "orders",
-            "{{orderId}}",
-            "status-info"
-          ]
-        },
-        "description": "TestCaseId: ORD13\nModule: Order/Public Tracking\nType: Positive\nAuth: User token\nObjective: Tra status va lich su trang thai",
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{accessToken}}",
-              "type": "string"
-            }
-          ]
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const testCaseId = \"ORD13\";",
-              "const expectedStatusCodes = [200, 201];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let responseData = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
-              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
-              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
-          }
-        }
-      ],
-      "response": []
-    },
-    {
-      "name": "PUBORD01 - Track bang orderCode + thong tin xac thuc hop le",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/public/orders/track",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "public",
-            "orders",
-            "track"
-          ]
-        },
-        "description": "TestCaseId: PUBORD01\nModule: Order/Public Tracking\nType: Positive\nAuth: Public\nObjective: Track bang orderCode + thong tin xac thuc hop le",
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"orderCode\": \"{{orderCode}}\",\n  \"email\": \"{{userEmail}}\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "auth": {
-          "type": "noauth"
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const testCaseId = \"PUBORD01\";",
-              "const expectedStatusCodes = [200, 201];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let responseData = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
-              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
-              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
-          }
-        }
-      ],
-      "response": []
-    },
-    {
-      "name": "PUBORD02 - Quick track orderCode hop le",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/public/orders/quick-track/{{orderId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "public",
-            "orders",
-            "quick-track",
-            "{{orderId}}"
-          ]
-        },
-        "description": "TestCaseId: PUBORD02\nModule: Order/Public Tracking\nType: Positive\nAuth: Public\nObjective: Quick track orderCode hop le",
-        "auth": {
-          "type": "noauth"
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const testCaseId = \"PUBORD02\";",
-              "const expectedStatusCodes = [200, 201];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let responseData = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
-              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
-              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
-          }
-        }
-      ],
-      "response": []
-    },
-    {
-      "name": "PUBORD03 - Validate access hop le",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/public/orders/validate-access",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "public",
-            "orders",
-            "validate-access"
-          ]
-        },
-        "description": "TestCaseId: PUBORD03\nModule: Order/Public Tracking\nType: Positive\nAuth: Public\nObjective: Validate access hop le",
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"orderCode\": \"{{orderCode}}\",\n  \"email\": \"{{userEmail}}\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "auth": {
-          "type": "noauth"
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const testCaseId = \"PUBORD03\";",
-              "const expectedStatusCodes = [200, 201];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let responseData = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
-              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
-              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
-          }
-        }
-      ],
-      "response": []
-    },
-    {
-      "name": "PUBORD04 - Tra guide tracking",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/public/orders/tracking-guide",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "public",
-            "orders",
-            "tracking-guide"
-          ]
-        },
-        "description": "TestCaseId: PUBORD04\nModule: Order/Public Tracking\nType: Positive\nAuth: Public\nObjective: Tra guide tracking",
-        "auth": {
-          "type": "noauth"
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const testCaseId = \"PUBORD04\";",
-              "const expectedStatusCodes = [200, 201];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let responseData = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
-              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
-              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
-          }
-        }
-      ],
-      "response": []
-    },
-    {
-      "name": "PUBORD05 - OrderCode sai tra 404",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/admin/products?page=0&size=10",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "admin",
-            "products"
-          ],
-          "query": [
-            {
-              "key": "page",
-              "value": "0"
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "undefined",
+                  "type": "any"
+                }
+              ]
             },
-            {
-              "key": "size",
-              "value": "10"
-            }
-          ]
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@gmail.com\",\n  \"recipientName\": \"Nguyen Van A\",\n  \"phoneNumber\": \"0909123456\",\n  \"shippingAddress\": \"TP HCM\",\n  \"shippingFee\": 30000,\n  \"shippingUnit\": \"GHN\",\n  \"note\": \"Giao buổi sáng\",\n  \"paymentMethod\": \"COD\",\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 1\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders"
+              ]
+            },
+            "description": "Tạo đơn hàng với danh sách sản phẩm. Hỗ trợ COD, VNPay, Bank Transfer."
+          },
+          "response": []
         },
-        "description": "TestCaseId: PUBORD05\nModule: Order/Public Tracking\nType: Negative\nAuth: Public\nObjective: OrderCode sai tra 404",
-        "auth": {
-          "type": "noauth"
-        }
-      },
-      "event": [
         {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const testCaseId = \"PUBORD05\";",
-              "const expectedStatusCodes = [404];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let responseData = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
-              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
-              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
-          }
+          "name": "Hủy đơn hàng",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Cancel success\", function () {",
+                  "    pm.expect(pm.response.code).to.equal(200, \"Expected 200 before parsing body\");",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.success).to.equal(true);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "undefined",
+                  "type": "any"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/{{orderId}}/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "{{orderId}}",
+                "cancel"
+              ]
+            },
+            "description": "Khách hàng tự hủy đơn hàng của mình.  Chỉ có thể hủy đơn hàng ở trạng thái 'Chờ xác nhận'."
+          },
+          "response": []
+        },
+        {
+          "name": "Lấy thông tin đơn hàng",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Order info exists\", function() {",
+                  "    pm.expect(body.data).to.not.equal(null);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "{{orderId}}"
+              ]
+            },
+            "description": "User chỉ có thể xem đơn hàng của chính mình"
+          },
+          "response": []
+        },
+        {
+          "name": "Lấy thông tin trạng thái đơn hàng",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Status exists\", function() {",
+                  "    pm.expect(body.data.status).to.not.equal(null);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "undefined",
+                  "type": "any"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/{{orderId}}/status-info",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "{{orderId}}",
+                "status-info"
+              ]
+            },
+            "description": "Lấy thông tin chi tiết về trạng thái hiện tại và các hành động khả thi"
+          },
+          "response": []
+        },
+        {
+          "name": "Kiểm tra có thể hủy đơn hàng",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Can cancel field exists\", function() {",
+                  "    pm.expect(body.data.canCancel).to.not.equal(null);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "undefined",
+                  "type": "any"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/{{orderId}}/can-cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "{{orderId}}",
+                "can-cancel"
+              ]
+            },
+            "description": "Kiểm tra xem đơn hàng có thể bị hủy bởi khách hàng hay không"
+          },
+          "response": []
+        },
+        {
+          "name": "Xem lịch sử đơn hàng của tôi",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"History list exists\", function() {",
+                  "    pm.expect(body.data).to.not.equal(null);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/my-orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "my-orders"
+              ]
+            },
+            "description": "Lấy danh sách tất cả đơn hàng của khách hàng hiện tại, sắp xếp theo ngày tạo mới nhất"
+          },
+          "response": []
+        },
+        {
+          "name": "Xem lịch sử đơn hàng (có phân trang)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"History list exists\", function() {",
+                  "    pm.expect(body.data).to.not.equal(null);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "undefined",
+                  "type": "any"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/my-orders/paginated?page=0&size=10&sortBy=createdAt&sortDir=desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "my-orders",
+                "paginated"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "Số trang (bắt đầu từ 0)"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "Số lượng đơn hàng mỗi trang"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt",
+                  "description": "Trường sắp xếp"
+                },
+                {
+                  "key": "sortDir",
+                  "value": "desc",
+                  "description": "Hướng sắp xếp (asc/desc)"
+                }
+              ]
+            },
+            "description": "Lấy danh sách đơn hàng của khách hàng với phân trang và sắp xếp"
+          },
+          "response": []
+        },
+        {
+          "name": "Đếm số đơn hàng của tôi",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Pagination data exists\", function() {",
+                  "    pm.expect(body.data).to.not.equal(null);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/my-orders/count",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "my-orders",
+                "count"
+              ]
+            },
+            "description": "Lấy tổng số đơn hàng của khách hàng hiện tại"
+          },
+          "response": []
+        },
+        {
+          "name": "Lọc đơn hàng theo trạng thái",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Filtered data exists\", function() {",
+                  "    pm.expect(body.data).to.not.equal(null);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "undefined",
+                  "type": "any"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/my-orders/by-status?status=PENDING",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "my-orders",
+                "by-status"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "PENDING"
+                }
+              ]
+            },
+            "description": "Lấy danh sách đơn hàng của khách hàng theo trạng thái cụ thể"
+          },
+          "response": []
         }
-      ],
-      "response": []
-    }
-  ],
-  "event": [
+      ]
+    },
     {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          "const suffix = pm.environment.get(\"uniqueSuffix\") || Date.now().toString();",
-          "pm.environment.set(\"uniqueSuffix\", suffix);",
-          "pm.environment.set(\"todayIso\", new Date().toISOString().slice(0, 19));",
-          "pm.environment.set(\"futureIso\", new Date(Date.now() + 86400000 * 30).toISOString().slice(0, 19));",
-          "pm.environment.set(\"yesterdayIso\", new Date(Date.now() - 86400000).toISOString().slice(0, 19));",
-          "if (!pm.environment.get(\"currentEmail\")) pm.environment.set(\"currentEmail\", `user_${suffix}@test.com`);",
-          "if (!pm.environment.get(\"currentUsername\")) pm.environment.set(\"currentUsername\", `user_${suffix}`);",
-          "if (!pm.environment.get(\"userEmail\")) pm.environment.set(\"userEmail\", pm.environment.get(\"currentEmail\"));",
-          "if (!pm.environment.get(\"userPassword\")) pm.environment.set(\"userPassword\", \"Password@123\");",
-          "if (!pm.environment.get(\"adminPassword\")) pm.environment.set(\"adminPassword\", \"Password@123\");",
-          "if (!pm.environment.get(\"resetPassword\")) pm.environment.set(\"resetPassword\", \"Password@1234\");"
-        ]
-      }
+      "name": "Public Order Tracking",
+      "item": [
+        {
+          "name": "Kiểm tra quyền truy cập đơn hàng",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Permission checked\", function() {",
+                  "    pm.expect(body.success).to.equal(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "default"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderCode\": \"ORD_260528162336\",\n  \"email\": \"test@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/orders/validate-access",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "orders",
+                "validate-access"
+              ]
+            },
+            "description": "Kiểm tra mã đơn và email có khớp không trước khi tra cứu chi tiết"
+          },
+          "response": []
+        },
+        {
+          "name": "Tra cứu đơn hàng công khai",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Tracking data exists\", function() {",
+                  "    pm.expect(body.data).to.not.equal(null);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "default"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderCode\": \"ORD_260529152059\",\n  \"email\": \"nguoidung123@gmail.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/orders/track",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "orders",
+                "track"
+              ]
+            },
+            "description": "Tra cứu trạng thái đơn hàng bằng mã đơn và email khách hàng.  Không cần đăng nhập."
+          },
+          "response": []
+        },
+        {
+          "name": "Hướng dẫn tra cứu đơn hàng",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/orders/tracking-guide",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "orders",
+                "tracking-guide"
+              ]
+            },
+            "description": "Lấy thông tin hướng dẫn cách tra cứu đơn hàng và các câu hỏi thường gặp"
+          },
+          "response": []
+        },
+        {
+          "name": "Thống kê tra cứu đơn hàng",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Statistics exists\", function() {",
+                  "    pm.expect(body.data).to.not.equal(null);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/orders/statistics",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "orders",
+                "statistics"
+              ]
+            },
+            "description": "Lấy thống kê về tình hình đơn hàng (dành cho admin hoặc hiển thị công khai)"
+          },
+          "response": []
+        },
+        {
+          "name": "Tra cứu nhanh bằng mã đơn",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status should be 200\", function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"Quick tracking exists\", function() {",
+                  "    pm.expect(body.data).to.not.equal(null);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/orders/quick-track/{{orderCode}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "orders",
+                "quick-track",
+                "{{orderCode}}"
+              ]
+            },
+            "description": "Tra cứu trạng thái cơ bản chỉ bằng mã đơn hàng (thông tin hạn chế để bảo mật)"
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "variable": [
@@ -1431,8 +835,8 @@
       "value": "{{baseUrl}}"
     },
     {
-      "key": "responseTimeThresholdMs",
-      "value": "3000"
+      "key": "accessToken",
+      "value": ""
     }
   ]
 }
