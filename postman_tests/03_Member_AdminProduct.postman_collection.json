@@ -338,19 +338,27 @@
               "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
               "});",
               "",
-              "// 3. Kiểm tra dữ liệu và Lưu ID vào Environment",
+              "// 3. Kiểm tra dữ liệu và mớm ID tự động cho CI/CD",
               "if (pm.response.code === 200 || pm.response.code === 201) {",
               "    const jsonData = pm.response.json();",
               "    ",
               "    // Đảm bảo dữ liệu trả về nằm trong cục 'data' và có 'id'",
               "    pm.test(`[${testCaseId}] Trả về thông tin danh mục có chứa ID`, () => {",
+              "        pm.expect(jsonData).to.have.property('data');",
               "        pm.expect(jsonData.data).to.have.property('id');",
               "    });",
               "",
-              "    // Lưu cái ID vừa tạo vào biến môi trường 'categoryId' để lát nữa dùng cho API Sửa/Xóa",
+              "    // BẮT BUỘC LƯU VÀO currentResourceId ĐỂ BOT CI/CD CHẠY ĐƯỢC CÁC BƯỚC PUT/DELETE",
               "    if (jsonData.data && jsonData.data.id) {",
-              "        pm.environment.set(\"categoryId\", jsonData.data.id);",
-              "        console.log(`[${testCaseId}] Đã lưu categoryId:`, jsonData.data.id);",
+              "        const newId = jsonData.data.id;",
+              "        ",
+              "        // Lưu biến xài chung cho CRUD",
+              "        pm.environment.set(\"currentResourceId\", newId);",
+              "        ",
+              "        // Lưu thêm biến dự phòng nếu API khác cần",
+              "        pm.environment.set(\"categoryId\", newId); ",
+              "        ",
+              "        console.log(`[${testCaseId}] CI/CD Ready! Đã lưu currentResourceId = ${newId}`);",
               "    }",
               "}"
             ],
@@ -1029,7 +1037,7 @@
           }
         },
         "url": {
-          "raw": "{{baseUrl}}/api/v1/admin/categories/{{currentResourceId}}",
+          "raw": "{{baseUrl}}/api/v1/admin/categories/99",
           "host": [
             "{{baseUrl}}"
           ],
@@ -1038,7 +1046,7 @@
             "v1",
             "admin",
             "categories",
-            "{{currentResourceId}}"
+            "99"
           ]
         },
         "description": "TestCaseId: ADM05\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Cap nhat category thanh cong"
@@ -1120,7 +1128,7 @@
           }
         },
         "url": {
-          "raw": "{{baseUrl}}/api/v1/admin/categories/{{currentResourceId}}",
+          "raw": "{{baseUrl}}/api/v1/admin/categories/1",
           "host": [
             "{{baseUrl}}"
           ],
@@ -1129,7 +1137,7 @@
             "v1",
             "admin",
             "categories",
-            "{{currentResourceId}}"
+            "1"
           ]
         },
         "description": "TestCaseId: ADM05\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Cap nhat category thanh cong"
@@ -1293,7 +1301,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"name\": \"Màng hình\",\n  \"description\": \"Cố tình test lỗi Cyclic Dependency - Tự nhận chính mình làm cha\",\n  \"status\": true,\n  \"parentId\": 20\n}",
+          "raw": "{\n  \"name\": \"Màng hình\",\n  \"description\": \"Cố tình test lỗi Cyclic Dependency - Tự nhận chính mình làm cha\",\n  \"status\": true,\n  \"parentId\": 26\n}",
           "options": {
             "raw": {
               "language": "json"
