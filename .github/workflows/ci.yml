@@ -20,11 +20,11 @@ concurrency:
 env:
   BASE_URL: http://localhost:8081
   POSTGRES_USER: phonehub
-  POSTGRES_PASSWORD: phonehub_password
-  POSTGRES_DB: phonehub_db
+  POSTGRES_PASSWORD: phonehub
+  POSTGRES_DB: phonehub
   DB_HOST: localhost
   DB_USERNAME: phonehub
-  DB_PASSWORD: phonehub_password
+  DB_PASSWORD: phonehub
   REDIS_HOST: localhost
   MAIL_HOST: smtp.example.com
   MAIL_PORT: "587"
@@ -238,10 +238,11 @@ jobs:
           MEMBER_NAME: ${{ matrix.member }}
           GH_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          node <<'NODE'
+          node --input-type=commonjs <<'NODE'
           const fs = require('fs');
           const path = require('path');
 
+          async function main() {
           const jiraBaseUrl = process.env.JIRA_BASE_URL.replace(/\/$/, '');
           const auth = Buffer.from(`${process.env.JIRA_EMAIL}:${process.env.JIRA_API_TOKEN}`).toString('base64');
           const collection = process.env.COLLECTION_NAME;
@@ -337,7 +338,7 @@ jobs:
             const testCaseLabel = sanitizeLabel(`tc-${testCaseId}`);
             const collectionLabel = sanitizeLabel(`collection-${collection}`);
             const jql = `project = ${process.env.JIRA_PROJECT_KEY} AND labels = "postman-ci" AND labels = "${testCaseLabel}" AND labels = "${collectionLabel}" AND statusCategory != Done`;
-            const searchUrl = `${jiraBaseUrl}/rest/api/3/search?jql=${encodeURIComponent(jql)}&maxResults=1&fields=key,summary`;
+            const searchUrl = `${jiraBaseUrl}/rest/api/3/search/jql?jql=${encodeURIComponent(jql)}&maxResults=1&fields=key,summary`;
             const existing = await jiraFetch(searchUrl);
 
             if ((existing.issues || []).length > 0) {
@@ -364,6 +365,12 @@ jobs:
             });
             console.log(`Created Jira issue ${created.key} for ${requestName}`);
           }
+          }
+
+          main().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
           NODE
 
       - name: Fail job if tests failed
