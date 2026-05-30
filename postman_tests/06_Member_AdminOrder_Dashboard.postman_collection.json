@@ -1,309 +1,42 @@
 {
   "info": {
-    "_postman_id": "c82db78a-eb23-4a53-8859-57ca2d8562fa",
+    "_postman_id": "9ae724b7-dc20-4557-9d4a-9005083d2ab4",
     "name": "06_Member_AdminOrder_Dashboard",
+    "description": "Generated from phonehub_postman_test_cases.xlsx. One request equals one testcase; request name starts with stable testcase ID for CI/Jira deduplication.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "55125280",
-    "_collection_link": "https://go.postman.co/collection/55125280-c82db78a-eb23-4a53-8859-57ca2d8562fa?source=collection_link"
+    "_exporter_id": "46988351",
+    "_collection_link": "https://go.postman.co/collection/46988351-9ae724b7-dc20-4557-9d4a-9005083d2ab4?source=collection_link"
   },
-  "item": [
-    {
-      "name": "01_Login_Admin",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "const json = pm.response.json();\r",
-              "// Kiểm tra cấu trúc trả về từ backend của bạn (thường là json.data.accessToken hoặc json.accessToken)\r",
-              "const token = json.accessToken || (json.data && json.data.accessToken);\r",
-              "\r",
-              "if (token) {\r",
-              "    pm.environment.set(\"adminAccessToken\", token);\r",
-              "    pm.environment.set(\"accessToken\", token); // Đề phòng nhóm dùng tên biến này\r",
-              "    console.log(\"Đã tự động cập nhật Admin Token mới!\");\r",
-              "}"
-            ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
-          }
-        }
-      ],
-      "request": {
-        "auth": {
-          "type": "noauth"
-        },
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n    \"usernameOrEmail\": \"admin\",\r\n    \"password\": \"Password@123\"\r\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "http://localhost:8081/api/v1/auth/login",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8081",
-          "path": [
-            "api",
-            "v1",
-            "auth",
-            "login"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "[AORD01] - Admin lay danh sach don, co filter/pagination",
-      "request": {
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VySWQiOjEzLCJpYXQiOjE3ODAwNjE1ODAsImV4cCI6MTc4MDE0Nzk4MH0.dyZXprBAlY7QKwpPuJ61onYgUfWjZ-NKnpwjDVr6Pxc",
-              "type": "string"
-            }
-          ]
-        },
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8081/api/v1/admin/orders",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8081",
-          "path": [
-            "api",
-            "v1",
-            "admin",
-            "orders"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "[AORD02] - Admin lay chi tiet don hang",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test(\"[AORD02] - Status code phải là 404 Not Found\", function () {\r",
-              "    pm.response.to.have.status(404);\r",
-              "});\r",
-              "\r",
-              "pm.test(\"[AORD02] - Trả về message lỗi không tìm thấy đơn hàng\", function () {\r",
-              "    var jsonData = pm.response.json();\r",
-              "    pm.expect(jsonData.message).to.be.a('string');\r",
-              "});"
-            ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
-          }
-        }
-      ],
-      "request": {
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VySWQiOjEzLCJpYXQiOjE3ODAwNjE1ODAsImV4cCI6MTc4MDE0Nzk4MH0.dyZXprBAlY7QKwpPuJ61onYgUfWjZ-NKnpwjDVr6Pxc",
-              "type": "string"
-            }
-          ]
-        },
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8081/api/v1/admin/orders/999999",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8081",
-          "path": [
-            "api",
-            "v1",
-            "admin",
-            "orders",
-            "999999"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "[AORD03] - Chuyen trang thai hop le thanh cong",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "// 1. Kiểm tra xem hệ thống có trả về mã 404 (Không tìm thấy đơn hàng) hay không\r",
-              "pm.test(\"[AORD03] - Status code phải là 404 Not Found\", function () {\r",
-              "    pm.response.to.have.status(404);\r",
-              "});\r",
-              "\r",
-              "// 2. Kiểm tra xem cấu trúc lỗi trả về có đúng là thất bại (false) không\r",
-              "pm.test(\"[AORD03] - Trường success phải là false\", function () {\r",
-              "    var jsonData = pm.response.json();\r",
-              "    pm.expect(jsonData.success).to.eql(false);\r",
-              "});"
-            ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
-          }
-        }
-      ],
-      "request": {
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VySWQiOjEzLCJpYXQiOjE3ODAwNjE1ODAsImV4cCI6MTc4MDE0Nzk4MH0.dyZXprBAlY7QKwpPuJ61onYgUfWjZ-NKnpwjDVr6Pxc",
-              "type": "string"
-            }
-          ]
-        },
-        "method": "PUT",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8081/api/v1/admin/orders/999999/status?newStatus=CONFIRMED",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8081",
-          "path": [
-            "api",
-            "v1",
-            "admin",
-            "orders",
-            "999999",
-            "status"
-          ],
-          "query": [
-            {
-              "key": "newStatus",
-              "value": "CONFIRMED"
-            }
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "[AORD04] - Chuyen trang thai khong hop le tra loi 400",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "// 1. Hệ thống hiện tại đang trả về 404 Not Found do check ID trước\r",
-              "pm.test(\"[AORD04] - Status code phải là 404 Not Found\", function () {\r",
-              "    pm.response.to.have.status(404);\r",
-              "});\r",
-              "\r",
-              "// 2. Kiểm tra xem kết quả thành công có phải là false không\r",
-              "pm.test(\"[AORD04] - Trường success phải là false\", function () {\r",
-              "    var jsonData = pm.response.json();\r",
-              "    pm.expect(jsonData.success).to.eql(false);\r",
-              "});"
-            ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
-          }
-        }
-      ],
-      "request": {
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VySWQiOjEzLCJpYXQiOjE3ODAwNjE1ODAsImV4cCI6MTc4MDE0Nzk4MH0.dyZXprBAlY7QKwpPuJ61onYgUfWjZ-NKnpwjDVr6Pxc",
-              "type": "string"
-            }
-          ]
-        },
-        "method": "PUT",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8081/api/v1/admin/orders/999999/status?newStatus=CONFIRMED",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8081",
-          "path": [
-            "api",
-            "v1",
-            "admin",
-            "orders",
-            "999999",
-            "status"
-          ],
-          "query": [
-            {
-              "key": "newStatus",
-              "value": "CONFIRMED"
-            }
-          ]
-        }
-      },
-      "response": []
-    }
-  ],
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VySWQiOjEzLCJpYXQiOjE3ODAwNjMyNDYsImV4cCI6MTc4MDE0OTY0Nn0.fplgxLW8JqGFXmwIzVhNtnUAMC-t3UJdUEL2FmVsvks",
-        "type": "string"
-      }
-    ]
-  },
+  "item": [],
   "event": [
     {
       "listen": "prerequest",
       "script": {
         "type": "text/javascript",
-        "packages": {},
-        "requests": {},
         "exec": [
-          ""
+          "const suffix = pm.environment.get(\"uniqueSuffix\") || Date.now().toString();",
+          "pm.environment.set(\"uniqueSuffix\", suffix);",
+          "pm.environment.set(\"todayIso\", new Date().toISOString().slice(0, 19));",
+          "pm.environment.set(\"futureIso\", new Date(Date.now() + 86400000 * 30).toISOString().slice(0, 19));",
+          "pm.environment.set(\"yesterdayIso\", new Date(Date.now() - 86400000).toISOString().slice(0, 19));",
+          "if (!pm.environment.get(\"currentEmail\")) pm.environment.set(\"currentEmail\", `user_${suffix}@test.com`);",
+          "if (!pm.environment.get(\"currentUsername\")) pm.environment.set(\"currentUsername\", `user_${suffix}`);",
+          "if (!pm.environment.get(\"userEmail\")) pm.environment.set(\"userEmail\", pm.environment.get(\"currentEmail\"));",
+          "if (!pm.environment.get(\"userPassword\")) pm.environment.set(\"userPassword\", \"Password@123\");",
+          "if (!pm.environment.get(\"adminPassword\")) pm.environment.set(\"adminPassword\", \"Password@123\");",
+          "if (!pm.environment.get(\"resetPassword\")) pm.environment.set(\"resetPassword\", \"Password@1234\");"
         ]
       }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "{{baseUrl}}"
     },
     {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "packages": {},
-        "requests": {},
-        "exec": [
-          ""
-        ]
-      }
+      "key": "responseTimeThresholdMs",
+      "value": "3000"
     }
   ]
 }

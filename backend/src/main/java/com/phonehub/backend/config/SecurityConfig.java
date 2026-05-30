@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -180,8 +180,7 @@ public class SecurityConfig {
                                                                 .baseUri("/oauth2/authorization"))
                                                 .redirectionEndpoint(redirection -> redirection
                                                                 .baseUri("/login/oauth2/code/*")))
-                                // Trả về 401 Unauthorized cho API requests thay vì redirect đến OAuth2 login
-                                // Điều này giúp Swagger UI và các API clients xử lý lỗi đúng cách
+
                                 .exceptionHandling(exceptions -> exceptions
                                                 // Xử lý lỗi authentication (401) cho API
                                                 .defaultAuthenticationEntryPointFor(

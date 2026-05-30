@@ -1,359 +1,30 @@
 {
   "info": {
-    "_postman_id": "ed6d0bae-1c64-43ca-9cb1-2ea432b546be",
-    "name": "🛠️ [Member 3] Admin - Product, Brand, Category",
-    "description": "Quản lý sản phẩm, thương hiệu, danh mục từ phía Admin (16 endpoints)",
+    "_postman_id": "fdecd3f9-a74e-41e0-a365-77629b245762",
+    "name": "03_Member_AdminProduct",
+    "description": "Generated from phonehub_postman_test_cases.xlsx. One request equals one testcase; request name starts with stable testcase ID for CI/Jira deduplication.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "49201715",
-    "_collection_link": "https://go.postman.co/collection/49201715-ed6d0bae-1c64-43ca-9cb1-2ea432b546be?source=collection_link"
+    "_exporter_id": "46988351",
+    "_collection_link": "https://go.postman.co/collection/46988351-fdecd3f9-a74e-41e0-a365-77629b245762?source=collection_link"
   },
-  "item": [
-    {
-      "name": "Product Managenment",
-      "item": [
-        {
-          "name": "Đăng nhập Admin",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// Kiểm tra chắc chắn API gọi thành công (Status 200)\r",
-                  "pm.test(\"Đăng nhập thành công với mã 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "// Chuyển phản hồi của Backend thành đối tượng JSON\r",
-                  "var jsonData = pm.response.json();\r",
-                  "\r",
-                  "// Tìm đúng đường dẫn đến chỗ giấu Token và lưu lại\r",
-                  "if (jsonData && jsonData.data && jsonData.data.accessToken) {\r",
-                  "    var token = jsonData.data.accessToken;\r",
-                  "    \r",
-                  "    // Lưu Token vào biến môi trường tên là \"adminAccessToken\"\r",
-                  "    pm.environment.set(\"adminAccessToken\", token);\r",
-                  "    \r",
-                  "    // In ra console để tự tin là đã lưu thành công\r",
-                  "    console.log(\"Hệ thống đã tự động chộp được Token: \" + token);\r",
-                  "} else {\r",
-                  "    console.log(\"Lỗi: Không tìm thấy accessToken trong phản hồi!\");\r",
-                  "}"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "accept",
-                "value": "*/*"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"usernameOrEmail\": \"admin\",\r\n  \"password\": \"Password@123\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "login"
-              ]
-            },
-            "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:8081/api/v1/auth/login' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"usernameOrEmail\": \"user1\",\r\n  \"password\": \"User123456\"\r\n}'"
-          },
-          "response": []
-        },
-        {
-          "name": "Đăng nhập User",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// Kiểm tra chắc chắn API gọi thành công (Status 200)\r",
-                  "pm.test(\"Đăng nhập User thành công với mã 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "// Chuyển phản hồi của Backend thành đối tượng JSON\r",
-                  "var jsonData = pm.response.json();\r",
-                  "\r",
-                  "// Tìm đúng đường dẫn đến chỗ giấu Token và lưu lại\r",
-                  "if (jsonData && jsonData.data && jsonData.data.accessToken) {\r",
-                  "    var token = jsonData.data.accessToken;\r",
-                  "    \r",
-                  "    // Lưu vào biến \"accessToken\"\r",
-                  "    pm.environment.set(\"accessToken\", token);\r",
-                  "    \r",
-                  "    // In ra console để dễ debug trên CI\r",
-                  "    console.log(\"Hệ thống đã tự động chộp được Token của User thường: \" + token);\r",
-                  "} else {\r",
-                  "    console.log(\"Lỗi: Không tìm thấy accessToken trong phản hồi!\");\r",
-                  "}"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "accept",
-                "value": "*/*"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"usernameOrEmail\": \"user\",\r\n  \"password\": \"Password@123\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "login"
-              ]
-            },
-            "description": "Generated from cURL: curl -X 'POST' \\\r\n  'http://localhost:8081/api/v1/auth/login' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"usernameOrEmail\": \"user1\",\r\n  \"password\": \"User123456\"\r\n}'"
-          },
-          "response": []
-        },
-        {
-          "name": "[ADM01] Test không có Token",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Bị chặn ở ngoài cửa với mã 401\", function () {\r",
-                  "    pm.response.to.have.status(401);\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "1"
-                }
-              ]
-            },
-            "description": "Lấy thông tin chi tiết của một sản phẩm theo ID"
-          },
-          "response": []
-        },
-        {
-          "name": "[ADM02] Test Token User thường",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"User thường không đủ quyền, phải trả về 403\", function () {\r",
-                  "    pm.response.to.have.status(403);\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "products",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "1"
-                }
-              ]
-            },
-            "description": "Lấy thông tin chi tiết của một sản phẩm theo ID"
-          },
-          "response": []
-        }
-      ]
-    }
-  ],
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "{{accessToken}}",
-        "type": "string"
-      }
-    ]
-  },
+  "item": [],
   "event": [
     {
       "listen": "prerequest",
       "script": {
         "type": "text/javascript",
-        "requests": {},
         "exec": [
-          "const suffix = Date.now().toString();",
+          "const suffix = pm.environment.get(\"uniqueSuffix\") || Date.now().toString();",
           "pm.environment.set(\"uniqueSuffix\", suffix);",
-          "",
+          "pm.environment.set(\"todayIso\", new Date().toISOString().slice(0, 19));",
+          "pm.environment.set(\"futureIso\", new Date(Date.now() + 86400000 * 30).toISOString().slice(0, 19));",
+          "pm.environment.set(\"yesterdayIso\", new Date(Date.now() - 86400000).toISOString().slice(0, 19));",
+          "if (!pm.environment.get(\"currentEmail\")) pm.environment.set(\"currentEmail\", `user_${suffix}@test.com`);",
+          "if (!pm.environment.get(\"currentUsername\")) pm.environment.set(\"currentUsername\", `user_${suffix}`);",
+          "if (!pm.environment.get(\"userEmail\")) pm.environment.set(\"userEmail\", pm.environment.get(\"currentEmail\"));",
           "if (!pm.environment.get(\"userPassword\")) pm.environment.set(\"userPassword\", \"Password@123\");",
           "if (!pm.environment.get(\"adminPassword\")) pm.environment.set(\"adminPassword\", \"Password@123\");",
-          "",
-          "pm.environment.set(\"currentEmail\", `user_${suffix}@test.com`);",
-          "pm.environment.set(\"currentUsername\", `user_${suffix}`);",
-          "pm.environment.set(\"negativeProductId\", pm.environment.get(\"negativeProductId\") || \"999999999\");",
-          "pm.environment.set(\"negativeOrderId\", pm.environment.get(\"negativeOrderId\") || \"999999999\");"
-        ]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "requests": {},
-        "exec": [
-          "pm.test(\"No server error\", () => { pm.expect(pm.response.code).to.be.below(500); });",
-          "pm.test(\"Response time < 2000ms\", () => { pm.expect(pm.response.responseTime).to.be.below(2000); });",
-          "pm.test(\"Response is JSON when body exists\", () => {",
-          "  if (pm.response.text()) pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\");",
-          "});",
-          "",
-          "if (pm.response.text() && (pm.response.headers.get(\"Content-Type\") || \"\").includes(\"application/json\")) {",
-          "  const json = pm.response.json();",
-          "  const data = json.data || json;",
-          "  const url = pm.request.url.toString();",
-          "  const requestName = pm.info.requestName.toLowerCase();",
-          "",
-          "  if (data.accessToken) {",
-          "    if (requestName.includes(\"admin\")) pm.environment.set(\"adminAccessToken\", data.accessToken);",
-          "    else pm.environment.set(\"accessToken\", data.accessToken);",
-          "  }",
-          "  if (data.refreshToken) pm.environment.set(\"refreshToken\", data.refreshToken);",
-          "  if (data.user && data.user.id) pm.environment.set(\"userId\", data.user.id);",
-          "",
-          "  const id = data.id || data.productId || data.orderId || data.addressId || data.cartItemId || data.guestCartId;",
-          "  if (id) pm.environment.set(\"currentResourceId\", id);",
-          "",
-          "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-          "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-          "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-          "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-          "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-          "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-          "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-          "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-          "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-          "  if (data.orderCode) { pm.environment.set(\"createdOrderCode\", data.orderCode); pm.environment.set(\"orderCode\", data.orderCode); }",
-          "}"
+          "if (!pm.environment.get(\"resetPassword\")) pm.environment.set(\"resetPassword\", \"Password@1234\");"
         ]
       }
     }
@@ -364,20 +35,8 @@
       "value": "{{baseUrl}}"
     },
     {
-      "key": "expectedStatus",
-      "value": ""
-    },
-    {
-      "key": "currentResourceId",
-      "value": ""
-    },
-    {
-      "key": "currentEmail",
-      "value": ""
-    },
-    {
-      "key": "currentUsername",
-      "value": ""
+      "key": "responseTimeThresholdMs",
+      "value": "3000"
     }
   ] 
 }
