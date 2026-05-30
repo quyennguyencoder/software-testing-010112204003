@@ -129,17 +129,10 @@ jobs:
             npm install -g newman@6 newman-reporter-htmlextra@1
           fi
 
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
-          cache: maven
-
       - name: Prepare report directory
         run: mkdir -p postman_tests/reports
 
-      - name: Start Postgres and Redis
+      - name: Start services with Docker Compose
         working-directory: backend
         run: |
           cat > .env <<EOF
@@ -150,8 +143,28 @@ jobs:
           DB_USERNAME=${POSTGRES_USER}
           DB_PASSWORD=${POSTGRES_PASSWORD}
           REDIS_HOST=redis
+          MAIL_HOST=${MAIL_HOST}
+          MAIL_PORT=${MAIL_PORT}
+          MAIL_USERNAME=${MAIL_USERNAME}
+          MAIL_PASSWORD=${MAIL_PASSWORD}
+          GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+          GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+          JWT_SECRET=${JWT_SECRET}
+          JWT_EXPIRATION=${JWT_EXPIRATION}
+          JWT_REFRESH_EXPIRATION=${JWT_REFRESH_EXPIRATION}
+          VNPAY_URL=${VNPAY_URL}
+          VNPAY_TMN_CODE=${VNPAY_TMN_CODE}
+          VNPAY_HASH_SECRET=${VNPAY_HASH_SECRET}
+          VNPAY_RETURN_URL=${VNPAY_RETURN_URL}
+          FRONTEND_URL=${FRONTEND_URL}
+          GEMINI_API_KEY=${GEMINI_API_KEY}
+          GEMINI_API_URL=${GEMINI_API_URL}
+          GEMINI_MODEL=${GEMINI_MODEL}
+          GEMINI_EMBEDDING_MODEL=${GEMINI_EMBEDDING_MODEL}
+          API_PRODUCT_BASE_URL=${API_PRODUCT_BASE_URL}
           EOF
-          docker compose up -d postgres redis
+          docker compose build backend
+          docker compose up -d postgres redis backend
 
       - name: Wait for Postgres
         run: |
@@ -164,24 +177,6 @@ jobs:
           docker compose -f backend/docker-compose.yml logs postgres
           exit 1
 
-      - name: Seed database if SQL dump exists
-        run: |
-          if [ -f backend/database_full.sql ]; then
-            docker exec -i phonehub-postgres psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" < backend/database_full.sql
-          else
-            echo "backend/database_full.sql not found; continuing without seed data."
-          fi
-
-      - name: Build backend package
-        working-directory: backend
-        run: mvn clean package -B -DskipTests
-
-      - name: Start backend server
-        working-directory: backend
-        run: |
-          nohup java -jar target/*.jar > ../backend.log 2>&1 &
-          echo $! > ../backend.pid
-
       - name: Wait for backend health
         run: |
           for i in {1..60}; do
@@ -191,7 +186,7 @@ jobs:
             sleep 2
           done
           echo "Backend did not become healthy"
-          tail -n 200 backend.log || true
+          docker compose -f backend/docker-compose.yml logs backend || true
           exit 1
 
       - name: Run Newman - ${{ matrix.member }} / ${{ matrix.collection }}
@@ -221,7 +216,6 @@ jobs:
           name: report-${{ matrix.member }}
           path: |
             postman_tests/reports/${{ matrix.collection }}.*
-            backend.log
           if-no-files-found: ignore
 
       - name: Create Jira issues for new failed requests
@@ -381,7 +375,11 @@ jobs:
 
       - name: Show backend logs on failure
         if: failure()
-        run: tail -n 200 backend.log || true
+        run: docker compose -f backend/docker-compose.yml logs backend --tail 200 || true
+
+      - name: Cleanup Docker containers
+        if: always()
+        run: docker compose -f backend/docker-compose.yml down || true
 
   summary:
     name: Test summary
