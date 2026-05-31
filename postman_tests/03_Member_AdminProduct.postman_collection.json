@@ -417,6 +417,137 @@
       "response": []
     },
     {
+      "name": "[Setup] Tạo danh mục Cha để test Xóa",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200 || pm.response.code === 201) {",
+              "    pm.variables.set(\"tempParentId\", pm.response.json().data.id);",
+              "    ",
+              "    // In ra cửa sổ Console để kiểm tra",
+              "    console.log(\"Đã lưu biến tạm tempParentId =\", pm.variables.get(\"tempParentId\"));",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Danh mục Cha tạm thời\",\n  \"description\": \"Tạo ra chỉ để test xóa\",\n  \"status\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/categories",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "categories"
+          ]
+        },
+        "description": "TestCaseId: ADM03\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Admin tao category thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "[Setup] Tạo Danh Mục Con",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Danh mục Con tạm thời\",\n  \"description\": \"Tạo ra để trói buộc thằng cha\",\n  \"status\": true,\n  \"parentId\": {{tempParentId}}\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/categories",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "categories"
+          ]
+        },
+        "description": "TestCaseId: ADM03\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Admin tao category thanh cong"
+      },
+      "response": []
+    },
+    {
       "name": "ADM04 - Ten category rong",
       "event": [
         {
@@ -1548,7 +1679,7 @@
           }
         ],
         "url": {
-          "raw": "{{baseUrl}}/api/v1/admin/categories/31",
+          "raw": "{{baseUrl}}/api/v1/admin/categories/{{tempParentId}}",
           "host": [
             "{{baseUrl}}"
           ],
@@ -1557,7 +1688,7 @@
             "v1",
             "admin",
             "categories",
-            "31"
+            "{{tempParentId}}"
           ]
         },
         "description": "TestCaseId: ADM06\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Xoa category thanh cong"
