@@ -704,7 +704,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"name\": \"Máy in\",\n  \"description\": \"Postman test category\",\n  \"status\": true\n}",
+          "raw": "{\n  \"name\": \"Điện thoại\",\n  \"description\": \"Postman test category\",\n  \"status\": true\n}",
           "options": {
             "raw": {
               "language": "json"
