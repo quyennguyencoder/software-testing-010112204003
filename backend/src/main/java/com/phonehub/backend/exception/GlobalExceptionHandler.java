@@ -11,7 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -135,6 +135,18 @@ public class GlobalExceptionHandler {
         String errorMessage = ex.getMessage() != null ? ex.getMessage() : "Internal server error";
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.internalServerError(errorMessage));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse<?>> handleTypeMismatchException(
+            MethodArgumentTypeMismatchException ex, WebRequest request) {
+        log.error("Type mismatch error: {}", ex.getMessage());
+
+        String message = String.format("Định dạng dữ liệu không hợp lệ cho tham số '%s'. Vui lòng kiểm tra lại.", ex.getName());
+        
+        // Tận dụng luôn ApiResponse.badRequest của dự án để trả về mã 400
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.badRequest(message));
     }
 }
 

@@ -393,7 +393,138 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"name\": \"Máy in\",\n  \"description\": \"Postman test Máy in\",\n  \"status\": true\n}",
+          "raw": "{\n  \"name\": \"Máy hình\",\n  \"description\": \"Postman test Máy in\",\n  \"status\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/categories",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "categories"
+          ]
+        },
+        "description": "TestCaseId: ADM03\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Admin tao category thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "[Setup] Tạo danh mục Cha để test Xóa",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200 || pm.response.code === 201) {",
+              "    pm.variables.set(\"tempParentId\", pm.response.json().data.id);",
+              "    ",
+              "    // In ra cửa sổ Console để kiểm tra",
+              "    console.log(\"Đã lưu biến tạm tempParentId =\", pm.variables.get(\"tempParentId\"));",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Danh mục Cha tạm thời\",\n  \"description\": \"Tạo ra chỉ để test xóa\",\n  \"status\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/categories",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "categories"
+          ]
+        },
+        "description": "TestCaseId: ADM03\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Admin tao category thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "[Setup] Tạo Danh Mục Con",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Danh mục Con tạm thời\",\n  \"description\": \"Tạo ra để trói buộc thằng cha\",\n  \"status\": true,\n  \"parentId\": {{tempParentId}}\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -573,7 +704,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"name\": \"Máy in\",\n  \"description\": \"Postman test category\",\n  \"status\": true\n}",
+          "raw": "{\n  \"name\": \"Điện thoại\",\n  \"description\": \"Postman test category\",\n  \"status\": true\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -1322,6 +1453,405 @@
           ]
         },
         "description": "TestCaseId: ADM05\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Cap nhat category thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM06 - Xoa category thanh cong",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM06\";",
+              "const expectedStatusCodes = [200, 204]; // API Xóa thường trả về 200 (OK) hoặc 204 (No Content)",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "// 1. Kiểm tra mã trạng thái (Xóa thành công)",
+              "pm.test(`[${testCaseId}] Xóa danh mục thành công trả về mã ${expectedStatusCodes.join(\"/\")}`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "// 2. Kiểm tra lỗi Server",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý tốt, không bị sập (No 5xx errors)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "// 3. Kiểm tra thời gian phản hồi",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// 4. Nếu API có trả về thông báo (Message), đảm bảo nó là JSON",
+              "if (pm.response.text()) {",
+              "    pm.test(`[${testCaseId}] Dữ liệu trả về (nếu có) phải là chuẩn JSON`, () => {",
+              "        pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+              "    });",
+              "}",
+              "",
+              "// 5. [Bước dọn dẹp quan trọng cho CI/CD]",
+              "if (pm.response.code === 200 || pm.response.code === 204) {",
+              "    const deletedId = pm.environment.get(\"currentResourceId\");",
+              "    console.log(`[${testCaseId}] Đã xóa vĩnh viễn danh mục ID: ${deletedId}. CI/CD luồng Happy Path kết thúc đẹp!`);",
+              "    ",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/categories/{{currentResourceId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "categories",
+            "{{currentResourceId}}"
+          ]
+        },
+        "description": "TestCaseId: ADM06\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Xoa category thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM06_1 - Xóa danh mục không tồn tại",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM06_1\";",
+              "const expectedStatusCodes = [404]; ",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "// 1. Kiểm tra mã trạng thái",
+              "pm.test(`[${testCaseId}] Bắt lỗi xóa ID không tồn tại, trả về mã 404`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "// 2. Kiểm tra Server không bị sập (Nhấn mạnh vào lỗi cũ)",
+              "pm.test(`[${testCaseId}] Hệ thống rào lỗi tốt, Dev đã check null (Không bị sập 500)`, () => {",
+              "    pm.expect(pm.response.code).to.not.equal(500);",
+              "});",
+              "",
+              "// 3. Kiểm tra thời gian phản hồi",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// 4. Kiểm tra format dữ liệu lỗi trả về",
+              "if (pm.response.text()) {",
+              "    pm.test(`[${testCaseId}] Trả về câu thông báo lỗi chuẩn định dạng JSON`, () => {",
+              "        pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+              "        ",
+              "        const errorData = pm.response.json();",
+              "        console.log(`[${testCaseId}] Thông báo lỗi từ Backend:`, errorData.message || errorData.error);",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/categories/99",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "categories",
+            "99"
+          ]
+        },
+        "description": "TestCaseId: ADM06\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Xoa category thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM06_2 - Xóa danh mục đang làm cha",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM06_2\";",
+              "const expectedStatusCodes = [400, 409]; ",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "// 1. Kiểm tra mã trạng thái (Chặn thành công)",
+              "pm.test(`[${testCaseId}] Bắt lỗi xóa danh mục đang có con, trả về mã ${expectedStatusCodes.join(\" hoặc \")}`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "// 2. Chống sập Server (Bắt lỗi SQL ConstraintViolationException)",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý lỗi khóa ngoại tốt, không bị sập (No 500)`, () => {",
+              "    pm.expect(pm.response.code).to.not.equal(500);",
+              "});",
+              "",
+              "// 3. Kiểm tra thời gian phản hồi",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// 4. Kiểm tra format dữ liệu lỗi trả về",
+              "if (pm.response.text()) {",
+              "    pm.test(`[${testCaseId}] Trả về câu thông báo lỗi chuẩn định dạng JSON`, () => {",
+              "        pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+              "        ",
+              "        // In nhẹ câu thông báo ra Console để xem Dev giải thích lỗi cho người dùng thế nào",
+              "        const errorData = pm.response.json();",
+              "        console.log(`[${testCaseId}] Thông báo từ Backend:`, errorData.message || errorData.error);",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/categories/{{tempParentId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "categories",
+            "{{tempParentId}}"
+          ]
+        },
+        "description": "TestCaseId: ADM06\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Xoa category thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM06_3 - Xóa danh mục đang có sản phẩm",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM06_3\";",
+              "// Kỳ vọng Server chặn lệnh xóa và báo lỗi dữ liệu (400) hoặc xung đột (409)",
+              "const expectedStatusCodes = [400, 409]; ",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "// 1. Kiểm tra mã trạng thái (Chặn thành công)",
+              "pm.test(`[${testCaseId}] Bắt lỗi xóa danh mục chứa sản phẩm, trả về mã ${expectedStatusCodes.join(\"/\")}`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "// 2. Chống sập Server (Bắt lỗi SQL khi danh mục đang gắn với sản phẩm)",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý lỗi khóa ngoại (Product) tốt, không bị sập (No 500)`, () => {",
+              "    pm.expect(pm.response.code).to.not.equal(500);",
+              "});",
+              "",
+              "// 3. Kiểm tra thời gian phản hồi",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// 4. Kiểm tra format dữ liệu lỗi trả về",
+              "if (pm.response.text()) {",
+              "    pm.test(`[${testCaseId}] Trả về câu thông báo lỗi chuẩn định dạng JSON`, () => {",
+              "        pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+              "        ",
+              "        // In câu thông báo ra Console để xem Dev viết lỗi có thân thiện không",
+              "        const errorData = pm.response.json();",
+              "        console.log(`[${testCaseId}] Thông báo từ Backend:`, errorData.message || errorData.error);",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/categories/2",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "categories",
+            "2"
+          ]
+        },
+        "description": "TestCaseId: ADM06\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Xoa category thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM06_4 - Xóa danh mục sai định dạng ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM06_4\";",
+              "// Kỳ vọng Server báo lỗi cú pháp/dữ liệu đầu vào",
+              "const expectedStatusCodes = [400]; ",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "// 1. Kiểm tra mã trạng thái (Bắt lỗi sai Data Type)",
+              "pm.test(`[${testCaseId}] Bắt lỗi sai định dạng ID (Data Type Mismatch), trả về mã 400`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "// 2. Chống sập Server ",
+              "pm.test(`[${testCaseId}] Hệ thống rào lỗi TypeMismatch tốt, không bị sập (No 500)`, () => {",
+              "    pm.expect(pm.response.code).to.not.equal(500);",
+              "});",
+              "",
+              "// 3. Kiểm tra thời gian phản hồi",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// 4. Kiểm tra format dữ liệu lỗi trả về",
+              "if (pm.response.text()) {",
+              "    pm.test(`[${testCaseId}] Trả về câu thông báo lỗi chuẩn định dạng JSON`, () => {",
+              "        pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+              "        ",
+              "        // In log ra để soi xem báo lỗi có dễ hiểu không",
+              "        const errorData = pm.response.json();",
+              "        console.log(`[${testCaseId}] Thông báo từ Backend:`, errorData.message || errorData.error);",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/categories/abc",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "categories",
+            "abc"
+          ]
+        },
+        "description": "TestCaseId: ADM06\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Xoa category thanh cong"
       },
       "response": []
     }
