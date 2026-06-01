@@ -393,7 +393,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"name\": \"Máy in\",\n  \"description\": \"Postman test Máy in\",\n  \"status\": true\n}",
+          "raw": "{\n  \"name\": \"Máy hình\",\n  \"description\": \"Postman test Máy in\",\n  \"status\": true\n}",
           "options": {
             "raw": {
               "language": "json"
