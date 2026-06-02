@@ -11,7 +11,7 @@
     {
       "name": "Đăng nhập Admin",
       "event": [
-        {
+        { 
           "listen": "test",
           "script": {
             "exec": [
