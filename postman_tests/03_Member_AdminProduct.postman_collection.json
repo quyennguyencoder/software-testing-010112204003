@@ -11,7 +11,7 @@
     {
       "name": "Đăng nhập Admin",
       "event": [
-        {
+        { 
           "listen": "test",
           "script": {
             "exec": [
@@ -1852,6 +1852,521 @@
           ]
         },
         "description": "TestCaseId: ADM06\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Xoa category thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM07 - Tao brand thanh cong",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM07\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "// 1. Kiểm tra trạng thái thành công",
+              "pm.test(`[${testCaseId}] Tạo Brand thành công, trả về mã 200 hoặc 201`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "// 2. Chống sập Server",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý tốt, không có lỗi 5xx`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "// 3. Kiểm tra hiệu năng",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// 4. Kiểm tra dữ liệu và Lưu ID mồi",
+              "pm.test(`[${testCaseId}] Trả về JSON hợp lệ và có ID`, () => {",
+              "    pm.response.to.be.json;",
+              "    const json = pm.response.json();",
+              "    const responseData = json.data || json; // Linh động theo format trả về",
+              "    ",
+              "    // Bắt buộc phải có ID trả về",
+              "    pm.expect(responseData).to.have.property('id');",
+              "    ",
+              "    // Lưu thẳng vào biến môi trường để dành cho mấy hàm PUT/DELETE phía sau xài",
+              "    pm.environment.set(\"brandId\", responseData.id);",
+              "    ",
+              "    console.log(`[${testCaseId}] Đã lưu brandId = ${responseData.id} vào Environment!`);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Brand {{uniqueSuffix}}\",\n  \"description\": \"Postman test brand\",\n  \"logoUrl\": \"https://example.com/logo.png\",\n  \"status\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/brands",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "brands"
+          ]
+        },
+        "description": "TestCaseId: ADM07\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Tao brand thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM08 - Brand trung ten tra loi",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM08\"; ",
+              "const expectedStatusCodes = [400];",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Bắt lỗi dữ liệu đầu vào, trả về mã 400`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý lỗi tốt, không bị sập (No 5xx)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Trả về thông báo lỗi chuẩn định dạng JSON`, () => {",
+              "    pm.response.to.be.json;",
+              "    const json = pm.response.json();",
+              "    // Kỳ vọng có trường thông báo lỗi",
+              "    pm.expect(json).to.have.property('message'); ",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Brand {{uniqueSuffix}}\",\n  \"description\": \"Postman test brand\",\n  \"logoUrl\": \"https://example.com/logo.png\",\n  \"status\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/brands",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "brands"
+          ]
+        },
+        "description": "TestCaseId: ADM08\nModule: Admin Product/Brand/Category\nType: Negative\nAuth: Admin token\nObjective: Brand trung ten tra loi"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM08_1 - Tạo Brand có name rỗng",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM08_1\"; ",
+              "const expectedStatusCodes = [400];",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Bắt lỗi dữ liệu đầu vào, trả về mã 400`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý lỗi tốt, không bị sập (No 5xx)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Trả về thông báo lỗi chuẩn định dạng JSON`, () => {",
+              "    pm.response.to.be.json;",
+              "    const json = pm.response.json();",
+              "    // Kỳ vọng có trường thông báo lỗi",
+              "    pm.expect(json).to.have.property('message'); ",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"\",\n  \"description\": \"Postman test brand\",\n  \"logoUrl\": \"https://example.com/logo.png\",\n  \"status\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/brands",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "brands"
+          ]
+        },
+        "description": "TestCaseId: ADM08\nModule: Admin Product/Brand/Category\nType: Negative\nAuth: Admin token\nObjective: Brand trung ten tra loi"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM08_2 - Tạo Brand bị thiếu trường name",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM08_2\"; ",
+              "const expectedStatusCodes = [400];",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Bắt lỗi dữ liệu đầu vào, trả về mã 400`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý lỗi tốt, không bị sập (No 5xx)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Trả về thông báo lỗi chuẩn định dạng JSON`, () => {",
+              "    pm.response.to.be.json;",
+              "    const json = pm.response.json();",
+              "    // Kỳ vọng có trường thông báo lỗi",
+              "    pm.expect(json).to.have.property('message'); ",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"description\": \"Postman test brand\",\n  \"logoUrl\": \"https://example.com/logo.png\",\n  \"status\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/brands",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "brands"
+          ]
+        },
+        "description": "TestCaseId: ADM08\nModule: Admin Product/Brand/Category\nType: Negative\nAuth: Admin token\nObjective: Brand trung ten tra loi"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM08_3 - Tạo Brand có name quá dài",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM08_3\"; ",
+              "const expectedStatusCodes = [400];",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Bắt lỗi dữ liệu đầu vào, trả về mã 400`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý lỗi tốt, không bị sập (No 5xx)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Trả về thông báo lỗi chuẩn định dạng JSON`, () => {",
+              "    pm.response.to.be.json;",
+              "    const json = pm.response.json();",
+              "    // Kỳ vọng có trường thông báo lỗi",
+              "    pm.expect(json).to.have.property('message'); ",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\n  \"description\": \"Postman test brand\",\n  \"logoUrl\": \"https://example.com/logo.png\",\n  \"status\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/brands",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "brands"
+          ]
+        },
+        "description": "TestCaseId: ADM08\nModule: Admin Product/Brand/Category\nType: Negative\nAuth: Admin token\nObjective: Brand trung ten tra loi"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM08_4 - Sai định dạng Logo",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM08_4\"; ",
+              "const expectedStatusCodes = [400];",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Bắt lỗi dữ liệu đầu vào, trả về mã 400`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý lỗi tốt, không bị sập (No 5xx)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Trả về thông báo lỗi chuẩn định dạng JSON`, () => {",
+              "    pm.response.to.be.json;",
+              "    const json = pm.response.json();",
+              "    // Kỳ vọng có trường thông báo lỗi",
+              "    pm.expect(json).to.have.property('message'); ",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"hihi\",\n  \"description\": \"Postman test brand\",\n  \"logoUrl\": \"haha\",\n  \"status\": true    \n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/brands",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "brands"
+          ]
+        },
+        "description": "TestCaseId: ADM08\nModule: Admin Product/Brand/Category\nType: Negative\nAuth: Admin token\nObjective: Brand trung ten tra loi"
       },
       "response": []
     }
