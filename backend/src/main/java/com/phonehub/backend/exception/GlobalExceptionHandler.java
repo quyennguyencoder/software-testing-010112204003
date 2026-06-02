@@ -118,11 +118,18 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException ex, WebRequest request) {
         log.error("Validation error: {}", ex.getMessage());
         Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
+        
+        // Đã sửa: Dùng getFieldErrors() và check containsKey để không ghi đè lỗi
+        ex.getBindingResult().getFieldErrors().forEach((error) -> {
+            String fieldName = error.getField();
             String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
+            
+            // Nếu trường này CHƯA CÓ lỗi nào được lưu, thì mới thêm vào.
+            if (!errors.containsKey(fieldName)) {
+                errors.put(fieldName, errorMessage);
+            }
         });
+        
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(400, "Validation failed", errors));
     }
