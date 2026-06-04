@@ -2797,6 +2797,935 @@
         "description": "TestCaseId: ADM09\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Cap nhat brand thanh cong"
       },
       "response": []
+    },
+    {
+      "name": "ADM10 - Xoa brand thanh cong",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM10\";",
+              "// Xóa thành công thường trả về 200 (OK) hoặc 204 (No Content) tùy logic Backend",
+              "const expectedStatusCodes = [200, 204]; ",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Xóa Brand thành công, trả về mã 200 hoặc 204`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Không có lỗi Server (No 5xx)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// BÍ QUYẾT Ở ĐÂY: Xóa xong trên Server thì cũng phải xóa luôn ID lưu trong Postman",
+              "// Để tránh tình trạng mấy API sau xài nhầm cái ID của Brand đã \"chết\"",
+              "if (pm.response.code === 200 || pm.response.code === 204) {",
+              "    pm.environment.unset(\"brandId\");",
+              "    pm.environment.unset(\"currentResourceId\");",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/brands/{{brandId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "brands",
+            "{{brandId}}"
+          ]
+        },
+        "description": "TestCaseId: ADM10\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Xoa brand thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM10_1 - Xóa brand không tồn tại",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM10_1\";",
+              "const expectedStatusCodes = [404]; ",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Chặn xóa ID ảo, trả về mã 404`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý tốt, không bị sập (No 5xx)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Có trả về thông báo lỗi chuẩn JSON`, () => {",
+              "    pm.response.to.be.json;",
+              "    pm.expect(pm.response.json()).to.have.property('message');",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/brands/99",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "brands",
+            "99"
+          ]
+        },
+        "description": "TestCaseId: ADM10\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Xoa brand thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM10_2 - Xóa sai định dạng ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM10_2\";",
+              "const expectedStatusCodes = [400]; ",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Bắt lỗi định dạng ID (Type Mismatch), trả về mã 400`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Lưới Exception rào lỗi tốt, không bị sập (No 5xx)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Có câu thông báo lỗi hướng dẫn người dùng`, () => {",
+              "    pm.response.to.be.json;",
+              "    pm.expect(pm.response.json()).to.have.property('message');",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/brands/abc",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "brands",
+            "abc"
+          ]
+        },
+        "description": "TestCaseId: ADM10\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Xoa brand thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM10_3 - Xóa brand đang có sản phẩm",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM10_3\";",
+              "// Có thể là 400 (Bad Request) hoặc 409 (Conflict) tùy thuộc vào cách Backend code ngoại lệ DataIntegrityViolationException",
+              "const expectedStatusCodes = [400, 409]; ",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Chặn xóa Brand đang có sản phẩm, trả về mã 400 hoặc 409`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Không văng lỗi 500 do xung đột khóa ngoại (Foreign Key)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Giải thích rõ lý do không được xóa trong message`, () => {",
+              "    pm.response.to.be.json;",
+              "    const json = pm.response.json();",
+              "    pm.expect(json).to.have.property('message');",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/brands/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "brands",
+            "1"
+          ]
+        },
+        "description": "TestCaseId: ADM10\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Xoa brand thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM11 - Tao product hop le, luu productId",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM11\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "// 1. Test các điều kiện cơ bản",
+              "pm.test(`[${testCaseId}] Tạo Product thành công, trả về mã 200/201`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Không có lỗi Server (No 5xx)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// 2. NHIỆM VỤ CỐT LÕI: Lưu productId để xài cho mấy API sau",
+              "if (pm.response.code === 200 || pm.response.code === 201) {",
+              "    const json = pm.response.json();",
+              "    // Tùy cấu trúc API của bạn (nằm trong json.data hay json luôn)",
+              "    const responseData = json.data || json; ",
+              "    ",
+              "    if (responseData.id) {",
+              "        pm.environment.set(\"productId\", responseData.id);",
+              "        console.log(\"Tuyệt vời! Đã tóm được Product ID: \" + responseData.id);",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"PhoneHub Test Product {{uniqueSuffix}}\",\n  \"description\": \"Created by Postman collection\",\n  \"thumbnailUrl\": \"https://example.com/phone.png\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"brandId\": \"{{brandId}}\",\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"PH-{{uniqueSuffix}}\",\n      \"color\": \"Black\",\n      \"storage\": \"128GB\",\n      \"ram\": \"8GB\",\n      \"price\": 12990000,\n      \"stockQuantity\": 20,\n      \"status\": true\n    }\n  ],\n  \"metadata\": {\n    \"salePrice\": 12990000,\n    \"screenSize\": 6.7,\n    \"batteryCapacity\": 5000,\n    \"operatingSystem\": \"Android\"\n  },\n  \"images\": []\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products?page=0&size=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "TestCaseId: ADM11\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Tao product hop le, luu productId"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM11_1 - Tạo sản phẩm bị trùng mã sku",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM11_1\"; ",
+              "const expectedStatusCodes = [400, 404, 409]; ",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Bắt lỗi dữ liệu nghiệp vụ/định dạng, trả về mã 400/404/409`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống vững vàng, chặn lỗi tốt không văng 500`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Có giải thích lỗi rõ ràng trong body JSON`, () => {",
+              "    pm.response.to.be.json;",
+              "    pm.expect(pm.response.json()).to.have.property('message');",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"PhoneHub Product {{uniqueSuffix}}\",\n  \"description\": \"Created by Postman collection\",\n  \"thumbnailUrl\": \"https://example.com/phone.png\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"brandId\": \"{{brandId}}\",\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"PH-{{uniqueSuffix}}\",\n      \"color\": \"Black\",\n      \"storage\": \"128GB\",\n      \"ram\": \"8GB\",\n      \"price\": 12990000,\n      \"stockQuantity\": 20,\n      \"status\": true\n    }\n  ],\n  \"metadata\": {\n    \"salePrice\": 12990000,\n    \"screenSize\": 6.7,\n    \"batteryCapacity\": 5000,\n    \"operatingSystem\": \"Android\"\n  },\n  \"images\": []\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products?page=0&size=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "TestCaseId: ADM11\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Tao product hop le, luu productId"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM11_2 - Tạo sản phẩm với ID cateogory và brand không tồn tại",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM11_2\"; ",
+              "const expectedStatusCodes = [400, 404, 409]; ",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Bắt lỗi dữ liệu nghiệp vụ/định dạng, trả về mã 400/404/409`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống vững vàng, chặn lỗi tốt không văng 500`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Có giải thích lỗi rõ ràng trong body JSON`, () => {",
+              "    pm.response.to.be.json;",
+              "    pm.expect(pm.response.json()).to.have.property('message');",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"PhoneHub Product hihi {{uniqueSuffix}}\",\n  \"description\": \"Created by Postman collection\",\n  \"thumbnailUrl\": \"https://example.com/phone.png\",\n  \"categoryId\": \"9999\",\n  \"brandId\": \"9999\",\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"PH-{{uniqueSuffix}}\",\n      \"color\": \"Black\",\n      \"storage\": \"128GB\",\n      \"ram\": \"8GB\",\n      \"price\": 12990000,\n      \"stockQuantity\": 20,\n      \"status\": true\n    }\n  ],\n  \"metadata\": {\n    \"salePrice\": 12990000,\n    \"screenSize\": 6.7,\n    \"batteryCapacity\": 5000,\n    \"operatingSystem\": \"Android\"\n  },\n  \"images\": []\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products?page=0&size=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "TestCaseId: ADM11\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Tao product hop le, luu productId"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM11_3 - Tạo sản phẩm không có templates",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM11_3\";",
+              "const expectedStatusCodes = [400, 404, 409]; ",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Bắt lỗi dữ liệu nghiệp vụ/định dạng, trả về mã 400/404/409`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống vững vàng, chặn lỗi tốt không văng 500`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Có giải thích lỗi rõ ràng trong body JSON`, () => {",
+              "    pm.response.to.be.json;",
+              "    pm.expect(pm.response.json()).to.have.property('message');",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"PhoneHub Test Product 123 {{uniqueSuffix}}\",\n  \"description\": \"Created by Postman collection\",\n  \"thumbnailUrl\": \"https://example.com/phone.png\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"brandId\": \"{{brandId}}\",\n  \"status\": true,\n  \"templates\": [],\n  \"metadata\": {\n    \"salePrice\": 12990000,\n    \"screenSize\": 6.7,\n    \"batteryCapacity\": 5000,\n    \"operatingSystem\": \"Android\"\n  },\n  \"images\": []\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products?page=0&size=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "TestCaseId: ADM11\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Tao product hop le, luu productId"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM11_4 - Bắt lỗi Type Mismatch và Size Validation",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM11_4\";",
+              "const expectedStatusCodes = [400, 404, 409]; ",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Bắt lỗi dữ liệu nghiệp vụ/định dạng, trả về mã 400/404/409`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống vững vàng, chặn lỗi tốt không văng 500`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Có giải thích lỗi rõ ràng trong body JSON`, () => {",
+              "    pm.response.to.be.json;",
+              "    pm.expect(pm.response.json()).to.have.property('message');",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"PhoneHub Test Product PhoneHub Test Product PhoneHub Test Product PhoneHub Test Product PhoneHub Test Product PhoneHub Test Product PhoneHub Test Product PhoneHub Test Product PhoneHub Test Product PhoneHub Test Product PhoneHub Test Product PhoneHub Test Product PhoneHub Test Product PhoneHub Test Product PhoneHub Test Product PhoneHub Test Product\",\n  \"description\": \"Test lỗi Type Mismatch và vượt quá độ dài cho phép\",\n  \"thumbnailUrl\": \"https://example.com/phone.png\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"brandId\": \"{{brandId}}\",\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"PH-{{uniqueSuffix}}\",\n      \"color\": \"Black\",\n      \"storage\": \"128GB\",\n      \"ram\": \"8GB\",\n      \"price\": \"mười ngàn\", \n      \"stockQuantity\": 20,\n      \"status\": true\n    }\n  ],\n  \"metadata\": {\n    \"salePrice\": 12990000,\n    \"screenSize\": 6.7,\n    \"batteryCapacity\": 5000,\n    \"operatingSystem\": \"Android\"\n  },\n  \"images\": []\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products?page=0&size=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "TestCaseId: ADM11\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Tao product hop le, luu productId"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM12 - Thieu name/price/category/brand tra 400",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM12\";",
+              "const expectedStatusCodes = [400]; ",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "// 1. Kiểm tra mã lỗi",
+              "pm.test(`[${testCaseId}] Bắt lỗi THIẾU dữ liệu (name/price/category/brand), trả về mã 400`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "// 2. Đảm bảo Server không bị sập (No 500) do lỗi Null Pointer Exception",
+              "pm.test(`[${testCaseId}] Hệ thống rào lỗi Null tốt, không văng 500`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "// 3. Kiểm tra hiệu năng",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// 4. Kiểm tra Backend có trả về câu thông báo tử tế không",
+              "pm.test(`[${testCaseId}] Có trả về thông báo lỗi chuẩn JSON`, () => {",
+              "    pm.response.to.be.json;",
+              "    pm.expect(pm.response.json()).to.have.property('message');",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"\", \n  \"description\": \"Created by Postman collection\",\n  \"thumbnailUrl\": \"https://example.com/phone.png\",\n  \"categoryId\": null, \n  \"brandId\": null, \n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"PH-{{uniqueSuffix}}\",\n      \"color\": \"Black\",\n      \"storage\": \"128GB\",\n      \"ram\": \"8GB\",\n      \"price\": null, \n      \"stockQuantity\": 20,\n      \"status\": true\n    }\n  ],\n  \"metadata\": {\n    \"salePrice\": 12990000,\n    \"screenSize\": 6.7,\n    \"batteryCapacity\": 5000,\n    \"operatingSystem\": \"Android\"\n  },\n  \"images\": []\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products?page=0&size=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "TestCaseId: ADM12\nModule: Admin Product/Brand/Category\nType: Negative\nAuth: Admin token\nObjective: Thieu name/price/category/brand tra 400"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM13 - Gia am hoac stock am tra 400",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM13\";",
+              "const expectedStatusCodes = [400]; // Kỳ vọng mã lỗi 400 Bad Request",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "// 1. Kiểm tra mã lỗi trả về",
+              "pm.test(`[${testCaseId}] Bắt lỗi giá (price) và tồn kho (stock) âm, trả về mã 400`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "// 2. Chống sập Server",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý ngoại lệ tốt, không văng 500`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "// 3. Kiểm tra hiệu năng",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// 4. Kiểm tra cấu trúc thông báo lỗi",
+              "pm.test(`[${testCaseId}] Có trả về thông báo lỗi chi tiết chuẩn JSON`, () => {",
+              "    pm.response.to.be.json;",
+              "    pm.expect(pm.response.json()).to.have.property('message');",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"PhoneHub Test Product {{uniqueSuffix}}\",\n  \"description\": \"Created by Postman collection\",\n  \"thumbnailUrl\": \"https://example.com/phone.png\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"brandId\": \"{{brandId}}\",\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"PH-{{uniqueSuffix}}\",\n      \"color\": \"Black\",\n      \"storage\": \"128GB\",\n      \"ram\": \"8GB\",\n      \"price\": -1,\n      \"stockQuantity\": -1,\n      \"status\": true\n    }\n  ],\n  \"metadata\": {\n    \"salePrice\": 12990000,\n    \"screenSize\": 6.7,\n    \"batteryCapacity\": 5000,\n    \"operatingSystem\": \"Android\"\n  },\n  \"images\": []\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products?page=0&size=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "TestCaseId: ADM13\nModule: Admin Product/Brand/Category\nType: Boundary\nAuth: Admin token\nObjective: Gia am hoac stock am tra 400"
+      },
+      "response": []
     }
   ],
   "event": [
