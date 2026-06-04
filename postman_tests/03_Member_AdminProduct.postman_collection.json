@@ -3084,6 +3084,200 @@
       "response": []
     },
     {
+      "name": "[Setup] Tạo Category mồi",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM03\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "// 1. Kiểm tra mã trạng thái (Tạo thành công)",
+              "pm.test(`[${testCaseId}] Tạo danh mục thành công trả về mã ${expectedStatusCodes.join(\"/\")}`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "// 2. Kiểm tra thời gian phản hồi",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// 3. Kiểm tra dữ liệu và mớm ID tự động cho CI/CD",
+              "if (pm.response.code === 200 || pm.response.code === 201) {",
+              "    const jsonData = pm.response.json();",
+              "    ",
+              "    // Đảm bảo dữ liệu trả về nằm trong cục 'data' và có 'id'",
+              "    pm.test(`[${testCaseId}] Trả về thông tin danh mục có chứa ID`, () => {",
+              "        pm.expect(jsonData).to.have.property('data');",
+              "        pm.expect(jsonData.data).to.have.property('id');",
+              "    });",
+              "",
+              "    // BẮT BUỘC LƯU VÀO currentResourceId ĐỂ BOT CI/CD CHẠY ĐƯỢC CÁC BƯỚC PUT/DELETE",
+              "    if (jsonData.data && jsonData.data.id) {",
+              "        const newId = jsonData.data.id;",
+              "        ",
+              "        // Lưu biến xài chung cho CRUD",
+              "        pm.environment.set(\"currentResourceId\", newId);",
+              "        ",
+              "        // Lưu thêm biến dự phòng nếu API khác cần",
+              "        pm.environment.set(\"categoryId\", newId); ",
+              "        ",
+              "        console.log(`[${testCaseId}] CI/CD Ready! Đã lưu currentResourceId = ${newId}`);",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Máy hình\",\n  \"description\": \"Postman test Máy in\",\n  \"status\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/categories",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "categories"
+          ]
+        },
+        "description": "TestCaseId: ADM03\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Admin tao category thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "[Setup] - Tạo Brand mồi",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM07\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "// 1. Kiểm tra trạng thái thành công",
+              "pm.test(`[${testCaseId}] Tạo Brand thành công, trả về mã 200 hoặc 201`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "// 2. Chống sập Server",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý tốt, không có lỗi 5xx`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "// 3. Kiểm tra hiệu năng",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// 4. Kiểm tra dữ liệu và Lưu ID mồi",
+              "pm.test(`[${testCaseId}] Trả về JSON hợp lệ và có ID`, () => {",
+              "    pm.response.to.be.json;",
+              "    const json = pm.response.json();",
+              "    const responseData = json.data || json; // Linh động theo format trả về",
+              "    ",
+              "    // Bắt buộc phải có ID trả về",
+              "    pm.expect(responseData).to.have.property('id');",
+              "    ",
+              "    // Lưu thẳng vào biến môi trường để dành cho mấy hàm PUT/DELETE phía sau xài",
+              "    pm.environment.set(\"brandId\", responseData.id);",
+              "    ",
+              "    console.log(`[${testCaseId}] Đã lưu brandId = ${responseData.id} vào Environment!`);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Brand {{uniqueSuffix}}\",\n  \"description\": \"Postman test brand\",\n  \"logoUrl\": \"https://example.com/logo.png\",\n  \"status\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/brands",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "brands"
+          ]
+        },
+        "description": "TestCaseId: ADM07\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Tao brand thanh cong"
+      },
+      "response": []
+    },
+    {
       "name": "ADM11 - Tao product hop le, luu productId",
       "event": [
         {
