@@ -4,6 +4,7 @@ import com.phonehub.backend.dto.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -118,11 +119,18 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException ex, WebRequest request) {
         log.error("Validation error: {}", ex.getMessage());
         Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
+        
+        // Đã sửa: Dùng getFieldErrors() và check containsKey để không ghi đè lỗi
+        ex.getBindingResult().getFieldErrors().forEach((error) -> {
+            String fieldName = error.getField();
             String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
+            
+            // Nếu trường này CHƯA CÓ lỗi nào được lưu, thì mới thêm vào.
+            if (!errors.containsKey(fieldName)) {
+                errors.put(fieldName, errorMessage);
+            }
         });
+        
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(400, "Validation failed", errors));
     }
@@ -135,6 +143,28 @@ public class GlobalExceptionHandler {
         String errorMessage = ex.getMessage() != null ? ex.getMessage() : "Internal server error";
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.internalServerError(errorMessage));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse<?>> handleTypeMismatchException(
+            MethodArgumentTypeMismatchException ex, WebRequest request) {
+        log.error("Type mismatch error: {}", ex.getMessage());
+
+        String message = String.format("Định dạng dữ liệu không hợp lệ cho tham số '%s'. Vui lòng kiểm tra lại.", ex.getName());
+        
+        // Tận dụng luôn ApiResponse.badRequest của dự án để trả về mã 400
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.badRequest(message));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("success", false);
+        errorResponse.put("status", 400);
+        errorResponse.put("message", "Định dạng dữ liệu đầu vào không hợp lệ.");
+        errorResponse.put("data", null);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }
 
