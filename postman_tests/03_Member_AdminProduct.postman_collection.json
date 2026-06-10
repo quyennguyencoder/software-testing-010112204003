@@ -3920,6 +3920,424 @@
         "description": "TestCaseId: ADM13\nModule: Admin Product/Brand/Category\nType: Boundary\nAuth: Admin token\nObjective: Gia am hoac stock am tra 400"
       },
       "response": []
+    },
+    {
+      "name": "ADM14 - List san pham co pagination",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM14\";",
+              "const expectedStatusCodes = [200]; // Lấy danh sách thành công chỉ ra 200 thôi",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Lấy danh sách thành công, trả về mã 200`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Không bị lỗi Server (No 5xx)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Dữ liệu trả về đúng cấu trúc phân trang`, () => {",
+              "    pm.response.to.be.json;",
+              "    const json = pm.response.json();",
+              "    const data = json.data || json; ",
+              "",
+              "    // Mảng content (chứa danh sách sản phẩm)",
+              "    pm.expect(data).to.have.property('content').that.is.an('array');",
+              "    ",
+              "    pm.expect(data).to.have.any.keys('number', 'page', 'pageNo', 'pageNumber');",
+              "    ",
+              "    // Kiểm tra kích thước trang",
+              "    pm.expect(data).to.have.any.keys('size', 'pageSize', 'limit');",
+              "    ",
+              "    // Kiểm tra tổng số phần tử",
+              "    pm.expect(data).to.have.any.keys('totalElements', 'total', 'totalItems');",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products?page=0&size=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "TestCaseId: ADM14\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: List san pham co pagination"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM14_1 - Lấy danh sách thất bại do truyền chữ vào page/size",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM14_1\"; ",
+              "const expectedStatusCodes = [400]; // Lỗi ép kiểu tham số phải ra 400",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Bắt lỗi tham số phân trang là chữ (Type Mismatch), trả về mã 400`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống vững vàng, không văng 500`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Có báo lỗi rõ ràng cho người dùng`, () => {",
+              "    pm.response.to.be.json;",
+              "    pm.expect(pm.response.json()).to.have.property('message');",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products?page=abc&size=muoi",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "abc"
+            },
+            {
+              "key": "size",
+              "value": "muoi"
+            }
+          ]
+        },
+        "description": "TestCaseId: ADM14\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: List san pham co pagination"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM14_2 - Truyền số trang hoặc kích thước âm",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM14_2\"; ",
+              "const expectedStatusCodes = [400]; // Lỗi ép kiểu tham số phải ra 400",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Bắt lỗi tham số phân trang là chữ (Type Mismatch), trả về mã 400`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống vững vàng, không văng 500`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Có báo lỗi rõ ràng cho người dùng`, () => {",
+              "    pm.response.to.be.json;",
+              "    pm.expect(pm.response.json()).to.have.property('message');",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products?page=-5&size=-33",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "-5"
+            },
+            {
+              "key": "size",
+              "value": "-33"
+            }
+          ]
+        },
+        "description": "TestCaseId: ADM14\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: List san pham co pagination"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM14_3 - Truyền số trang quá lớn",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM14_3\";",
+              "const expectedStatusCodes = [200]; // Dù không có data, nhưng thao tác hỏi xin data vẫn là hợp lệ -> 200 OK",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Trả về mã 200 OK khi số trang vượt quá giới hạn`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý an toàn, không văng 500`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Mảng danh sách sản phẩm (content) phải rỗng []`, () => {",
+              "    pm.response.to.be.json;",
+              "    const json = pm.response.json();",
+              "    const data = json.data || json; ",
+              "",
+              "    // Kiểm tra content phải tồn tại, là một mảng, và độ dài mảng bằng 0 (empty)",
+              "    pm.expect(data).to.have.property('content').that.is.an('array').that.is.empty;",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Thuộc tính 'empty' được hệ thống bật thành true`, () => {",
+              "    pm.response.to.be.json;",
+              "    const json = pm.response.json();",
+              "    const data = json.data || json; ",
+              "",
+              "    // Kiểm tra cờ báo hiệu hết data",
+              "    pm.expect(data).to.have.property('empty').that.is.true;",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products?page=999&size=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "999"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "TestCaseId: ADM14\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: List san pham co pagination"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM14_4 - Lấy danh sách kết hợp bộ lọc",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM14_4\";",
+              "",
+              "pm.test(`[${testCaseId}] Trả về mã 200 OK khi lọc/tìm kiếm thành công`, () => {",
+              "    pm.expect(pm.response.code).to.equal(200);",
+              "});",
+              "pm.test(`[${testCaseId}] Tổng số phần tử (totalElements) phải nhỏ hơn tổng kho (33)`, () => {",
+              "    const json = pm.response.json();",
+              "    const data = json.data || json;",
+              "    ",
+              "    // Vì đã lọc rồi nên chắc chắn số lượng phải ít hơn hoặc bằng 33 (không thể giữ nguyên 33 nếu filter thực sự chạy)",
+              "    pm.expect(data.totalElements).to.be.below(33); ",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Dữ liệu trả về chuẩn xác theo điều kiện lọc`, () => {",
+              "    const json = pm.response.json();",
+              "    const content = (json.data || json).content;",
+              "    ",
+              "    // Kiểm tra từng sản phẩm trong mảng content xem có thỏa mãn điều kiện không",
+              "    if (content.length > 0) {",
+              "        content.forEach(product => {",
+              "            // Lưu ý: Tùy bạn đang dùng điều kiện lọc nào ở Bước 1 thì đổi điều kiện if ở đây.",
+              "            // Ví dụ ở đây mình test keyword=Samsung, nên mình check tên sản phẩm (name)",
+              "            let productName = product.name.toLowerCase();",
+              "            pm.expect(productName).to.include(\"samsung\");",
+              "            ",
+              "            // Nếu bạn test status=true thì dùng dòng này:",
+              "            // pm.expect(product.status).to.be.true;",
+              "        });",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products?page=0&size=10&keyword=samsung",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            },
+            {
+              "key": "keyword",
+              "value": "samsung"
+            }
+          ]
+        },
+        "description": "TestCaseId: ADM14\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: List san pham co pagination"
+      },
+      "response": []
     }
   ],
   "event": [
