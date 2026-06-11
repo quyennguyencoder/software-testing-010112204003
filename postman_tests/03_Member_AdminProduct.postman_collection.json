@@ -4338,6 +4338,423 @@
         "description": "TestCaseId: ADM14\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: List san pham co pagination"
       },
       "response": []
+    },
+    {
+      "name": "ADM15 - Chi tiet product hop le",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM15\";",
+              "const expectedStatusCodes = [200];",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Lấy chi tiết sản phẩm thành công, trả về mã 200`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Không có lỗi Server (No 5xx)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Trả về đúng thông tin của sản phẩm đang được yêu cầu`, () => {",
+              "    pm.response.to.be.json;",
+              "    const json = pm.response.json();",
+              "    const data = json.data || json; ",
+              "",
+              "    // 1. Kiểm tra ID có khớp với ID trên URL không",
+              "    const requestedProductId = pm.environment.get(\"productId\");",
+              "    if (requestedProductId) {",
+              "        pm.expect(String(data.id)).to.equal(String(requestedProductId));",
+              "    }",
+              "",
+              "    // 2. Kiểm tra các thông tin cơ bản ở lớp ngoài cùng",
+              "    pm.expect(data).to.have.property('name');",
+              "    pm.expect(data).to.have.property('status');",
+              "    ",
+              "    // 3. Kiểm tra giá và số lượng tồn kho (Nằm bên trong mảng templates)",
+              "    pm.expect(data).to.have.property('templates').that.is.an('array');",
+              "    if (data.templates.length > 0) {",
+              "        pm.expect(data.templates[0]).to.have.property('price');",
+              "        pm.expect(data.templates[0]).to.have.property('stockQuantity');",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products/{{productId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products",
+            "{{productId}}"
+          ]
+        },
+        "description": "TestCaseId: ADM15\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Chi tiet product hop le"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM16 - Update product thanh cong",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM16\";",
+              "const expectedStatusCodes = [200]; // Cập nhật thành công thường trả về 200 OK",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Cập nhật sản phẩm thành công, trả về mã 200`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý mượt mà, không văng lỗi Server (No 5xx)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Trả về JSON chứa thông tin sản phẩm đã được cập nhật đúng ID`, () => {",
+              "    // Đảm bảo có trả về JSON",
+              "    pm.response.to.be.json;",
+              "    const json = pm.response.json();",
+              "    const data = json.data || json; ",
+              "",
+              "    const requestedProductId = pm.environment.get(\"productId\");",
+              "    if (requestedProductId) {",
+              "        pm.expect(String(data.id)).to.equal(String(requestedProductId));",
+              "    }",
+              "",
+              "    // Đảm bảo object trả về không bị rỗng",
+              "    pm.expect(data).to.have.property('name');",
+              "    pm.expect(data).to.have.property('status');",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"PhoneHub Test Product {{uniqueSuffix}}\",\n  \"description\": \"Created by Postman collection\",\n  \"thumbnailUrl\": \"https://example.com/phone.png\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"brandId\": \"{{brandId}}\",\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"PH-{{uniqueSuffix}}\",\n      \"color\": \"Black\",\n      \"storage\": \"128GB\",\n      \"ram\": \"8GB\",\n      \"price\": 12990000,\n      \"stockQuantity\": 20,\n      \"status\": true\n    }\n  ],\n  \"metadata\": {\n    \"salePrice\": 12990000,\n    \"screenSize\": 6.7,\n    \"batteryCapacity\": 5000,\n    \"operatingSystem\": \"Android\"\n  },\n  \"images\": []\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products/{{productId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products",
+            "{{productId}}"
+          ]
+        },
+        "description": "TestCaseId: ADM16\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Update product thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM16_1 - Update trùng SKU sản phẩm khác",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM16_1\";",
+              "const expectedStatusCodes = [400, 409]; // Kỳ vọng Backend chặn lại và báo lỗi",
+              "",
+              "pm.test(`[${testCaseId}] Bắt lỗi trùng SKU của sản phẩm khác, trả về mã 400 hoặc 409`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống vững vàng, không văng lỗi sập Server (No 5xx)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Có trả về thông báo lỗi bằng JSON`, () => {",
+              "    pm.response.to.be.json;",
+              "    const json = pm.response.json();",
+              "    ",
+              "    pm.expect(json).to.have.property('message');",
+              "    // Nếu Dev viết lỗi tốt, trong câu chửi thường sẽ có nhắc đến từ 'sku' hoặc 'already exists'",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"PhoneHub Test Product {{uniqueSuffix}}\",\n  \"description\": \"Created by Postman collection\",\n  \"thumbnailUrl\": \"https://example.com/phone.png\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"brandId\": \"{{brandId}}\",\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"APPLE-IP15PM-256-BLUE\",\n      \"color\": \"Black\",\n      \"storage\": \"128GB\",\n      \"ram\": \"8GB\",\n      \"price\": 12990000,\n      \"stockQuantity\": 20,\n      \"status\": true\n    }\n  ],\n  \"metadata\": {\n    \"salePrice\": 12990000,\n    \"screenSize\": 6.7,\n    \"batteryCapacity\": 5000,\n    \"operatingSystem\": \"Android\"\n  },\n  \"images\": []\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products/{{productId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products",
+            "{{productId}}"
+          ]
+        },
+        "description": "TestCaseId: ADM16\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Update product thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM16_2 - Update bỏ sót trường bắt buộc",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM16_2\";",
+              "const expectedStatusCodes = [400]; ",
+              "",
+              "pm.test(`[${testCaseId}] Bắt lỗi thiếu trường dữ liệu bắt buộc (Price), trả về mã 400`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý ngoại lệ tốt, không văng 500`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Có trả về thông báo lỗi dạng JSON`, () => {",
+              "    pm.response.to.be.json;",
+              "    const json = pm.response.json();",
+              "    ",
+              "    // Kiểm tra có trường message báo lỗi",
+              "    pm.expect(json).to.have.property('message');",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"PhoneHub Test Product {{uniqueSuffix}}\",\n  \"description\": \"Created by Postman collection\",\n  \"thumbnailUrl\": \"https://example.com/phone.png\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"brandId\": \"{{brandId}}\",\n  \"status\": true,\n  \"templates\": [\n    {\n      \"sku\": \"PH-{{uniqueSuffix}}\",\n      \"color\": \"Black\",\n      \"storage\": \"128GB\",\n      \"ram\": \"8GB\",\n      \"stockQuantity\": 20,\n      \"status\": true\n    }\n  ],\n  \"metadata\": {\n    \"salePrice\": 12990000,\n    \"screenSize\": 6.7,\n    \"batteryCapacity\": 5000,\n    \"operatingSystem\": \"Android\"\n  },\n  \"images\": []\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products/{{productId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products",
+            "{{productId}}"
+          ]
+        },
+        "description": "TestCaseId: ADM16\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Update product thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM17 - Soft delete product thanh cong",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM17\";",
+              "const expectedStatusCodes = [200, 204]; ",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Xóa (mềm) sản phẩm thành công, trả về mã hợp lệ`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý an toàn, không văng lỗi Server (No 5xx)`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// Nếu Backend của bạn có trả về message xác nhận (mã 200), ta check thêm cục JSON",
+              "if (pm.response.code === 200) {",
+              "    pm.test(`[${testCaseId}] Có trả về thông báo xác nhận dạng JSON`, () => {",
+              "        pm.response.to.be.json;",
+              "        pm.expect(pm.response.json()).to.have.property('message');",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products/{{productId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products",
+            "{{productId}}"
+          ]
+        },
+        "description": "TestCaseId: ADM17\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Soft delete product thanh cong"
+      },
+      "response": []
     }
   ],
   "event": [
