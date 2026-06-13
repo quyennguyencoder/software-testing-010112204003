@@ -175,7 +175,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"AORD03\";",
               "const expectedStatusCodes = [200, 201];",
@@ -205,7 +204,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -242,7 +244,7 @@
           }
         },
         "url": {
-          "raw": "{{baseUrl}}/api/v1/admin/orders/{{orderId}}/status",
+          "raw": "{{baseUrl}}/api/v1/admin/orders/{{orderId}}/status?newStatus=CONFIRMED",
           "host": [
             "{{baseUrl}}"
           ],
@@ -253,6 +255,13 @@
             "orders",
             "{{orderId}}",
             "status"
+          ],
+          "query": [
+            {
+              "key": "newStatus",
+              "value": "CONFIRMED",
+              "type": "text"
+            }
           ]
         },
         "description": "TestCaseId: AORD03\nModule: Admin Order/Dashboard/User\nType: Positive\nAuth: Admin token\nObjective: Chuyen trang thai hop le thanh cong"
