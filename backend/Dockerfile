@@ -1,17 +1,14 @@
 # Sử dụng image chứa sẵn Java 17
-FROM eclipse-temurin:17-jdk-alpine
+FROM maven:3.9.9-eclipse-temurin-17
 
 WORKDIR /app
 
-# Copy file cấu hình maven trước để tận dụng cache layer
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
-RUN chmod +x mvnw
-# Tải thư viện về (chỉ resolve dependencies cần thiết, tránh timeout)
-# RUN ./mvnw dependency:resolve -DskipTests
+# Copy only pom.xml first to cache dependency resolution
+COPY pom.xml ./
+RUN mvn -B -DskipTests dependency:resolve
 
 # Copy source code
 COPY src ./src
 
-# Chạy ứng dụng (skip test compilation vì tests chưa update cho Product refactor)
-CMD ["./mvnw", "spring-boot:run", "-Dmaven.test.skip=true"]
+# Run the Spring Boot app without tests
+CMD ["mvn", "spring-boot:run", "-Dmaven.test.skip=true"]
