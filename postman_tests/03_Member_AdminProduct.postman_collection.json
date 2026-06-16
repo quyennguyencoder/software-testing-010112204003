@@ -4755,7 +4755,6 @@
         "description": "TestCaseId: ADM17\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Soft delete product thanh cong"
       },
       "response": []
-<<<<<<< HEAD
     },
     {
       "name": "ADM18 - Product vua xoa xuat hien trong deleted list",
@@ -5071,7 +5070,7 @@
             "raw": {
               "language": "json"
             }
-          } 
+          }
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/admin/products/{{productId}}/images",
@@ -5163,8 +5162,6 @@
         "description": "TestCaseId: ADM20\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Them image thanh cong, luu imageId"
       },
       "response": []
-=======
->>>>>>> ef1463435f33093b3c76c4d8ea2944748f001be6
     }
   ],
   "event": [
