@@ -5070,7 +5070,7 @@
             "raw": {
               "language": "json"
             }
-          }
+          } 
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/admin/products/{{productId}}/images",
