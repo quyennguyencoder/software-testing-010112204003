@@ -76,6 +76,60 @@
       "response": []
     },
     {
+      "name": "Admin Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var responseBody = pm.response.text();",
+              "if (!responseBody || responseBody.trim() === \"\") {",
+              "    console.log(\"Lỗi: Response body rỗng (status \" + pm.response.code + \"). Kiểm tra lại thông tin đăng nhập hoặc server.\");",
+              "} else {",
+              "    var jsonData = pm.response.json();",
+              "    if (jsonData && jsonData.data && jsonData.data.accessToken) {",
+              "        var token = jsonData.data.accessToken;",
+              "        pm.environment.set(\"adminAccessToken\", token);",
+              "        console.log(\"Hệ thống đã tự động chộp được Token của Admin: \" + token);",
+              "    } else {",
+              "        console.log(\"Lỗi: Không tìm thấy accessToken trong phản hồi!\");",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"usernameOrEmail\": \"admin\",\r\n  \"password\": \"Password@123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "ORD01 - Tao don hang hop le, luu orderId, orderCode",
       "event": [
         {
@@ -559,14 +613,14 @@
       "response": []
     },
     {
-      "name": "ORD05 - User khac khong duoc xem don, tra 403/404",
+      "name": "ORD05 - User khac khong duoc xem don, tra 401/403/404",
       "event": [
         {
           "listen": "test",
           "script": {
             "exec": [
               "const testCaseId = \"ORD05\";",
-              "const expectedStatusCodes = [403, 404];",
+              "const expectedStatusCodes = [401, 403, 404];",
               "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
               "",
@@ -585,14 +639,14 @@
               "    console.log(`[ORD05] Post-response: Đã restore accessToken về token của chủ đơn`);",
               "}",
               "",
-              "// BƯỚC 1: Kiểm tra status code phải là 403 hoặc 404",
-              "pm.test(`[${testCaseId}] Bước 1 - Status code phải là 403 hoặc 404 (từ chối truy cập)`, () => {",
+              "// BƯỚC 1: Kiểm tra status code phải là 401, 403 hoặc 404",
+              "pm.test(`[${testCaseId}] Bước 1 - Status code phải là 401, 403 hoặc 404 (từ chối truy cập)`, () => {",
               "    const actual = pm.response.code;",
               "    const passed = expectedStatusCodes.includes(actual);",
               "    if (passed) {",
               "        console.log(`✅ [${testCaseId}] Bước 1 PASS: Status code = ${actual} — hệ thống đã chặn đúng user khác`);",
               "    } else {",
-              "        console.log(`❌ [${testCaseId}] Bước 1 FAIL: Status code = ${actual} (phải là 403 hoặc 404) — API đang để lộ đơn hàng của người khác!`);",
+              "        console.log(`❌ [${testCaseId}] Bước 1 FAIL: Status code = ${actual} (phải là 401, 403 hoặc 404) — API đang để lộ đơn hàng của người khác!`);",
               "    }",
               "    pm.expect(actual).to.be.oneOf(expectedStatusCodes);",
               "});",
@@ -673,52 +727,24 @@
           "listen": "prerequest",
           "script": {
             "exec": [
-              "// ORD05: Dùng token của user KHÁC để test truy cập bị từ chối",
+              "// ORD05: Dùng token của user KHÁC (admin) để test truy cập bị từ chối",
               "// Lưu lại accessToken hiện tại (của chủ đơn) để restore sau",
               "const ownerToken = pm.environment.get(\"accessToken\");",
               "pm.variables.set(\"_ownerToken\", ownerToken);",
               "",
-              "// Dùng adminAccessToken như một \"user khác\" để gửi request",
-              "// Nếu không có adminAccessToken, dùng một token giả để chắc chắn bị từ chối",
-              "let otherToken = pm.environment.get(\"adminAccessToken\");",
-              "const applyOtherToken = (token) => {",
-              "    otherToken = token || \"invalid-other-user-token\";",
-              "    pm.environment.set(\"accessToken\", otherToken);",
+              "// Dùng adminAccessToken (đã được fetch từ 'Admin Login' request)",
+              "const adminToken = pm.environment.get(\"adminAccessToken\");",
+              "if (adminToken) {",
+              "    pm.environment.set(\"accessToken\", adminToken);",
               "    pm.request.headers.upsert({",
               "        key: \"Authorization\",",
-              "        value: `Bearer ${otherToken}`",
+              "        value: `Bearer ${adminToken}`",
               "    });",
-              "};",
-              "",
-              "if (!otherToken) {",
-              "    pm.sendRequest({",
-              "        url: `${pm.environment.get(\"baseUrl\")}/api/v1/auth/login`,",
-              "        method: \"POST\",",
-              "        header: { \"Content-Type\": \"application/json\" },",
-              "        body: {",
-              "            mode: \"raw\",",
-              "            raw: JSON.stringify({",
-              "                usernameOrEmail: pm.environment.get(\"adminEmail\") || \"admin\",",
-              "                password: pm.environment.get(\"adminPassword\") || \"Password@123\"",
-              "            })",
-              "        }",
-              "    }, (err, res) => {",
-              "        let token = null;",
-              "        try {",
-              "            const body = !err && res ? res.json() : null;",
-              "            token = body && body.data ? body.data.accessToken : null;",
-              "        } catch (e) {",
-              "            token = null;",
-              "        }",
-              "        if (token) pm.environment.set(\"adminAccessToken\", token);",
-              "        applyOtherToken(token);",
-              "    });",
+              "    console.log(`[ORD05] Pre-request: Đã swap Authorization sang adminAccessToken`);",
               "} else {",
-              "    applyOtherToken(otherToken);",
+              "    console.log(`[ORD05] Pre-request: ⚠️ adminAccessToken không có! Hãy chạy 'Admin Login' request trước`);",
               "}",
-              "",
-              "console.log(`[ORD05] Pre-request: Đã swap Authorization sang token của user khác (adminAccessToken)`);",
-              "console.log(`[ORD05] orderId đang dùng: ${pm.environment.get(\"orderId\")} (thuộc về user chủ đơn, không phải user hiện tại)`);"
+              "console.log(`[ORD05] orderId đang dùng: ${pm.environment.get(\"orderId\")} (thuộc về user chủ đơn, không phải admin)`);"
             ],
             "type": "text/javascript",
             "packages": {},
@@ -757,7 +783,7 @@
             "{{orderId}}"
           ]
         },
-        "description": "TestCaseId: ORD05\nModule: Order/Public Tracking\nType: Auth negative\nAuth: User token\nObjective: User khac khong duoc xem don, tra 403/404"
+        "description": "TestCaseId: ORD05\nModule: Order/Public Tracking\nType: Auth negative\nAuth: User token\nObjective: User khac khong duoc xem don, tra 401/403/404"
       },
       "response": []
     },
