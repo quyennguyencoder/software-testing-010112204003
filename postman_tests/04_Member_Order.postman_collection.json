@@ -612,6 +612,7 @@
         "description": "TestCaseId: ORD04\nModule: Order/Public Tracking\nType: Positive\nAuth: User token\nObjective: User chu don xem chi tiet thanh cong"
       },
       "response": []
+
     },
     {
       "name": "ORD05 - User khac khong duoc xem don, tra 401/403/404",
