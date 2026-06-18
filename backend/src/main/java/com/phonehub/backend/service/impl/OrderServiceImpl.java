@@ -584,6 +584,7 @@ public class OrderServiceImpl implements IOrderService {
             case PENDING -> "Chờ xác nhận";
             case CONFIRMED -> "Đã xác nhận"; 
             case SHIPPING -> "Đang giao hàng";
+            case SHIPPED -> "Đang giao hàng";
             case DELIVERED -> "Đã giao hàng";
             case CANCELLED -> "Đã hủy";
         };
