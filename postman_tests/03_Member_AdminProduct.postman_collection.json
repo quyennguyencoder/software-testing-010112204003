@@ -5162,6 +5162,398 @@
         "description": "TestCaseId: ADM20\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Them image thanh cong, luu imageId"
       },
       "response": []
+    },
+    {
+      "name": "[Setup] - Thêm ảnh thứ 2",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM20\";",
+              "const expectedStatusCodes = [200, 201]; ",
+              "",
+              "pm.test(`[${testCaseId}] Thêm ảnh cho sản phẩm thành công (Mã 200/201)`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Không văng lỗi Server 5xx`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Backend trả về thông báo cập nhật thành công`, () => {",
+              "    pm.response.to.be.json;",
+              "    const json = pm.response.json();",
+              "    ",
+              "    // Check xem có chữ \"thành công\" trong message không",
+              "    pm.expect(json.message.toLowerCase()).to.include(\"thành công\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"images\": [\n    {\n      \"imageUrl\": \"https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-blue-thumbnew-600x600.jpg\",\n      \"altText\": \"Ảnh số 0\",\n      \"imageOrder\": 0,\n      \"isPrimary\": true\n    },\n    {\n      \"imageUrl\": \"https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-white-thumbnew-600x600.jpg\",\n      \"altText\": \"Ảnh số 1\",\n      \"imageOrder\": 1,\n      \"isPrimary\": false\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products/{{productId}}/images",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products",
+            "{{productId}}",
+            "images"
+          ]
+        },
+        "description": "TestCaseId: ADM20\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Them image thanh cong, luu imageId"
+      },
+      "response": []
+    },
+    {
+      "name": "[Setup] - Lấy chi tiết để hứng imageId",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(`[Setup] Tự động vớt imageId mới nhất lưu vào ví Postman`, () => {",
+              "    const json = pm.response.json();",
+              "    const data = json.data || json; ",
+              "",
+              "    // 1. Kiểm tra xem mảng images có tồn tại và có dữ liệu không",
+              "    pm.expect(data).to.have.property('images').that.is.an('array');",
+              "    pm.expect(data.images.length).to.be.greaterThan(0, \"Ối, mảng hình ảnh trống trơn, không có ID để lấy!\");",
+              "",
+              "    // 2. Lấy ID của bức ảnh cuối cùng trong mảng (chính là bức ảnh thứ 2 bạn vừa thêm)",
+              "    const currentImageId = data.images[data.images.length - 1].id;",
+              "",
+              "    // 3. Cất vào ví (Environment)",
+              "    pm.environment.set(\"imageId\", currentImageId);",
+              "    console.log(\"Đã hứng thành công imageId: \" + currentImageId);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products/{{productId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products",
+            "{{productId}}"
+          ]
+        },
+        "description": "TestCaseId: ADM15\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Chi tiet product hop le"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM21 - Xoa image thanh cong",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM21\";",
+              "// API Xóa thường trả về 200 (kèm message) hoặc 204 (Không có content)",
+              "const expectedStatusCodes = [200, 204]; ",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Xóa ảnh sản phẩm thành công (Mã 200 hoặc 204)`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý mượt mà, không văng lỗi 5xx`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// Chỉ kiểm tra JSON nếu Backend có trả về dữ liệu (mã 200)",
+              "if (pm.response.text() && pm.response.code === 200) {",
+              "    pm.test(`[${testCaseId}] Có trả về thông báo xác nhận xóa`, () => {",
+              "        pm.response.to.be.json;",
+              "        const json = pm.response.json();",
+              "        // Kiểm tra xem có trường message báo thành công không",
+              "        pm.expect(json).to.have.property('message');",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products/{{productId}}/images/{{imageId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products",
+            "{{productId}}",
+            "images",
+            "{{imageId}}"
+          ]
+        },
+        "description": "TestCaseId: ADM21\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Xoa image thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM21_1 - Xóa ảnh không thuộc sản phẩm",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM21_1\";",
+              "",
+              "const expectedStatusCodes = [400, 404]; ",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Chặn xóa (Mã 400/404) khi ID ảnh không thuộc về ID sản phẩm`, () => {",
+              "    // NẾU API TRẢ VỀ 200 HOẶC 204 Ở ĐÂY -> BÁO BUG CRITICAL NGAY LẬP TỨC!",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý an toàn, không văng lỗi 5xx`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "if (pm.response.text()) {",
+              "    pm.test(`[${testCaseId}] Có trả về thông báo lỗi báo việc không khớp dữ liệu`, () => {",
+              "        pm.response.to.be.json;",
+              "        const json = pm.response.json();",
+              "        pm.expect(json).to.have.property('message');",
+              "        ",
+              "        // In ra console để xem Dev Backend chửi câu gì",
+              "        console.log(\"Message trả về: \" + json.message);",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products/{{productId}}/images/56",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products",
+            "{{productId}}",
+            "images",
+            "56"
+          ]
+        },
+        "description": "TestCaseId: ADM21\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Xoa image thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADM22 - Tra metadata/san pham thoa dieu kien",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADM22\";",
+              "const expectedStatusCodes = [200]; // Lấy dữ liệu thì thường là mã 200 OK",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "",
+              "pm.test(`[${testCaseId}] Lấy dữ liệu thành công (Mã 200)`, () => {",
+              "    pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Hệ thống xử lý an toàn, không văng lỗi 5xx`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "pm.test(`[${testCaseId}] Có trả về dữ liệu (JSON) hợp lệ`, () => {",
+              "    pm.response.to.be.json;",
+              "    const json = pm.response.json();",
+              "    ",
+              "    // Tùy backend bọc trong 'data' hay trả về thẳng",
+              "    const data = json.data || json;",
+              "    ",
+              "    // Kì vọng dữ liệu trả về không bị lỗi null hay undefined",
+              "    pm.expect(data).to.not.be.null;",
+              "    pm.expect(data).to.not.be.undefined;",
+              "    ",
+              "    // Nếu bạn biết chắc nó phải trả về mảng, có thể mở comment dòng dưới:",
+              "    // pm.expect(data).to.be.an('array'); ",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminAccessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products/metadata/greater-than-price?price=150000",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "admin",
+            "products",
+            "metadata",
+            "greater-than-price"
+          ],
+          "query": [
+            {
+              "key": "price",
+              "value": "150000"
+            }
+          ]
+        },
+        "description": "TestCaseId: ADM22\nModule: Admin Product/Brand/Category\nType: Positive\nAuth: Admin token\nObjective: Tra metadata/san pham thoa dieu kien"
+      },
+      "response": []
     }
   ],
   "event": [
