@@ -1,4 +1,3 @@
-
 {
   "info": {
     "_postman_id": "cd473063-2318-4352-8ede-7a9f991d1749",
@@ -877,6 +876,108 @@
           ]
         },
         "description": "TestCaseId: ORD06\nModule: Order/Public Tracking\nType: Positive\nAuth: User token\nObjective: Lay danh sach don cua user"
+      },
+      "response": []
+    },
+    {
+      "name": "ORD07 - Pagination dung page, size, totalElements",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ORD07\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  json = pm.response.json();",
+              "  responseData = json.data || json;",
+              "}",
+              "",
+              "pm.test(`${testCaseId} - Kiểm tra status code hợp lệ (${expectedStatusCodes.join(\"/\")})`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} - Không có lỗi server (5xx)`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} - Thời gian phản hồi dưới ngưỡng cho phép`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} - Phản hồi trả về JSON hợp lệ`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "",
+              "if (pm.response.code === 200 && contentType.includes(\"application/json\")) {",
+              "  pm.test(`${testCaseId} - Dữ liệu trả về có mảng content`, () => {",
+              "    pm.expect(responseData).to.have.property(\"content\").that.is.an(\"array\");",
+              "  });",
+              "  pm.test(`${testCaseId} - Có trường totalElements`, () => {",
+              "    pm.expect(responseData).to.have.property(\"totalElements\").that.is.a(\"number\");",
+              "  });",
+              "  pm.test(`${testCaseId} - Có trường số trang (number)`, () => {",
+              "    pm.expect(responseData).to.have.property(\"number\").that.is.a(\"number\");",
+              "  });",
+              "  pm.test(`${testCaseId} - Có trường kích thước trang (size)`, () => {",
+              "    pm.expect(responseData).to.have.property(\"size\").that.is.a(\"number\");",
+              "  });",
+              "  pm.test(`${testCaseId} - Số trang trả về khớp với tham số page=0`, () => {",
+              "    pm.expect(responseData.number).to.eql(0);",
+              "  });",
+              "  pm.test(`${testCaseId} - Kích thước trang trả về khớp với tham số size=10`, () => {",
+              "    pm.expect(responseData.size).to.eql(10);",
+              "  });",
+              "",
+              "  const id = responseData.id || responseData.orderId;",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  if (responseData.orderCode) {",
+              "    pm.environment.set(\"createdOrderCode\", responseData.orderCode);",
+              "    pm.environment.set(\"orderCode\", responseData.orderCode);",
+              "  }",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/orders/my-orders/paginated?page=0&size=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "orders",
+            "my-orders",
+            "paginated"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "TestCaseId: ORD07\nModule: Order/Public Tracking\nType: Positive\nAuth: User token\nObjective: Pagination dung page, size, totalElements"
       },
       "response": []
     }
