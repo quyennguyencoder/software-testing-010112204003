@@ -161,6 +161,7 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+										<jvmArguments>-Duser.timezone=Asia/Ho_Chi_Minh</jvmArguments>
 				</configuration>
 			</plugin>
 		</plugins>

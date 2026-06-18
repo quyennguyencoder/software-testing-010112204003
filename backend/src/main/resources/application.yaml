@@ -1,7 +1,8 @@
 spring:
   application:
     name: phonehub-backend
-  
+  config:
+    import: optional:file:env.properties
   profiles:
     active: dev
   datasource:
@@ -10,7 +11,6 @@ spring:
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
-  
   jpa:
     hibernate:
       ddl-auto: update
@@ -19,6 +19,8 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          time_zone: Asia/Ho_Chi_Minh
     defer-datasource-initialization: true
 
   sql:
@@ -45,13 +47,13 @@ spring:
           connectiontimeout: 5000
           timeout: 5000
           writetimeout: 5000
-  
+
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
     mode: HTML
     encoding: UTF-8
-    cache: false  # false for development, true for production
+    cache: false # false for development, true for production
 
   security:
     oauth2:
