@@ -159,6 +159,7 @@ public class AdminOrderDetailResponse {
 		case PENDING -> "Chờ xác nhận";
 		case CONFIRMED -> "Đã xác nhận";
 		case SHIPPING -> "Đang giao hàng";
+		case SHIPPED -> "Đang giao hàng";
 		case DELIVERED -> "Đã giao hàng";
 		case CANCELLED -> "Đã hủy";
 		};
@@ -168,7 +169,7 @@ public class AdminOrderDetailResponse {
 		return switch (currentStatus) {
 		case PENDING -> List.of(OrderStatus.CONFIRMED, OrderStatus.CANCELLED);
 		case CONFIRMED -> List.of(OrderStatus.SHIPPING, OrderStatus.CANCELLED);
-		case SHIPPING -> List.of(OrderStatus.DELIVERED);
+		case SHIPPING, SHIPPED -> List.of(OrderStatus.DELIVERED);
 		case DELIVERED, CANCELLED -> List.of(); // No further transitions
 		};
 	}
