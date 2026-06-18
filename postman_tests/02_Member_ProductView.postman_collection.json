@@ -1,42 +1,87 @@
 {
   "info": {
-    "_postman_id": "013111f2-14ba-48d2-aa02-ed875c043f57",
+    "_postman_id": "59c91178-4baf-4c06-8c88-f793e6700cb7",
     "name": "02_Member_ProductView",
-    "description": "Generated from phonehub_postman_test_cases.xlsx. One request equals one testcase; request name starts with stable testcase ID for CI/Jira deduplication.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "46988351",
-    "_collection_link": "https://go.postman.co/collection/46988351-013111f2-14ba-48d2-aa02-ed875c043f57?source=collection_link"
+    "_exporter_id": "55361097",
+    "_collection_link": "https://go.postman.co/collection/55361097-59c91178-4baf-4c06-8c88-f793e6700cb7?source=collection_link"
   },
-  "item": [],
-  "event": [
+  "item": [
     {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          "const suffix = pm.environment.get(\"uniqueSuffix\") || Date.now().toString();",
-          "pm.environment.set(\"uniqueSuffix\", suffix);",
-          "pm.environment.set(\"todayIso\", new Date().toISOString().slice(0, 19));",
-          "pm.environment.set(\"futureIso\", new Date(Date.now() + 86400000 * 30).toISOString().slice(0, 19));",
-          "pm.environment.set(\"yesterdayIso\", new Date(Date.now() - 86400000).toISOString().slice(0, 19));",
-          "if (!pm.environment.get(\"currentEmail\")) pm.environment.set(\"currentEmail\", `user_${suffix}@test.com`);",
-          "if (!pm.environment.get(\"currentUsername\")) pm.environment.set(\"currentUsername\", `user_${suffix}`);",
-          "if (!pm.environment.get(\"userEmail\")) pm.environment.set(\"userEmail\", pm.environment.get(\"currentEmail\"));",
-          "if (!pm.environment.get(\"userPassword\")) pm.environment.set(\"userPassword\", \"Password@123\");",
-          "if (!pm.environment.get(\"adminPassword\")) pm.environment.set(\"adminPassword\", \"Password@123\");",
-          "if (!pm.environment.get(\"resetPassword\")) pm.environment.set(\"resetPassword\", \"Password@1234\");"
-        ]
-      }
-    }
-  ],
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "{{baseUrl}}"
-    },
-    {
-      "key": "responseTimeThresholdMs",
-      "value": "3000"
+      "name": "PV01 - Search keyword hop le tra danh sach/pagination",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"PV01\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/products/search?keyword=iphone&page=0&size=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "products",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "keyword",
+              "value": "iphone"
+            },
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "TestCaseId: PV01\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Search keyword hop le tra danh sach/pagination"
+      },
+      "response": []
     }
   ]
 }
