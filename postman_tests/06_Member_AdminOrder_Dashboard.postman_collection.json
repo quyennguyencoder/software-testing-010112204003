@@ -526,7 +526,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"AORD07\";",
               "const expectedStatusCodes = [200, 201];",
@@ -555,8 +554,23 @@
               "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}",
+              "",
+              "pm.test(`${testCaseId} response data should be an array`, () => {",
+              "    pm.expect(responseData).to.be.an('array');",
+              "});",
+              "",
+              "if (responseData && responseData.length > 0) {",
+              "    pm.test(`${testCaseId} first order should have required fields`, () => {",
+              "        pm.expect(responseData[0]).to.have.property('id');",
+              "        pm.expect(responseData[0]).to.have.property('orderCode');",
+              "        pm.expect(responseData[0]).to.have.property('status');",
+              "    });",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
