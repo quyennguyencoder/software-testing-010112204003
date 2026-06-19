@@ -9,7 +9,6 @@
   },
   "item": [
     {
-
       "name": "User Login",
       "event": [
         {
@@ -320,10 +319,7 @@
               "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
               "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
               "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-<
               "  if (url.includes(\"/cart/items\") && responseData.items && responseData.items.length > 0) { pm.environment.set(\"cartItemId\", responseData.items[0].id); } else if (id && url.includes(\"/cart/items\")) { pm.environment.set(\"cartItemId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
@@ -378,7 +374,6 @@
         "description": "TestCaseId: CART03\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Them san pham hop le, luu cartItemId"
       },
       "response": []
-
     },
     {
       "name": "CART04 - Product khong ton tai tra 404",
@@ -646,7 +641,6 @@
         "description": "TestCaseId: CART06\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Cap nhat quantity thanh cong"
       },
       "response": []
-<<<<<<< HEAD
     },
     {
       "name": "CART07 - Xoa item thanh cong",
@@ -723,9 +717,6 @@
         "description": "TestCaseId: CART07\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Xoa item thanh cong"
       },
       "response": []
-=======
-
->>>>>>> 77d7e086f9b93953b895717b62ce886cdb574da1
     }
   ],
   "event": [
