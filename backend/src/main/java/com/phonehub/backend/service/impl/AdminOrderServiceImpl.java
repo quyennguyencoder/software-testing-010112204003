@@ -290,7 +290,7 @@ public class AdminOrderServiceImpl implements IAdminOrderService {
 		return switch (currentStatus) {
 		case PENDING -> List.of(OrderStatus.CONFIRMED, OrderStatus.CANCELLED);
 		case CONFIRMED -> List.of(OrderStatus.SHIPPING, OrderStatus.CANCELLED);
-		case SHIPPING -> List.of(OrderStatus.DELIVERED);
+		case SHIPPING, SHIPPED -> List.of(OrderStatus.DELIVERED);
 		case DELIVERED, CANCELLED -> List.of(); // No further transitions
 		};
 	}
