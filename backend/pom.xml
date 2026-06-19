@@ -161,6 +161,44 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+										<jvmArguments>-Duser.timezone=Asia/Ho_Chi_Minh</jvmArguments>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.12</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<excludes>
+						<exclude>com/phonehub/backend/config/**</exclude>
+						<exclude>com/phonehub/backend/dto/**</exclude>
+						<exclude>com/phonehub/backend/entity/**</exclude>
+						<exclude>com/phonehub/backend/enums/**</exclude>
+						<exclude>com/phonehub/backend/event/**</exclude>
+						<exclude>com/phonehub/backend/exception/**</exclude>
+						<exclude>com/phonehub/backend/listener/**</exclude>
+						<exclude>com/phonehub/backend/mapper/**</exclude>
+						<exclude>com/phonehub/backend/repository/**</exclude>
+						<exclude>com/phonehub/backend/security/**</exclude>
+						<exclude>com/phonehub/backend/util/**</exclude>
+						<exclude>com/phonehub/backend/validator/**</exclude>
+						<exclude>com/phonehub/backend/service/intf/**</exclude>
+						<exclude>com/phonehub/backend/PhonehubBackendApplication.class</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 		</plugins>

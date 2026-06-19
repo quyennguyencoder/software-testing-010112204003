@@ -10,7 +10,7 @@ import com.phonehub.backend.dto.response.dashboard.TopProductResponse;
 import com.phonehub.backend.dto.response.dashboard.UserRegistrationChartResponse;
 import com.phonehub.backend.enums.DashboardPeriod;
 import com.phonehub.backend.enums.RegistrationPeriod;
-import com.phonehub.backend.service.IDashboardService;
+import com.phonehub.backend.service.intf.IDashboardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

@@ -4,7 +4,7 @@ import com.phonehub.backend.dto.ApiResponse;
 import com.phonehub.backend.dto.request.user.ChangePasswordRequest;
 import com.phonehub.backend.dto.request.user.UpdateProfileRequest;
 import com.phonehub.backend.dto.response.user.UserResponse;
-import com.phonehub.backend.service.IUserService;
+import com.phonehub.backend.service.intf.IUserService;
 import com.phonehub.backend.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

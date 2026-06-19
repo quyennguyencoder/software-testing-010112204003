@@ -3,7 +3,7 @@ package com.phonehub.backend.controller;
 import com.phonehub.backend.dto.ApiResponse;
 import com.phonehub.backend.dto.request.PromotionTemplateRequest;
 import com.phonehub.backend.dto.response.PromotionTemplateResponse;
-import com.phonehub.backend.service.IPromotionTemplateService;
+import com.phonehub.backend.service.intf.IPromotionTemplateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;

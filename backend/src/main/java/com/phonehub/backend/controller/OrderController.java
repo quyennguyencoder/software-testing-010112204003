@@ -5,7 +5,7 @@ import com.phonehub.backend.dto.request.order.CreateOrderRequest;
 import com.phonehub.backend.dto.response.order.CreateOrderResponse;
 import com.phonehub.backend.dto.response.order.OrderResponse;
 import com.phonehub.backend.enums.OrderStatus;
-import com.phonehub.backend.service.IOrderService;
+import com.phonehub.backend.service.intf.IOrderService;
 import com.phonehub.backend.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -226,6 +226,7 @@ public class OrderController {
             case PENDING -> "Chờ xác nhận";
             case CONFIRMED -> "Đã xác nhận";
             case SHIPPING -> "Đang giao hàng";
+            case SHIPPED -> "Đang giao hàng";
             case DELIVERED -> "Đã giao hàng";
             case CANCELLED -> "Đã hủy";
         };
@@ -236,6 +237,7 @@ public class OrderController {
             case PENDING -> "Đơn hàng đang chờ cửa hàng xác nhận. Thời gian xử lý: 1-2 giờ làm việc.";
             case CONFIRMED -> "Đơn hàng đã được xác nhận và đang chuẩn bị hàng hóa.";
             case SHIPPING -> "Đơn hàng đang được giao đến địa chỉ của bạn.";
+            case SHIPPED -> "Đơn hàng đang được giao đến địa chỉ của bạn.";
             case DELIVERED -> "Đơn hàng đã được giao thành công. Cảm ơn bạn đã mua hàng!";
             case CANCELLED -> "Đơn hàng đã bị hủy.";
         };

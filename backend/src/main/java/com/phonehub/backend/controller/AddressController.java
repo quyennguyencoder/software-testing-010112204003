@@ -3,7 +3,7 @@ package com.phonehub.backend.controller;
 import com.phonehub.backend.dto.ApiResponse;
 import com.phonehub.backend.dto.request.address.AddressRequest;
 import com.phonehub.backend.dto.response.address.AddressResponse;
-import com.phonehub.backend.service.IAddressService;
+import com.phonehub.backend.service.intf.IAddressService;
 import com.phonehub.backend.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

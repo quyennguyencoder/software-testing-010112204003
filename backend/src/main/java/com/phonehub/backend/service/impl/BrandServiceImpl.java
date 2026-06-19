@@ -8,7 +8,7 @@ import com.phonehub.backend.exception.BadRequestException;
 import com.phonehub.backend.exception.ResourceNotFoundException;
 import com.phonehub.backend.repository.BrandRepository;
 import com.phonehub.backend.repository.ProductRepository;
-import com.phonehub.backend.service.IBrandService;
+import com.phonehub.backend.service.intf.IBrandService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

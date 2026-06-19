@@ -3,7 +3,7 @@ package com.phonehub.backend.controller;
 import com.phonehub.backend.dto.ApiResponse;
 import com.phonehub.backend.dto.request.ChatbotAssistantUserRequest;
 import com.phonehub.backend.dto.response.ChatbotAssistantUserResponse;
-import com.phonehub.backend.service.IChatbotAssistantUserService;
+import com.phonehub.backend.service.intf.IChatbotAssistantUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.security.PermitAll;

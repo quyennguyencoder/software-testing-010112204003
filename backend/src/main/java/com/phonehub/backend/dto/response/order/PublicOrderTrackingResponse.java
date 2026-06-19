@@ -86,6 +86,7 @@ public class PublicOrderTrackingResponse {
             case PENDING -> "Chờ xác nhận";
             case CONFIRMED -> "Đã xác nhận";
             case SHIPPING -> "Đang giao hàng";
+            case SHIPPED -> "Đang giao hàng";
             case DELIVERED -> "Đã giao hàng";
             case CANCELLED -> "Đã hủy";
         };
@@ -96,6 +97,7 @@ public class PublicOrderTrackingResponse {
             case PENDING -> "Đơn hàng đang chờ cửa hàng xác nhận.  Thời gian xử lý: 1-2 giờ làm việc. ";
             case CONFIRMED -> "Đơn hàng đã được xác nhận và đang chuẩn bị hàng hóa.";
             case SHIPPING -> "Đơn hàng đang được giao đến địa chỉ của bạn.";
+            case SHIPPED -> "Đơn hàng đang được giao đến địa chỉ của bạn.";
             case DELIVERED -> "Đơn hàng đã được giao thành công.  Cảm ơn bạn đã mua hàng! ";
             case CANCELLED -> "Đơn hàng đã bị hủy. ";
         };
@@ -104,7 +106,7 @@ public class PublicOrderTrackingResponse {
     private static String[] getAvailableActions(OrderStatus status) {
         return switch (status) {
             case PENDING -> new String[]{"view_status", "cancel_order", "contact_support"};
-            case CONFIRMED, SHIPPING -> new String[]{"view_status", "contact_support"};
+            case CONFIRMED, SHIPPING, SHIPPED -> new String[]{"view_status", "contact_support"};
             case DELIVERED -> new String[]{"view_status", "review_product", "contact_support"};
             case CANCELLED -> new String[]{"view_status", "reorder", "contact_support"};
         };
@@ -115,6 +117,7 @@ public class PublicOrderTrackingResponse {
             case PENDING -> "Đơn hàng của bạn đang được xử lý. Bạn có thể hủy đơn nếu cần.";
             case CONFIRMED -> "Đơn hàng đã được xác nhận. Chúng tôi đang chuẩn bị hàng cho bạn.";
             case SHIPPING -> "Đơn hàng đang trên đường giao đến bạn. Vui lòng chú ý điện thoại.";
+            case SHIPPED -> "Đơn hàng đang trên đường giao đến bạn. Vui lòng chú ý điện thoại.";
             case DELIVERED -> "Đơn hàng đã giao thành công. Hãy đánh giá sản phẩm nhé!";
             case CANCELLED -> "Đơn hàng đã được hủy. Bạn có thể đặt lại đơn hàng mới.";
         };

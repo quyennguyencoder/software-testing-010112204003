@@ -4658,3 +4658,40 @@ ON CONFLICT (ward_code) DO NOTHING;
 -- Reset sequences for PostgreSQL
 SELECT setval('provinces_id_seq', (SELECT MAX(id) FROM provinces));
 SELECT setval('wards_id_seq', (SELECT MAX(id) FROM wards));
+
+-- ============================================================================
+-- 11. SAMPLE DATA FOR ORDERS (TESTING)
+-- ============================================================================
+
+INSERT INTO orders (id, order_code, user_id, email, recipient_name, phone_number, shipping_address, shipping_fee, shipping_unit, note, status, payment_method, total_amount, created_at, updated_at) VALUES
+(1, 'ORD-20240101-001', 2, 'huong.tran@gmail.com', 'Trần Thị Hương', '0912345678', '123 Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh', 30000.00, 'GHTK', 'Giao giờ hành chính', 'COMPLETED', 'COD', 35020000.00, NOW() - INTERVAL '5 days', NOW() - INTERVAL '3 days'),
+(2, 'ORD-20240102-002', 3, 'nam.le@gmail.com', 'Lê Văn Nam', '0923456789', '789 Trần Hưng Đạo, Phường 1, Quận 5, TP. Hồ Chí Minh', 0.00, 'GHN', '', 'PROCESSING', 'VNPAY', 22990000.00, NOW() - INTERVAL '2 days', NOW() - INTERVAL '2 days'),
+(3, 'ORD-20240103-003', 4, 'mai.pham@gmail.com', 'Phạm Thị Mai', '0934567890', '321 Võ Văn Tần, Phường 5, Quận 3, TP. Hồ Chí Minh', 25000.00, 'VIETTEL_POST', 'Gọi trước khi giao', 'PENDING', 'MOMO', 19015000.00, NOW() - INTERVAL '1 day', NOW() - INTERVAL '1 day'),
+(4, 'ORD-20240104-004', 14, 'user@gmail.com', 'User', '0987654321', 'Khu Công Nghệ Cao, TP. Thủ Đức, TP. Hồ Chí Minh', 15000.00, 'GHTK', '', 'SHIPPED', 'COD', 13005000.00, NOW() - INTERVAL '12 hours', NOW() - INTERVAL '6 hours');
+
+-- Reset sequences for orders
+SELECT setval('orders_id_seq', (SELECT MAX(id) FROM orders));
+
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES
+(1, 1, 1, 34990000.00), -- iPhone 15 Pro Max
+(2, 2, 1, 22990000.00), -- iPhone 15
+(3, 3, 1, 18990000.00), -- iPhone 14
+(4, 5, 1, 12990000.00); -- Samsung Galaxy S23 FE
+
+INSERT INTO order_status_history (order_id, status, changed_by, changed_at) VALUES
+(1, 'PENDING', 'SYSTEM', NOW() - INTERVAL '5 days'),
+(1, 'CONFIRMED', 'admin001', NOW() - INTERVAL '4 days'),
+(1, 'DELIVERED', 'admin001', NOW() - INTERVAL '3 days 12 hours'),
+(1, 'DELIVERED', 'SYSTEM', NOW() - INTERVAL '3 days'),
+(2, 'PENDING', 'SYSTEM', NOW() - INTERVAL '2 days'),
+(2, 'CONFIRMED', 'admin001', NOW() - INTERVAL '1 day 12 hours'),
+(3, 'PENDING', 'SYSTEM', NOW() - INTERVAL '1 day'),
+(4, 'PENDING', 'SYSTEM', NOW() - INTERVAL '12 hours'),
+(4, 'CONFIRMED', 'admin001', NOW() - INTERVAL '10 hours'),
+(4, 'DELIVERED', 'admin001', NOW() - INTERVAL '6 hours');
+
+INSERT INTO payments (order_id, provider, transaction_id, amount, status, note) VALUES
+(1, 'COD', NULL, 35020000.00, 'SUCCESS', 'Thanh toán tiền mặt khi nhận hàng'),
+(2, 'VNPAY', 'VNP123456789', 22990000.00, 'SUCCESS', 'Thanh toán qua VNPAY'),
+(3, 'VNPAY', NULL, 19015000.00, 'PENDING', 'Đang chờ thanh toán Momo'),
+(4, 'COD', NULL, 13005000.00, 'PENDING', 'Thanh toán tiền mặt khi nhận hàng');
