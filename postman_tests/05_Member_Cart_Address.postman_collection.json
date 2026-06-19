@@ -717,6 +717,10 @@
         "description": "TestCaseId: CART07\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Xoa item thanh cong"
       },
       "response": []
+
+=======
+
+
     },
     {
       "name": "CART08 - Xoa toan bo cart thanh cong",
@@ -792,6 +796,7 @@
         "description": "TestCaseId: CART08\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Xoa toan bo cart thanh cong"
       },
       "response": []
+
     },
     {
       "name": "CART09 - Tao guest cart thanh cong, luu guestCartId",
@@ -867,6 +872,7 @@
         "description": "TestCaseId: CART09\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: Public\nObjective: Tao guest cart thanh cong, luu guestCartId"
       },
       "response": []
+<<<<<<< HEAD
     },
     {
       "name": "CART10 - Cap nhat guest cart item thanh cong",
@@ -943,6 +949,10 @@
         "description": "TestCaseId: CART10\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: Public\nObjective: Cap nhat guest cart item thanh cong"
       },
       "response": []
+=======
+=======
+
+>>>>>>> cad8daa6525208384c36409bf88c74b024cd256f
     }
   ],
   "event": [
