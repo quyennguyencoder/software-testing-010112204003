@@ -60,7 +60,7 @@ public class CartServiceImpl implements ICartService {
     private static final int MAX_RETRY_ATTEMPTS = 3;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     @Cacheable(value = "cart", key = "#userId", unless = "#result == null")
     public CartResponse getCurrentCart(Long userId) {
         log.info("Getting cart for user: {}", userId);
