@@ -1,7 +1,7 @@
 package com.phonehub.backend.service.impl;
 
 import com.phonehub.backend.exception.EmailServiceException;
-import com.phonehub.backend.service.IEmailService;
+import com.phonehub.backend.service.intf.IEmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;

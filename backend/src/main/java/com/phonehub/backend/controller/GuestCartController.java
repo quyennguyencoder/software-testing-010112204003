@@ -3,7 +3,7 @@ package com.phonehub.backend.controller;
 import com.phonehub.backend.dto.ApiResponse;
 import com.phonehub.backend.dto.request.guestcart.GuestCartUpdateRequest;
 import com.phonehub.backend.dto.response.guestcart.GuestCartSessionResponse;
-import com.phonehub.backend.service.IGuestCartService;
+import com.phonehub.backend.service.intf.IGuestCartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;

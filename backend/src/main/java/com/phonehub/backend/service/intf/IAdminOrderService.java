@@ -1,5 +1,5 @@
 
-package com.phonehub.backend.service;
+package com.phonehub.backend.service.intf;
 
 import com.phonehub.backend.dto.request.order.AdminOrderFilterRequest;
 import com.phonehub.backend.dto.response.order.AdminOrderDetailResponse;
