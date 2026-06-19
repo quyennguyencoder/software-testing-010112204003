@@ -1,4 +1,4 @@
-package com.phonehub.backend.service;
+package com.phonehub.backend.service.intf;
 
 import com.phonehub.backend.dto.request.product.ManageImagesRequest;
 import org.springframework.data.domain.Page;

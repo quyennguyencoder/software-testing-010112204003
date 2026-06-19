@@ -1,4 +1,4 @@
-package com.phonehub.backend.service;
+package com.phonehub.backend.service.intf;
 
 import com.phonehub.backend.dto.response.location.ProvinceResponse;
 import com.phonehub.backend.dto.response.location.WardResponse;

@@ -6,7 +6,7 @@ import com.phonehub.backend.dto.request.cart.MergeGuestCartRequest;
 import com.phonehub.backend.dto.request.cart.UpdateCartItemRequest;
 import com.phonehub.backend.dto.response.cart.CartResponse;
 import com.phonehub.backend.dto.response.cart.MergeCartResponse;
-import com.phonehub.backend.service.ICartService;
+import com.phonehub.backend.service.intf.ICartService;
 import com.phonehub.backend.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

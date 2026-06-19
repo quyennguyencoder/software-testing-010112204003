@@ -4,7 +4,7 @@ import com.phonehub.backend.dto.ApiResponse;
 import com.phonehub.backend.dto.request.category.CreateCategoryRequest;
 import com.phonehub.backend.dto.request.category.UpdateCategoryRequest;
 import com.phonehub.backend.dto.response.category.CategoryResponse;
-import com.phonehub.backend.service.ICategoryService;
+import com.phonehub.backend.service.intf.ICategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

@@ -8,7 +8,7 @@ import com.phonehub.backend.dto.request.product.UpdateProductRequest;
 import com.phonehub.backend.dto.response.product.ProductDetailResponse;
 import com.phonehub.backend.dto.response.product.ProductListResponse;
 import com.phonehub.backend.dto.response.product.ProductTemplateResponse;
-import com.phonehub.backend.service.IProductService;
+import com.phonehub.backend.service.intf.IProductService;
 import com.phonehub.backend.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

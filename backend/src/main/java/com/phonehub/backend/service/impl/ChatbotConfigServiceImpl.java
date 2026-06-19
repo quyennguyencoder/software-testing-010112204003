@@ -5,8 +5,8 @@ import com.phonehub.backend.dto.response.ChatbotAssistantUserResponse.Recommende
 import com.phonehub.backend.dto.response.productview.ProductCardResponse;
 import com.phonehub.backend.entity.ChatbotConfig;
 import com.phonehub.backend.repository.ChatbotConfigRepository;
-import com.phonehub.backend.service.IChatbotConfigService;
-import com.phonehub.backend.service.IProductViewService;
+import com.phonehub.backend.service.intf.IChatbotConfigService;
+import com.phonehub.backend.service.intf.IProductViewService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

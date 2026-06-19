@@ -11,7 +11,7 @@ import com.phonehub.backend.exception.promotion.PromotionNotFoundException;
 import com.phonehub.backend.mapper.PromotionMapper;
 import com.phonehub.backend.repository.PromotionRepository;
 import com.phonehub.backend.repository.PromotionTemplateRepository;
-import com.phonehub.backend.service.IPromotionService;
+import com.phonehub.backend.service.intf.IPromotionService;
 import com.phonehub.backend.service.impl.promotion.PromotionDiscountCalculator;
 import com.phonehub.backend.service.impl.promotion.PromotionTargetManager;
 import com.phonehub.backend.service.impl.promotion.PromotionValidator;

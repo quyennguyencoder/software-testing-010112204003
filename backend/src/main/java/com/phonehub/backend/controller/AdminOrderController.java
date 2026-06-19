@@ -7,7 +7,7 @@ import com.phonehub.backend.dto.response.order.AdminOrderDetailResponse;
 import com.phonehub.backend.dto.response.order.AdminOrderListResponse;
 import com.phonehub.backend.enums.OrderStatus;
 import com.phonehub.backend.enums.PaymentMethod;
-import com.phonehub.backend.service.IAdminOrderService;
+import com.phonehub.backend.service.intf.IAdminOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
