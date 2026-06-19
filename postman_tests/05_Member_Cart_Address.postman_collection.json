@@ -717,6 +717,7 @@
         "description": "TestCaseId: CART07\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Xoa item thanh cong"
       },
       "response": []
+
     },
     {
       "name": "CART08 - Xoa toan bo cart thanh cong",
@@ -792,6 +793,7 @@
         "description": "TestCaseId: CART08\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Xoa toan bo cart thanh cong"
       },
       "response": []
+
     }
   ],
   "event": [
