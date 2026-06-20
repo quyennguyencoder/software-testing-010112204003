@@ -1,4 +1,4 @@
-package com.phonehub.backend.service;
+package com.phonehub.backend.service.intf;
 
 import com.phonehub.backend.dto.request.productview.ProductFilterRequest;
 import com.phonehub.backend.dto.request.productview.ProductSearchFilterRequest;

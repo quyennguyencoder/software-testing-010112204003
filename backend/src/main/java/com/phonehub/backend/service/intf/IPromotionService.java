@@ -1,4 +1,4 @@
-package com.phonehub.backend.service;
+package com.phonehub.backend.service.intf;
 
 import com.phonehub.backend.dto.request.PromotionRequest;
 import com.phonehub.backend.dto.response.PromotionResponse;

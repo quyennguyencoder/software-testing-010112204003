@@ -14,13 +14,12 @@ import com.phonehub.backend.entity.CartItem;
 import com.phonehub.backend.entity.Product;
 import com.phonehub.backend.entity.User;
 import com.phonehub.backend.event.CartUpdatedEvent;
-import com.phonehub.backend.exception.*;
 import com.phonehub.backend.repository.CartItemRepository;
 import com.phonehub.backend.repository.CartRepository;
 import com.phonehub.backend.repository.ProductRepository;
 import com.phonehub.backend.repository.UserRepository;
-import com.phonehub.backend.service.ICartService;
-import com.phonehub.backend.service.IGuestCartService;
+import com.phonehub.backend.service.intf.ICartService;
+import com.phonehub.backend.service.intf.IGuestCartService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.StaleObjectStateException;
@@ -60,7 +59,7 @@ public class CartServiceImpl implements ICartService {
     private static final int MAX_RETRY_ATTEMPTS = 3;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     @Cacheable(value = "cart", key = "#userId", unless = "#result == null")
     public CartResponse getCurrentCart(Long userId) {
         log.info("Getting cart for user: {}", userId);

@@ -14,7 +14,7 @@ import com.phonehub.backend.exception.UnauthorizedException;
 import com.phonehub.backend.mapper.UserMapper;
 import com.phonehub.backend.repository.UserRepository;
 import com.phonehub.backend.repository.UserSpecification;
-import com.phonehub.backend.service.IUserService;
+import com.phonehub.backend.service.intf.IUserService;
 import com.phonehub.backend.util.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

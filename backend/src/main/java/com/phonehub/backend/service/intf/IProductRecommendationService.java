@@ -1,4 +1,4 @@
-package com.phonehub.backend.service;
+package com.phonehub.backend.service.intf;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

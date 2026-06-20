@@ -5,7 +5,7 @@ import com.phonehub.backend.dto.response.payment.PaymentResponse;
 import com.phonehub.backend.entity.Payment;
 import com.phonehub.backend.mapper.PaymentMapper;
 import com.phonehub.backend.repository.PaymentRepository;
-import com.phonehub.backend.service.IPaymentService;
+import com.phonehub.backend.service.intf.IPaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

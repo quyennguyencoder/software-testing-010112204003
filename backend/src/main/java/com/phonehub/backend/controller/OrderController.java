@@ -5,7 +5,7 @@ import com.phonehub.backend.dto.request.order.CreateOrderRequest;
 import com.phonehub.backend.dto.response.order.CreateOrderResponse;
 import com.phonehub.backend.dto.response.order.OrderResponse;
 import com.phonehub.backend.enums.OrderStatus;
-import com.phonehub.backend.service.IOrderService;
+import com.phonehub.backend.service.intf.IOrderService;
 import com.phonehub.backend.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
