@@ -138,16 +138,15 @@ public class ProductServiceImplTest {
     }
     // Kiểm tra luồng chạy khi truyền vào một mức giá âm (-50), mong đợi trả về danh sách rỗng.
     @Test
-    void getProductMetadataGreaterThanPrice_NegativePrice() {
+    void getProductMetadataGreaterThanPrice_NegativePrice_ThrowsException() {
         BigDecimal price = BigDecimal.valueOf(-50);
 
-        when(productTemplateRepository.findByPriceGreaterThan(price)).thenReturn(Collections.emptyList());
-        when(productTemplateMapper.toResponseList(Collections.emptyList())).thenReturn(Collections.emptyList());
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            productService.getProductMetadataGreaterThanPrice(price);
+        });
 
-        List<ProductTemplateResponse> result = productService.getProductMetadataGreaterThanPrice(price);
-
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
+        assertTrue(exception.getMessage().contains("Giá tiền không hợp lệ"));
+        verify(productTemplateRepository, never()).findByPriceGreaterThan(any());
     }
     // Kiểm tra luồng chạy khi truyền vào mức giá bằng 0, mong đợi trả về danh sách chứa các sản phẩm có giá lớn hơn 0.
     @Test
