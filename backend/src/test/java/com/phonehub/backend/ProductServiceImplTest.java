@@ -120,7 +120,9 @@ public class ProductServiceImplTest {
         createProductRequest.setTemplates(Collections.singletonList(templateReq));
     } 
     
-    // --- Test for getProductMetadataGreaterThanPrice method --- //
+    // ==============================================================================
+    // TEST: createProduct
+    // ==============================================================================
     // Kiểm tra luồng chạy chính của hàm khi truyền vào một mức giá hợp lệ (100).
     @Test
     void getProductMetadataGreaterThanPrice_Success() {
@@ -146,6 +148,7 @@ public class ProductServiceImplTest {
         });
 
         assertTrue(exception.getMessage().contains("Giá tiền không hợp lệ"));
+
         verify(productTemplateRepository, never()).findByPriceGreaterThan(any());
     }
     // Kiểm tra luồng chạy khi truyền vào mức giá bằng 0, mong đợi trả về danh sách chứa các sản phẩm có giá lớn hơn 0.
@@ -190,5 +193,107 @@ public class ProductServiceImplTest {
 
 
         verify(productTemplateRepository, never()).findByPriceGreaterThan(any());
+    }
+
+    // ==============================================================================
+    // TEST: createProduct
+    // ==============================================================================
+    @Test
+    void createProduct_Success_NoMetadata() {
+        // Khởi tạo sản phẩm thành công (Không kèm Metadata)
+        
+        // 1. Dàn xếp diễn viên (Dựa vào dữ liệu từ hàm setUp() đã viết trước đó)
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(testCategory));
+        when(brandRepository.findById(1L)).thenReturn(Optional.of(testBrand));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+        
+        // Vượt qua vòng check trùng tên và trùng SKU
+        when(productRepository.existsByNameAndNotDeleted(createProductRequest.getName(), null)).thenReturn(false);
+        when(productTemplateRepository.existsBySku("SKU-1")).thenReturn(false);
+        
+        // Dàn xếp Mapper và Save
+        when(productMapper.toEntity(createProductRequest)).thenReturn(new Product());
+        when(productTemplateMapper.toEntity(any())).thenReturn(new ProductTemplate());
+        
+        Product savedProduct = new Product();
+        savedProduct.setId(1L);
+        // Cần khởi tạo list rỗng để code gốc gọi .size() không bị lỗi NullPointer
+        savedProduct.setTemplates(Collections.singletonList(new ProductTemplate())); 
+        
+        when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
+        when(productMapper.toDetailResponse(savedProduct)).thenReturn(new ProductDetailResponse());
+
+        // Chạy hàm thực tế
+        ProductDetailResponse result = productService.createProduct(createProductRequest, 1L);
+
+        // Nghiệm thu
+        assertNotNull(result);
+        verify(productRepository, times(1)).save(any(Product.class));
+        // Đảm bảo mapper metadata 
+        verify(productMetadataMapper, never()).toEntity(any()); 
+    }
+    // Kiểm tra luồng chạy chính của hàm khi truyền vào một CreateProductRequest hợp lệ, nhưng có kèm theo Metadata.
+    @Test
+    void createProduct_Success_WithMetadata() {
+        // (request.getMetadata() != null)
+        
+        // Gắn thêm Metadata vào Request
+        ProductMetadataRequest metadataRequest = new ProductMetadataRequest();
+        createProductRequest.setMetadata(metadataRequest); 
+
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(testCategory));
+        when(brandRepository.findById(1L)).thenReturn(Optional.of(testBrand));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+        when(productRepository.existsByNameAndNotDeleted(createProductRequest.getName(), null)).thenReturn(false);
+        when(productTemplateRepository.existsBySku("SKU-1")).thenReturn(false);
+        
+        when(productMapper.toEntity(createProductRequest)).thenReturn(new Product());
+        when(productTemplateMapper.toEntity(any())).thenReturn(new ProductTemplate());
+        
+        when(productMetadataMapper.toEntity(metadataRequest)).thenReturn(new ProductMetadata());
+
+        Product savedProduct = new Product();
+        savedProduct.setId(1L);
+        savedProduct.setTemplates(Collections.singletonList(new ProductTemplate()));
+        
+        when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
+        when(productMapper.toDetailResponse(savedProduct)).thenReturn(new ProductDetailResponse());
+
+        ProductDetailResponse result = productService.createProduct(createProductRequest, 1L);
+
+        assertNotNull(result);
+        verify(productMetadataMapper, times(1)).toEntity(metadataRequest);
+    }
+    // Kiểm tra luồng chạy khi truyền vào một CreateProductRequest có ID Danh mục (Category) không tồn tại, mong đợi ném ra ResourceNotFoundException.
+    @Test
+    void createProduct_CategoryNotFound_ThrowsException() {        
+        when(categoryRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Kỳ vọng hệ thống ném ra ResourceNotFoundException
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            productService.createProduct(createProductRequest, 1L);
+        });
+        verify(brandRepository, never()).findById(any());
+        verify(productRepository, never()).save(any());
+    }
+    // Kiểm tra luồng chạy khi truyền vào một CreateProductRequest có name trùng
+    @Test
+    void createProduct_DuplicateName_ThrowsException() {
+        
+        // Cho qua vòng check ID
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(testCategory));
+        when(brandRepository.findById(1L)).thenReturn(Optional.of(testBrand));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+        
+        // Cố tình báo là tên sản phẩm đã tồn tại
+        when(productRepository.existsByNameAndNotDeleted(createProductRequest.getName(), null)).thenReturn(true);
+
+        // Kỳ vọng văng BadRequestException do trùng tên
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            productService.createProduct(createProductRequest, 1L);
+        });
+
+        verify(productTemplateRepository, never()).existsBySku(any());
+        verify(productRepository, never()).save(any());
     }
 }
