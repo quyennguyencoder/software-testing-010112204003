@@ -202,7 +202,6 @@ public class ProductServiceImplTest {
     void createProduct_Success_NoMetadata() {
         // Khởi tạo sản phẩm thành công (Không kèm Metadata)
         
-        // 1. Dàn xếp diễn viên (Dựa vào dữ liệu từ hàm setUp() đã viết trước đó)
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(testCategory));
         when(brandRepository.findById(1L)).thenReturn(Optional.of(testBrand));
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
@@ -295,5 +294,53 @@ public class ProductServiceImplTest {
 
         verify(productTemplateRepository, never()).existsBySku(any());
         verify(productRepository, never()).save(any());
+    }
+    // ==============================================================================
+    // TEST: getProductById
+    // ==============================================================================
+    @Test
+    void getProductById_Success() {
+        // Lấy thông tin chi tiết sản phẩm thành công
+        Long productId = 1L;
+        Product mockProduct = new Product();
+        mockProduct.setId(productId);
+        
+        ProductDetailResponse mockResponse = new ProductDetailResponse();
+        mockResponse.setId(productId);
+
+        // Database tìm thấy sản phẩm
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.of(mockProduct));
+        
+        // Mapper chuyển đổi thành công
+        when(productMapper.toDetailResponse(mockProduct)).thenReturn(mockResponse);
+
+        // Gọi hàm thực tế
+        ProductDetailResponse result = productService.getProductById(productId);
+
+        // Nghiệm thu kết quả
+        assertNotNull(result);
+        assertEquals(productId, result.getId());
+        verify(productRepository, times(1)).findByIdAndIsDeletedFalse(productId);
+        verify(productMapper, times(1)).toDetailResponse(mockProduct);
+    }
+    // Kiểm tra luồng chạy khi truyền vào một ID sản phẩm không tồn tại, mong đợi ném ra ResourceNotFoundException.
+    @Test
+    void getProductById_NotFound_ThrowsException() {
+        // Sản phẩm không tồn tại hoặc đã bị xóa mềm (IsDeleted = true)
+        Long invalidProductId = 99L;
+
+        // Database trả về rỗng
+        when(productRepository.findByIdAndIsDeletedFalse(invalidProductId)).thenReturn(Optional.empty());
+
+        // Kỳ vọng hệ thống sẽ ném ra ResourceNotFoundException
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            productService.getProductById(invalidProductId);
+        });
+
+        // Kiểm tra đúng câu lệnh của hệ thống chưa 
+        assertTrue(exception.getMessage().contains("Không tìm thấy sản phẩm"));
+        
+        // bị văng lỗi giữa chừng nên Mapper không được gọi
+        verify(productMapper, never()).toDetailResponse(any());
     }
 }
