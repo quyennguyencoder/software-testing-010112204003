@@ -3,6 +3,7 @@ package com.phonehub.backend;
 import com.phonehub.backend.dto.request.product.CreateProductRequest;
 import com.phonehub.backend.dto.request.product.ProductMetadataRequest;
 import com.phonehub.backend.dto.request.product.ProductTemplateRequest;
+import com.phonehub.backend.dto.request.product.UpdateProductRequest;
 import com.phonehub.backend.dto.response.product.ProductDetailResponse;
 import com.phonehub.backend.dto.response.product.ProductTemplateResponse;
 import com.phonehub.backend.entity.Brand;
@@ -339,8 +340,131 @@ public class ProductServiceImplTest {
 
         // Kiểm tra đúng câu lệnh của hệ thống chưa 
         assertTrue(exception.getMessage().contains("Không tìm thấy sản phẩm"));
-        
-        // bị văng lỗi giữa chừng nên Mapper không được gọi
         verify(productMapper, never()).toDetailResponse(any());
     }
+
+    // ==============================================================================
+    // TEST: updateProduct
+    // ==============================================================================
+    @Test
+    void updateProduct_Success_FullUpdate() {
+        // Cập nhật đầy đủ thông tin (Name, Category, Brand, Templates, Metadata)
+        Long productId = 1L;
+        Product existingProduct = new Product();
+        existingProduct.setId(productId);
+        existingProduct.setName("Old Name");
+        existingProduct.setMetadata(new ProductMetadata()); 
+
+        UpdateProductRequest updateReq = new UpdateProductRequest();
+        updateReq.setName("New Name");
+        updateReq.setCategoryId(2L);
+        updateReq.setBrandId(2L);
+        
+        ProductTemplateRequest templateReq = new ProductTemplateRequest();
+        templateReq.setSku("NEW-SKU-1");
+        updateReq.setTemplates(Collections.singletonList(templateReq));
+        
+        ProductMetadataRequest metadataReq = new ProductMetadataRequest();
+        updateReq.setMetadata(metadataReq);
+
+        // Dàn xếp DB
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.of(existingProduct));
+        when(productRepository.existsByNameAndNotDeleted("New Name", productId)).thenReturn(false);
+        when(categoryRepository.findById(2L)).thenReturn(Optional.of(new Category()));
+        when(brandRepository.findById(2L)).thenReturn(Optional.of(new Brand()));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(new User()));
+        
+        // Dàn xếp Template & EntityManager
+        when(productTemplateRepository.existsBySku("NEW-SKU-1")).thenReturn(false);
+        doNothing().when(entityManager).flush(); 
+        when(productTemplateMapper.toEntity(any())).thenReturn(new ProductTemplate());
+        
+        // Dàn xếp Save & Return
+        when(productRepository.save(any(Product.class))).thenReturn(existingProduct);
+        when(productMapper.toDetailResponse(existingProduct)).thenReturn(new ProductDetailResponse());
+
+        // Gọi hàm
+        ProductDetailResponse result = productService.updateProduct(productId, updateReq, 1L);
+
+        assertNotNull(result);
+        verify(productRepository, times(1)).save(existingProduct);
+        // Kiểm tra xem có đi vào nhánh update existing metadata không
+        verify(productMetadataMapper, times(1)).updateEntityFromRequest(metadataReq, existingProduct.getMetadata());
+    }
+    // Cập nhật một phần (Chỉ đổi tên, không đổi Brand/Category/Templates, tạo Metadata MỚI)
+    @Test
+    void updateProduct_Success_PartialUpdate_NewMetadata() {
+        Long productId = 1L;
+        Product existingProduct = new Product();
+        existingProduct.setId(productId);
+        existingProduct.setName("Old Name");
+        existingProduct.setMetadata(null); 
+
+        UpdateProductRequest updateReq = new UpdateProductRequest();
+        updateReq.setName("Old Name"); 
+        updateReq.setMetadata(new ProductMetadataRequest()); // Update metadata
+
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.of(existingProduct));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(new User()));
+        
+        // Nhánh tạo mới metadata
+        when(productMetadataMapper.toEntity(any())).thenReturn(new ProductMetadata());
+        
+        when(productRepository.save(any(Product.class))).thenReturn(existingProduct);
+        when(productMapper.toDetailResponse(existingProduct)).thenReturn(new ProductDetailResponse());
+
+        ProductDetailResponse result = productService.updateProduct(productId, updateReq, 1L);
+
+        assertNotNull(result);
+        verify(productRepository, times(1)).save(existingProduct);
+        verify(productRepository, never()).existsByNameAndNotDeleted(any(), any()); // Không check tên
+        verify(entityManager, never()).flush(); // Không đụng tới templates
+    }
+    // Kiểm tra luồng chạy khi truyền vào một ID sản phẩm không tồn tại.
+    @Test
+    void updateProduct_NotFound_ThrowsException() {
+        // Sản phẩm không tồn tại
+        Long invalidProductId = 99L;
+        UpdateProductRequest updateReq = new UpdateProductRequest();
+
+        when(productRepository.findByIdAndIsDeletedFalse(invalidProductId)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            productService.updateProduct(invalidProductId, updateReq, 1L);
+        });
+
+        verify(productRepository, never()).save(any());
+    }
+    // Lỗi trùng SKU của sản phẩm khác
+    @Test
+    void updateProduct_DuplicateSkuFromAnotherProduct_ThrowsException() {
+        Long productId = 1L;
+        Product existingProduct = new Product();
+        existingProduct.setId(productId);
+
+        UpdateProductRequest updateReq = new UpdateProductRequest();
+        ProductTemplateRequest templateReq = new ProductTemplateRequest();
+        templateReq.setSku("DUPLICATE-SKU");
+        updateReq.setTemplates(Collections.singletonList(templateReq));
+
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.of(existingProduct));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(new User()));
+        
+        // SKU đã tồn tại và thuộc về Product mang ID số 2 
+        when(productTemplateRepository.existsBySku("DUPLICATE-SKU")).thenReturn(true);
+        Product anotherProduct = new Product();
+        anotherProduct.setId(2L); 
+        ProductTemplate existingTemplate = new ProductTemplate();
+        existingTemplate.setProduct(anotherProduct);
+        
+        when(productTemplateRepository.findBySku("DUPLICATE-SKU")).thenReturn(Optional.of(existingTemplate));
+
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            productService.updateProduct(productId, updateReq, 1L);
+        });
+
+        assertTrue(exception.getMessage().contains("SKU đã tồn tại"));
+        verify(entityManager, never()).flush(); 
+    }
+    
 }
