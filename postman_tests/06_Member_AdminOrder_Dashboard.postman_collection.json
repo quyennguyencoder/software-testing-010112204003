@@ -274,7 +274,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"AORD04\";",
               "const expectedStatusCodes = [400];",
@@ -304,7 +303,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -341,7 +343,7 @@
           }
         },
         "url": {
-          "raw": "{{baseUrl}}/api/v1/admin/orders/{{orderId}}/status",
+          "raw": "{{baseUrl}}/api/v1/admin/orders/{{orderId}}/status?newStatus=PENDING",
           "host": [
             "{{baseUrl}}"
           ],
@@ -352,6 +354,13 @@
             "orders",
             "{{orderId}}",
             "status"
+          ],
+          "query": [
+            {
+              "key": "newStatus",
+              "value": "PENDING",
+              "type": "text"
+            }
           ]
         },
         "description": "TestCaseId: AORD04\nModule: Admin Order/Dashboard/User\nType: Negative\nAuth: Admin token\nObjective: Chuyen trang thai khong hop le tra 400"
@@ -517,7 +526,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"AORD07\";",
               "const expectedStatusCodes = [200, 201];",
@@ -546,8 +554,23 @@
               "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}",
+              "",
+              "pm.test(`${testCaseId} response data should be an array`, () => {",
+              "    pm.expect(responseData).to.be.an('array');",
+              "});",
+              "",
+              "if (responseData && responseData.length > 0) {",
+              "    pm.test(`${testCaseId} first order should have required fields`, () => {",
+              "        pm.expect(responseData[0]).to.have.property('id');",
+              "        pm.expect(responseData[0]).to.have.property('orderCode');",
+              "        pm.expect(responseData[0]).to.have.property('status');",
+              "    });",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -746,7 +769,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"DASH02\";",
               "const expectedStatusCodes = [200, 201];",
@@ -776,7 +798,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -800,7 +825,7 @@
           }
         ],
         "url": {
-          "raw": "{{baseUrl}}/api/v1/admin/dashboard/revenue-chart?period=MONTHLY",
+          "raw": "{{baseUrl}}/api/v1/admin/dashboard/revenue-chart?period=monthly",
           "host": [
             "{{baseUrl}}"
           ],
@@ -814,7 +839,7 @@
           "query": [
             {
               "key": "period",
-              "value": "MONTHLY"
+              "value": "monthly"
             }
           ]
         },

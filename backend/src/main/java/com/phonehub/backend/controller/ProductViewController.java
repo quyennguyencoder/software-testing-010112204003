@@ -7,7 +7,7 @@ import com.phonehub.backend.dto.response.productview.CategoryProductsResponse;
 import com.phonehub.backend.dto.response.productview.ProductCardResponse;
 import com.phonehub.backend.dto.response.productview.ProductComparisonResponse;
 import com.phonehub.backend.dto.response.productview.ProductDetailViewResponse;
-import com.phonehub.backend.service.IProductViewService;
+import com.phonehub.backend.service.intf.IProductViewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
