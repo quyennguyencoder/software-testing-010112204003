@@ -466,5 +466,77 @@ public class ProductServiceImplTest {
         assertTrue(exception.getMessage().contains("SKU đã tồn tại"));
         verify(entityManager, never()).flush(); 
     }
-    
+    // ==============================================================================
+    // TEST: deleteProduct
+    // ============================================================================== 
+    // Test case Thành công: Bật cờ xóa mềm thành công
+    @Test
+    void deleteProduct_Success() {
+        // Chuẩn bị dữ liệu 
+        Long productId = 1L;
+        Long userId = 2L;
+
+        Product existingProduct = new Product();
+        existingProduct.setId(productId);
+        existingProduct.setIsDeleted(false); // Chưa bị xóa
+
+        User mockUser = new User();
+        mockUser.setId(userId);
+
+        // Giả lập DB trả về đúng sản phẩm và user
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.of(existingProduct));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
+        when(productRepository.save(any(Product.class))).thenReturn(existingProduct);
+
+        // Thực thi (When)
+        productService.deleteProduct(productId, userId);
+
+        // Bắt buộc phải xác nhận cờ isDeleted đã được chuyển thành true
+        assertTrue(existingProduct.getIsDeleted());
+        assertNotNull(existingProduct.getDeletedAt()); // Đã ghi nhận thời gian xóa
+        assertEquals(userId, existingProduct.getDeletedBy().getId()); 
+
+        // Xác nhận hàm save được gọi đúng 1 lần để lưu trạng thái
+        verify(productRepository, times(1)).save(existingProduct);
+    }
+
+    // 2. Sản phẩm không tồn tại
+    @Test
+    void deleteProduct_ProductNotFound_ThrowsException() {
+        Long invalidProductId = 99L;
+        Long userId = 2L;
+
+        // Giả lập không tìm thấy sản phẩm
+        when(productRepository.findByIdAndIsDeletedFalse(invalidProductId)).thenReturn(Optional.empty());
+
+        // Thực thi và bẫy lỗi
+        assertThrows(ResourceNotFoundException.class, () -> {
+            productService.deleteProduct(invalidProductId, userId);
+        });
+
+        // Xác nhận tuyệt đối không được gọi hàm save
+        verify(productRepository, never()).save(any());
+    }
+
+    // 3. Người dùng (Admin/Staff) không tồn tại
+    @Test
+    void deleteProduct_UserNotFound_ThrowsException() {
+        Long productId = 1L;
+        Long invalidUserId = 99L;
+
+        Product existingProduct = new Product();
+        existingProduct.setId(productId);
+
+        // Giả lập tìm thấy sản phẩm, nhưng user thì rỗng
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.of(existingProduct));
+        when(userRepository.findById(invalidUserId)).thenReturn(Optional.empty());
+
+        // Thực thi và bẫy lỗi
+        assertThrows(ResourceNotFoundException.class, () -> {
+            productService.deleteProduct(productId, invalidUserId);
+        });
+
+        // Trạng thái xóa chưa được kích hoạt, cấm gọi DB lưu
+        verify(productRepository, never()).save(any());
+    }
 }
