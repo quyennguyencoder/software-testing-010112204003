@@ -33,8 +33,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
+import java.util.Arrays;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -500,7 +501,7 @@ public class ProductServiceImplTest {
         verify(productRepository, times(1)).save(existingProduct);
     }
 
-    // 2. Sản phẩm không tồn tại
+    // Sản phẩm không tồn tại
     @Test
     void deleteProduct_ProductNotFound_ThrowsException() {
         Long invalidProductId = 99L;
@@ -518,7 +519,7 @@ public class ProductServiceImplTest {
         verify(productRepository, never()).save(any());
     }
 
-    // 3. Người dùng (Admin/Staff) không tồn tại
+    // Người dùng (Admin/Staff) không tồn tại
     @Test
     void deleteProduct_UserNotFound_ThrowsException() {
         Long productId = 1L;
@@ -537,6 +538,91 @@ public class ProductServiceImplTest {
         });
 
         // Trạng thái xóa chưa được kích hoạt, cấm gọi DB lưu
+        verify(productRepository, never()).save(any());
+    }
+    // ==============================================================================
+    // TEST: increaseStock
+    // ============================================================================== 
+    // Kịch bản Thành công
+    @Test
+    void increaseStock_Success() {
+        Long productId = 1L;
+        Integer amountToAdd = 5; 
+
+        Product existingProduct = new Product();
+        existingProduct.setId(productId);
+
+        // Tạo 2 cái phiên bản để test xem vòng lặp for có chạy đúng không
+        ProductTemplate template1 = new ProductTemplate();
+        template1.setStockQuantity(10); // Đang có 10
+
+        ProductTemplate template2 = new ProductTemplate();
+        template2.setStockQuantity(20); // Đang có 20
+
+        existingProduct.setTemplates(Arrays.asList(template1, template2));
+        
+
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.of(existingProduct));
+        when(productRepository.save(any(Product.class))).thenReturn(existingProduct);
+
+        // Thực thi
+        productService.increaseStock(productId, amountToAdd);
+
+        // Kiểm chứng: 10 + 5 = 15; 20 + 5 = 25
+        assertEquals(15, template1.getStockQuantity());
+        assertEquals(25, template2.getStockQuantity());
+        
+        verify(productRepository, times(1)).save(existingProduct);
+    }
+
+    // Truyền số lượng âm hoặc bằng 0
+    @Test
+    void increaseStock_InvalidAmount_ThrowsException() {
+        Long productId = 1L;
+        Integer invalidAmount = -5; // Cố tình truyền số âm
+
+        // Thực thi và bẫy lỗi 
+        assertThrows(BadRequestException.class, () -> {
+            productService.increaseStock(productId, invalidAmount);
+        });
+
+        // Bị chặn ở Trạm 1 nên tuyệt đối không được gọi xuống DB
+        verify(productRepository, never()).findByIdAndIsDeletedFalse(any());
+        verify(productRepository, never()).save(any());
+    }
+
+    // Sản phẩm không tồn tại
+    @Test
+    void increaseStock_ProductNotFound_ThrowsException() {
+        Long invalidProductId = 99L;
+        Integer amountToAdd = 5;
+
+        when(productRepository.findByIdAndIsDeletedFalse(invalidProductId)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            productService.increaseStock(invalidProductId, amountToAdd);
+        });
+
+        verify(productRepository, never()).save(any());
+    }
+
+    // Sản phẩm không có biến thể (Templates rỗng)
+    @Test
+    void increaseStock_NoTemplates_ThrowsException() {
+        Long productId = 1L;
+        Integer amountToAdd = 5;
+
+        Product productWithoutTemplates = new Product();
+        productWithoutTemplates.setId(productId);
+        productWithoutTemplates.setTemplates(new ArrayList<>()); 
+
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.of(productWithoutTemplates));
+
+        // validateProductHasTemplates ném ra
+        assertThrows(BadRequestException.class, () -> {
+            productService.increaseStock(productId, amountToAdd);
+        });
+
         verify(productRepository, never()).save(any());
     }
 }
