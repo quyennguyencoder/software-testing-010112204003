@@ -625,4 +625,103 @@ public class ProductServiceImplTest {
 
         verify(productRepository, never()).save(any());
     }
+    // ==============================================================================
+    // TEST: decreaseStock
+    // ==============================================================================
+    // Kịch bản Thành công: Thuật toán trừ lùi và break vòng lặp hoạt động chuẩn
+    @Test
+    void decreaseStock_Success_DeductSequentially() {
+        Long productId = 1L;
+        Integer amountToDecrease = 12; // mua 12 cái
+
+        Product existingProduct = new Product();
+        existingProduct.setId(productId);
+
+        //  tạo 3 biến thể 
+        ProductTemplate template1 = new ProductTemplate();
+        template1.setStockQuantity(2);  // Ít nhất
+
+        ProductTemplate template2 = new ProductTemplate();
+        template2.setStockQuantity(10); // Nhiều nhất 
+
+        ProductTemplate template3 = new ProductTemplate();
+        template3.setStockQuantity(5);  // Trung bình 
+
+        // Tổng kho = 17 (Đủ để trừ 12)
+        existingProduct.setTemplates(Arrays.asList(template1, template2, template3));
+
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.of(existingProduct));
+        when(productRepository.save(any(Product.class))).thenReturn(existingProduct);
+
+        // Thực thi
+        productService.decreaseStock(productId, amountToDecrease);
+
+        assertEquals(0, template2.getStockQuantity()); 
+        assertEquals(3, template3.getStockQuantity()); 
+        assertEquals(2, template1.getStockQuantity()); 
+        
+        verify(productRepository, times(1)).save(existingProduct);
+    }
+
+    // Lỗi: Truyền số lượng âm hoặc bằng 0
+    @Test
+    void decreaseStock_InvalidAmount_ThrowsException() {
+        Long productId = 1L;
+        Integer invalidAmount = -5; 
+
+        assertThrows(BadRequestException.class, () -> {
+            productService.decreaseStock(productId, invalidAmount);
+        });
+        verify(productRepository, never()).findByIdAndIsDeletedFalse(any());
+    }
+    // Lỗi: Sản phẩm không tồn tại 
+    @Test
+    void decreaseStock_ProductNotFound_ThrowsException() {
+        Long invalidProductId = 99L;
+        Integer amountToDecrease = 5;
+
+        when(productRepository.findByIdAndIsDeletedFalse(invalidProductId)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            productService.decreaseStock(invalidProductId, amountToDecrease);
+        });
+    }
+    // Lỗi: Sản phẩm không có biến thể nào 
+    @Test
+    void decreaseStock_NoTemplates_ThrowsException() {
+        Long productId = 1L;
+        Integer amountToDecrease = 5;
+
+        Product productWithoutTemplates = new Product();
+        productWithoutTemplates.setId(productId);
+        productWithoutTemplates.setTemplates(new ArrayList<>()); 
+
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.of(productWithoutTemplates));
+
+        assertThrows(BadRequestException.class, () -> {
+            productService.decreaseStock(productId, amountToDecrease);
+        });
+    } 
+    // Lỗi: Không đủ hàng trong kho 
+    @Test
+    void decreaseStock_InsufficientTotalStock_ThrowsException() {
+        Long productId = 1L;
+        Integer amountToDecrease = 50; // mua 50 cái
+
+        Product existingProduct = new Product();
+        existingProduct.setId(productId);
+
+        ProductTemplate template1 = new ProductTemplate();
+        template1.setStockQuantity(10); // Kho chỉ có 10
+
+        existingProduct.setTemplates(Collections.singletonList(template1));
+
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.of(existingProduct));
+        assertThrows(BadRequestException.class, () -> {
+            productService.decreaseStock(productId, amountToDecrease);
+        });
+
+        // Xác nhận không lưu bậy bạ xuống DB
+        verify(productRepository, never()).save(any());
+    } 
 }
