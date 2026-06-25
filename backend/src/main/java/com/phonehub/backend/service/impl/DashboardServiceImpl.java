@@ -158,6 +158,7 @@ public class DashboardServiceImpl implements IDashboardService {
                 OrderStatus.PENDING, "Chờ xác nhận",
                 OrderStatus.CONFIRMED, "Đã xác nhận",
                 OrderStatus.SHIPPING, "Đang giao hàng",
+                OrderStatus.SHIPPED, "Đang giao hàng",
                 OrderStatus.DELIVERED, "Đã giao hàng",
                 OrderStatus.CANCELLED, "Đã hủy"
         );
@@ -303,6 +304,7 @@ public class DashboardServiceImpl implements IDashboardService {
                 OrderStatus.PENDING, "Chờ xác nhận",
                 OrderStatus.CONFIRMED, "Đã xác nhận",
                 OrderStatus.SHIPPING, "Đang giao hàng",
+                OrderStatus.SHIPPED, "Đang giao hàng",
                 OrderStatus.DELIVERED, "Đã giao hàng",
                 OrderStatus.CANCELLED, "Đã hủy"
         );
