@@ -1039,8 +1039,99 @@ public class ProductServiceImplTest {
         assertEquals(102L, response.getImages().get(0).getId()); 
         assertEquals(101L, response.getImages().get(1).getId()); 
     }
+    // ==============================================================================
+    // TEST: restoreProduct
+    // ==============================================================================
+    // Lỗi không tìm thấy sản phẩm
+    @Test
+    void restoreProduct_ProductNotFound_ThrowsResourceNotFoundException() {
+        Long productId = 999L;
+        Long userId = 1L;
 
-    
+        when(productRepository.findByIdIncludingDeleted(productId)).thenReturn(Optional.empty());
+
+        // Bắt buộc văng lỗi ResourceNotFoundException
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            productService.restoreProduct(productId, userId);
+        });
+
+        assertEquals("Không tìm thấy sản phẩm với ID: " + productId, exception.getMessage());
+        verify(productRepository, never()).save(any());
+    }
+
+    // Lỗi sản phẩm chưa bị xóa
+    @Test
+    void restoreProduct_ProductNotDeleted_ThrowsBadRequestException() {
+        Long productId = 1L;
+        Long userId = 1L;
+
+        Product product = new Product();
+        product.setId(productId);
+        product.setIsDeleted(false);
+
+        when(productRepository.findByIdIncludingDeleted(productId)).thenReturn(Optional.of(product));
+
+        // Thực thi và kiểm chứng
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            productService.restoreProduct(productId, userId);
+        });
+
+        assertEquals("Sản phẩm này chưa bị xóa", exception.getMessage());
+        verify(productRepository, never()).save(any());
+    }
+
+    // Lỗi người dùng (Admin) thực hiện khôi phục không tồn tại
+    @Test
+    void restoreProduct_UserNotFound_ThrowsResourceNotFoundException() {
+        Long productId = 1L;
+        Long userId = 999L; 
+
+        // Giả lập sản phẩm đã bị xóa (Hợp lệ để khôi phục)
+        Product product = new Product();
+        product.setId(productId);
+        product.setIsDeleted(true);
+
+        when(productRepository.findByIdIncludingDeleted(productId)).thenReturn(Optional.of(product));
+        // Giả lập User không tồn tại
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        // Thực thi và kiểm chứng
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            productService.restoreProduct(productId, userId);
+        });
+
+        assertEquals("Không tìm thấy người dùng với ID: " + userId, exception.getMessage());
+        verify(productRepository, never()).save(any());
+    }
+
+    // Khôi phục thành công 
+    @Test
+    void restoreProduct_ValidRequest_RestoresProductSuccessfully() {
+        Long productId = 1L;
+        Long userId = 1L;
+
+        Product product = new Product();
+        product.setId(productId);
+        product.setIsDeleted(true);
+        product.setDeletedAt(java.time.LocalDateTime.now());
+        product.setDeletedBy(new User());
+
+        User adminUser = new User();
+        adminUser.setId(userId);
+
+        when(productRepository.findByIdIncludingDeleted(productId)).thenReturn(Optional.of(product));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(adminUser));
+
+        // Thực thi
+        productService.restoreProduct(productId, userId);
+
+        // Trạng thái sản phẩm phải được đảo ngược 
+        assertFalse(product.getIsDeleted());
+        assertNull(product.getDeletedAt());
+        assertNull(product.getDeletedBy());
+        assertEquals(adminUser, product.getUpdatedBy()); 
+        verify(productRepository, times(1)).save(product);
+    }
 
 
 }
