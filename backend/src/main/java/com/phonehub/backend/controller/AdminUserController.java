@@ -6,7 +6,7 @@ import com.phonehub.backend.dto.response.user.PagedUserResponse;
 import com.phonehub.backend.dto.response.user.UserResponse;
 import com.phonehub.backend.enums.UserRole;
 import com.phonehub.backend.enums.UserStatus;
-import com.phonehub.backend.service.IUserService;
+import com.phonehub.backend.service.intf.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

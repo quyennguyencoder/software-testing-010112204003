@@ -3,7 +3,7 @@ package com.phonehub.backend.controller;
 import com.phonehub.backend.dto.ApiResponse;
 import com.phonehub.backend.dto.response.location.ProvinceResponse;
 import com.phonehub.backend.dto.response.location.WardResponse;
-import com.phonehub.backend.service.ILocationService;
+import com.phonehub.backend.service.intf.ILocationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

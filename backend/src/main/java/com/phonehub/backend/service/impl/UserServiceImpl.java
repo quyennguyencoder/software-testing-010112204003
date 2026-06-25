@@ -14,7 +14,7 @@ import com.phonehub.backend.exception.UnauthorizedException;
 import com.phonehub.backend.mapper.UserMapper;
 import com.phonehub.backend.repository.UserRepository;
 import com.phonehub.backend.repository.UserSpecification;
-import com.phonehub.backend.service.IUserService;
+import com.phonehub.backend.service.intf.IUserService;
 import com.phonehub.backend.util.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -139,6 +139,7 @@ public class UserServiceImpl implements IUserService {
 
         // --- ĐOẠN CODE THÊM MỚI ĐỂ FIX BUG ---
         // 1. Lấy tên tài khoản (username) của Admin đang đăng nhập hiện tại
+<<<<<<< HEAD
         String currentUsername = org.springframework.security.core.context.SecurityContextHolder
                 .getContext().getAuthentication().getName();
         
@@ -148,6 +149,20 @@ public class UserServiceImpl implements IUserService {
         // 3. Nếu Admin đang đăng nhập lại tự truyền ID của chính mình vào để khóa -> Chặn luôn!
         if (currentAdmin != null && currentAdmin.getId().equals(userId)) {
             throw new BadRequestException("Bạn không thể tự khóa tài khoản của chính mình!");
+=======
+        org.springframework.security.core.Authentication authentication = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+        if (authentication != null && authentication.getName() != null) {
+            String currentUsername = authentication.getName();
+
+            // 2. Tìm thông tin của Admin đó trong database
+            User currentAdmin = userRepository.findByUsername(currentUsername).orElse(null);
+
+            // 3. Nếu Admin đang đăng nhập lại tự truyền ID của chính mình vào để khóa -> Chặn luôn!
+            if (currentAdmin != null && currentAdmin.getId().equals(userId)) {
+                throw new BadRequestException("Bạn không thể tự khóa tài khoản của chính mình!");
+            }
+>>>>>>> 36debd7906168b3bbdfe98cf169ae20c499fddc5
         }
         // -------------------------------------
 

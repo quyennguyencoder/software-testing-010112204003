@@ -4,7 +4,7 @@ import com.phonehub.backend.dto.request.cart.MergeGuestCartRequest;
 import com.phonehub.backend.dto.request.guestcart.GuestCartItemRequest;
 import com.phonehub.backend.dto.request.guestcart.GuestCartUpdateRequest;
 import com.phonehub.backend.exception.BadRequestException;
-import com.phonehub.backend.service.IGuestCartService;
+import com.phonehub.backend.service.intf.IGuestCartService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

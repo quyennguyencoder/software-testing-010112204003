@@ -7,7 +7,7 @@ import com.phonehub.backend.entity.Ward;
 import com.phonehub.backend.exception.ResourceNotFoundException;
 import com.phonehub.backend.repository.ProvinceRepository;
 import com.phonehub.backend.repository.WardRepository;
-import com.phonehub.backend.service.ILocationService;
+import com.phonehub.backend.service.intf.ILocationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
