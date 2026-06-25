@@ -1235,4 +1235,146 @@ public class ProductServiceImplTest {
         assertEquals("Thứ tự ảnh phải liên tục từ 0 đến 1", exception.getMessage());
         verify(productImageRepository, never()).deleteByProductId(any());
     }
+    // ==============================================================================
+    // TEST: deleteProductImage
+    // ==============================================================================
+    // Lỗi không tìm thấy sản phẩm
+    @Test
+    void deleteProductImage_ProductNotFound_ThrowsResourceNotFoundException() {
+        Long productId = 1L;
+        Long imageId = 10L;
+
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            productService.deleteProductImage(productId, imageId);
+        });
+
+        // Chú ý: Code hiện tại của sếp đang thiếu '+ productId' ở chuỗi này
+        assertEquals("Không tìm thấy sản phẩm với ID:", exception.getMessage());
+    }
+
+    // Lỗi không tìm thấy ảnh
+    @Test
+    void deleteProductImage_ImageNotFound_ThrowsResourceNotFoundException() {
+        Long productId = 1L;
+        Long imageId = 10L;
+
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.of(new Product()));
+        when(productImageRepository.findById(imageId)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            productService.deleteProductImage(productId, imageId);
+        });
+
+        assertEquals("Không tìm thấy hình ảnh với ID: " + imageId, exception.getMessage());
+    }
+
+    // Lỗi ảnh không thuộc về sản phẩm
+    @Test
+    void deleteProductImage_ImageDoesNotBelongToProduct_ThrowsBadRequestException() {
+        Long productId = 1L;
+        Long imageId = 10L;
+
+        Product productRequest = new Product(); productRequest.setId(productId);
+        Product differentProduct = new Product(); differentProduct.setId(99L); 
+
+        ProductImage image = new ProductImage();
+        image.setId(imageId);
+        image.setProduct(differentProduct); 
+
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.of(productRequest));
+        when(productImageRepository.findById(imageId)).thenReturn(Optional.of(image));
+
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            productService.deleteProductImage(productId, imageId);
+        });
+
+        assertEquals("Hình ảnh không thuộc sản phẩm này", exception.getMessage());
+    }
+
+    // Lỗi xóa tấm ảnh cuối cùng
+    @Test
+    void deleteProductImage_OnlyOneImageLeft_ThrowsBadRequestException() {
+        Long productId = 1L;
+        Long imageId = 10L;
+
+        Product product = new Product(); product.setId(productId);
+        ProductImage image = new ProductImage(); image.setId(imageId); image.setProduct(product);
+
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.of(product));
+        when(productImageRepository.findById(imageId)).thenReturn(Optional.of(image));
+        
+        // Giả lập DB chỉ còn đúng 1 tấm ảnh này
+        when(productImageRepository.findByProductIdOrderByImageOrderAsc(productId))
+                .thenReturn(List.of(image));
+
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            productService.deleteProductImage(productId, imageId);
+        });
+
+        assertEquals("Không thể xóa ảnh cuối cùng. Sản phẩm cần ít nhất 1 ảnh", exception.getMessage());
+        verify(productImageRepository, never()).delete(any());
+    }
+
+    // Xóa ảnh phụ thành công 
+    @Test
+    void deleteProductImage_NormalImage_DeletesSuccessfully() {
+        Long productId = 1L;
+        Long imageId = 10L;
+
+        Product product = new Product(); product.setId(productId);
+        
+        ProductImage imageToDelete = new ProductImage(); 
+        imageToDelete.setId(imageId); 
+        imageToDelete.setProduct(product);
+        imageToDelete.setIsPrimary(false); 
+
+        ProductImage anotherImage = new ProductImage(); 
+
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.of(product));
+        when(productImageRepository.findById(imageId)).thenReturn(Optional.of(imageToDelete));
+        when(productImageRepository.findByProductIdOrderByImageOrderAsc(productId))
+                .thenReturn(Arrays.asList(imageToDelete, anotherImage));
+
+        // Thực thi
+        productService.deleteProductImage(productId, imageId);
+
+        // Kiểm chứng: Chỉ xóa ảnh, KHÔNG lưu ảnh mới
+        verify(productImageRepository, times(1)).delete(imageToDelete);
+        verify(productImageRepository, never()).save(any());
+    }
+
+    // Xóa ảnh chính thành công (Kèm thăng cấp ảnh phụ lên làm chính)
+    @Test
+    void deleteProductImage_PrimaryImage_DeletesAndPromotesNewPrimary() {
+        Long productId = 1L;
+        Long imageId = 10L;
+
+        Product product = new Product(); product.setId(productId);
+        
+        ProductImage imageToDelete = new ProductImage(); 
+        imageToDelete.setId(imageId); 
+        imageToDelete.setProduct(product);
+        imageToDelete.setIsPrimary(true); 
+
+        ProductImage remainingImage = new ProductImage(); 
+        remainingImage.setId(20L);
+        remainingImage.setIsPrimary(false);
+
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.of(product));
+        when(productImageRepository.findById(imageId)).thenReturn(Optional.of(imageToDelete));
+        
+        when(productImageRepository.findByProductIdOrderByImageOrderAsc(productId))
+                .thenReturn(Arrays.asList(imageToDelete, remainingImage))
+                .thenReturn(List.of(remainingImage));
+        // Thực thi
+        productService.deleteProductImage(productId, imageId);
+
+        // Kiểm chứng
+        verify(productImageRepository, times(1)).delete(imageToDelete);
+        
+        assertTrue(remainingImage.getIsPrimary());
+        verify(productImageRepository, times(1)).save(remainingImage);
+    }
 }
