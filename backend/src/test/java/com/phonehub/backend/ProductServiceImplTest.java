@@ -955,7 +955,92 @@ public class ProductServiceImplTest {
         assertEquals(1L, result.getContent().get(0).getId());
         assertEquals(2L, result.getContent().get(1).getId());
     }
+    // ==============================================================================
+    // TEST: getDeletedProducts
+    // ==============================================================================
+    // hàm getDeletedProducts: Sản phẩm không có ảnh 
+    @Test
+    void getDeletedProducts_NoImages_ReturnsMappedPage() {
+        // Chuẩn bị dữ liệu đầu vào
+        String keyword = "iPhone";
+        Long categoryId = 1L;
+        Long brandId = 2L;
+        Pageable pageable = PageRequest.of(0, 10);
+
+        // Tạo giả 1 sản phẩm bị rỗng ảnh
+        Product productNoImage = new Product();
+        productNoImage.setId(1L);
+        productNoImage.setImages(null); // để null
+        
+        ProductTemplate template = new ProductTemplate();
+        template.setPrice(java.math.BigDecimal.ZERO);
+        productNoImage.setTemplates(List.of(template));
+
+        Page<Product> mockPage = new PageImpl<>(List.of(productNoImage));
+        when(productRepository.findDeletedProducts(keyword, categoryId, brandId, pageable))
+                .thenReturn(mockPage);
+
+        ProductListResponse mockResponse = new ProductListResponse();
+        when(productMapper.toListResponse(productNoImage)).thenReturn(mockResponse);
+
+        Page<ProductListResponse> result = productService.getDeletedProducts(keyword, categoryId, brandId, pageable);
+
+        assertNotNull(result);
+        assertEquals(1, result.getContent().size());
+        
+        ProductListResponse response = result.getContent().get(0);
+        assertEquals(0, response.getImageCount()); // Xác nhận đếm = 0
+        assertNull(response.getImages()); // Xác nhận danh sách ảnh không được build
+        
+        // Xác nhận đã gọi đúng hàm Repo chuyên dụng cho đồ đã xóa
+        verify(productRepository, times(1)).findDeletedProducts(keyword, categoryId, brandId, pageable);
+    }
+
+    // hàm getDeletedProducts: Sản phẩm có ảnh + thuật toán sắp xếp ảnh 
+    @Test
+    void getDeletedProducts_WithImages_SortsAndMapsImagesCorrectly() {
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Product productWithImages = new Product();
+        productWithImages.setId(1L);
+        
+        ProductTemplate template = new ProductTemplate();
+        template.setPrice(java.math.BigDecimal.ZERO);
+        productWithImages.setTemplates(List.of(template));
+
+        ProductImage img1 = new ProductImage();
+        img1.setId(101L);
+        img1.setImageOrder(2); // Ảnh này thứ tự số 2
+
+        ProductImage img2 = new ProductImage();
+        img2.setId(102L);
+        img2.setImageOrder(1); // Ảnh này thứ tự số 1 
+
+        productWithImages.setImages(Arrays.asList(img1, img2));
+
+        Page<Product> mockPage = new PageImpl<>(List.of(productWithImages));
+        when(productRepository.findDeletedProducts(null, null, null, pageable))
+                .thenReturn(mockPage);
+
+        ProductListResponse mockResponse = new ProductListResponse();
+        when(productMapper.toListResponse(productWithImages)).thenReturn(mockResponse);
+
+        // Thực thi
+        Page<ProductListResponse> result = productService.getDeletedProducts(null, null, null, pageable);
+
+        // Kiểm chứng
+        assertEquals(1, result.getContent().size());
+        ProductListResponse response = result.getContent().get(0);
+        
+        assertEquals(2, response.getImageCount()); 
+        assertNotNull(response.getImages());
+        assertEquals(2, response.getImages().size());
+        
+        assertEquals(102L, response.getImages().get(0).getId()); 
+        assertEquals(101L, response.getImages().get(1).getId()); 
+    }
 
     
+
 
 }
