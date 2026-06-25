@@ -9,7 +9,7 @@
   },
   "item": [
     {
-      "name": "AUTH01 - Dang ky hop le tra 200/201, co message thanh cong Copy",
+      "name": "AUTH01 - Dang ky hop le tra 200/201, co message thanh cong",
       "event": [
         {
           "listen": "test",
@@ -19,7 +19,7 @@
               "const expectedStatusCodes = [200, 201];",
               "const responseTimeThresholdMs = testCaseId === \"AUTH01\" ? 5000 : testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let data = {};",
+              "let json = {};",
               "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -52,8 +52,12 @@
         {
           "listen": "prerequest",
           "script": {
-            "exec": [],
-            "type": "text/javascript"
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -94,40 +98,40 @@
       "response": []
     },
     {
-      "name": "AUTH02 - Email sai format tra 400 Copy",
+      "name": "AUTH02 - Email sai format tra 400",
       "event": [
         {
           "listen": "test",
           "script": {
             "exec": [
-              "const testCaseId = \"AUTH02\";",
-              "const expectedStatusCodes = [400, 409];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let data = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = data.id || data.productId || data.orderId || data.addressId || data.cartItemId || data.guestCartId;",
-              "  if (data.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", data.accessToken); }",
-              "  if (data.refreshToken) pm.environment.set(\"refreshToken\", data.refreshToken);",
-              "  if (data.user && data.user.id) pm.environment.set(\"userId\", data.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (data.orderCode) { pm.environment.set(\"createdOrderCode\", data.orderCode); pm.environment.set(\"orderCode\", data.orderCode); }",
-              "}"
+              "// const testCaseId = \"AUTH02\";",
+              "// const expectedStatusCodes = [400, 409];",
+              "// const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "// const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "// let json = {};",
+              "// if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
+              "// pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "// pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "// pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "// pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "// if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "//   const id = data.id || data.productId || data.orderId || data.addressId || data.cartItemId || data.guestCartId;",
+              "//   if (data.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", data.accessToken); }",
+              "//   if (data.refreshToken) pm.environment.set(\"refreshToken\", data.refreshToken);",
+              "//   if (data.user && data.user.id) pm.environment.set(\"userId\", data.user.id);",
+              "//   if (id) pm.environment.set(\"currentResourceId\", id);",
+              "//   const url = pm.request.url.toString();",
+              "//   if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "//   if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "//   if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "//   if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "//   if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "//   if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "//   if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "//   if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "//   if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "//   if (data.orderCode) { pm.environment.set(\"createdOrderCode\", data.orderCode); pm.environment.set(\"orderCode\", data.orderCode); }",
+              "// }"
             ],
             "type": "text/javascript",
             "packages": {},
@@ -183,7 +187,7 @@
       "response": []
     },
     {
-      "name": "AUTH03 - Password va confirmPassword khac nhau tra 400 Copy",
+      "name": "AUTH03 - Password va confirmPassword khac nhau tra 400",
       "event": [
         {
           "listen": "test",
@@ -194,7 +198,7 @@
               "const expectedStatusCodes = [400];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let data = {};",
+              "let json = {};",
               "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -259,7 +263,7 @@
       "response": []
     },
     {
-      "name": "AUTH04 - Username/email da ton tai tra 409 hoac loi tuong ung Copy",
+      "name": "AUTH04 - Username/email da ton tai tra 409 hoac loi tuong ung",
       "event": [
         {
           "listen": "test",
@@ -270,7 +274,7 @@
               "const expectedStatusCodes = [409];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let data = {};",
+              "let json = {};",
               "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -335,7 +339,7 @@
       "response": []
     },
     {
-      "name": "AUTH05 - OTP hop le xac thuc thanh cong Copy",
+      "name": "AUTH05 - OTP hop le xac thuc thanh cong",
       "event": [
         {
           "listen": "test",
@@ -345,7 +349,7 @@
               "// const expectedStatusCodes = [200, 201];",
               "// const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "// const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "// let json = {}; let data = {};",
+              "// let json = {};",
               "// if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "// pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "// pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -378,8 +382,12 @@
         {
           "listen": "prerequest",
           "script": {
-            "exec": [],
-            "type": "text/javascript"
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -420,7 +428,7 @@
       "response": []
     },
     {
-      "name": "AUTH06 - OTP sai/het han tra loi Copy",
+      "name": "AUTH06 - OTP sai/het han tra loi",
       "event": [
         {
           "listen": "test",
@@ -431,7 +439,7 @@
               "const expectedStatusCodes = [400, 401, 403, 404, 409];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let data = {};",
+              "let json = {};",
               "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -496,7 +504,7 @@
       "response": []
     },
     {
-      "name": "AUTH07 - Login dung tra accessToken, refreshToken, thong tin user Copy",
+      "name": "AUTH07 - Login dung tra accessToken, refreshToken, thong tin user",
       "event": [
         {
           "listen": "test",
@@ -507,7 +515,7 @@
               "const expectedStatusCodes = [200, 201];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let data = {};",
+              "let json = {};",
               "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -572,7 +580,7 @@
       "response": []
     },
     {
-      "name": "AUTH08 - Sai mat khau tra 401 Copy",
+      "name": "AUTH08 - Sai mat khau tra 401",
       "event": [
         {
           "listen": "test",
@@ -583,7 +591,7 @@
               "const expectedStatusCodes = [401];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let data = {};",
+              "let json = {};",
               "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -648,7 +656,7 @@
       "response": []
     },
     {
-      "name": "AUTH09 - Thieu username/password tra 400 Copy",
+      "name": "AUTH09 - Thieu username/password tra 400",
       "event": [
         {
           "listen": "test",
@@ -659,7 +667,7 @@
               "const expectedStatusCodes = [400];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let data = {};",
+              "let json = {};",
               "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -724,7 +732,7 @@
       "response": []
     },
     {
-      "name": "AUTH10 - Refresh token hop le tra access token moi Copy",
+      "name": "AUTH10 - Refresh token hop le tra access token moi",
       "event": [
         {
           "listen": "test",
@@ -735,7 +743,7 @@
               "const expectedStatusCodes = [200, 201];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let data = {};",
+              "let json = {};",
               "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -800,7 +808,7 @@
       "response": []
     },
     {
-      "name": "AUTH11 - Refresh token rong/sai/het han tra 401/400 Copy",
+      "name": "AUTH11 - Refresh token rong/sai/het han tra 401/400",
       "event": [
         {
           "listen": "test",
@@ -811,7 +819,7 @@
               "const expectedStatusCodes = [400, 401];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let data = {};",
+              "let json = {};",
               "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -876,7 +884,7 @@
       "response": []
     },
     {
-      "name": "AUTH12 - Logout voi token hop le thanh cong Copy",
+      "name": "AUTH12 - Logout voi token hop le thanh cong",
       "event": [
         {
           "listen": "test",
@@ -887,7 +895,7 @@
               "const expectedStatusCodes = [200, 201];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let data = {};",
+              "let json = {};",
               "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -951,7 +959,7 @@
       "response": []
     },
     {
-      "name": "AUTH13 - Co Bearer token tra dung user hien tai Copy",
+      "name": "AUTH13 - Co Bearer token tra dung user hien tai",
       "event": [
         {
           "listen": "test",
@@ -962,7 +970,7 @@
               "const expectedStatusCodes = [200, 201];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let data = {};",
+              "let json = {};",
               "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -1026,7 +1034,7 @@
       "response": []
     },
     {
-      "name": "AUTH14 - Khong token tra 401 Copy",
+      "name": "AUTH14 - Khong token tra 401",
       "event": [
         {
           "listen": "test",
@@ -1037,7 +1045,7 @@
               "const expectedStatusCodes = [401];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let data = {};",
+              "let json = {};",
               "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -1088,7 +1096,7 @@
       "response": []
     },
     {
-      "name": "AUTH15 - Cap nhat profile hop le tra du lieu moi Copy",
+      "name": "AUTH15 - Cap nhat profile hop le tra du lieu moi",
       "event": [
         {
           "listen": "test",
@@ -1099,7 +1107,7 @@
               "const expectedStatusCodes = [200, 201];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let data = {};",
+              "let json = {};",
               "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -1176,51 +1184,53 @@
       "response": []
     },
     {
-      "name": "AUTH16 - Phone/gender/dateOfBirth sai format tra 400 Copy",
+      "name": "AUTH16 - Phone/gender/dateOfBirth sai format tra 400",
       "event": [
         {
           "listen": "test",
           "script": {
-            "exec": [
-              "// const testCaseId = \"AUTH16\";",
-              "// const expectedStatusCodes = [400];",
-              "// const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "// const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "// let json = {}; let data = {};",
-              "// if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
-              "// pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "// pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "// pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "// pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "// if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "//   const id = data.id || data.productId || data.orderId || data.addressId || data.cartItemId || data.guestCartId;",
-              "//   if (data.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", data.accessToken); }",
-              "//   if (data.refreshToken) pm.environment.set(\"refreshToken\", data.refreshToken);",
-              "//   if (data.user && data.user.id) pm.environment.set(\"userId\", data.user.id);",
-              "//   if (id) pm.environment.set(\"currentResourceId\", id);",
-              "//   const url = pm.request.url.toString();",
-              "//   if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "//   if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "//   if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "//   if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "//   if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "//   if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "//   if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "//   if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "//   if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "//   if (data.orderCode) { pm.environment.set(\"createdOrderCode\", data.orderCode); pm.environment.set(\"orderCode\", data.orderCode); }",
-              "// }"
-            ],
             "type": "text/javascript",
-            "packages": {},
-            "requests": {}
+            "exec": [
+              "const testCaseId = \"AUTH16\";",
+              "const expectedStatusCodes = [400];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = data.id || data.productId || data.orderId || data.addressId || data.cartItemId || data.guestCartId;",
+              "  if (data.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", data.accessToken); }",
+              "  if (data.refreshToken) pm.environment.set(\"refreshToken\", data.refreshToken);",
+              "  if (data.user && data.user.id) pm.environment.set(\"userId\", data.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (data.orderCode) { pm.environment.set(\"createdOrderCode\", data.orderCode); pm.environment.set(\"orderCode\", data.orderCode); }",
+              "}"
+            ]
           }
         },
         {
           "listen": "prerequest",
           "script": {
-            "exec": [],
-            "type": "text/javascript"
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -1273,7 +1283,7 @@
       "response": []
     },
     {
-      "name": "AUTH17 - Doi mat khau hop le thanh cong Copy",
+      "name": "AUTH17 - Doi mat khau hop le thanh cong",
       "event": [
         {
           "listen": "test",
@@ -1284,7 +1294,7 @@
               "const expectedStatusCodes = [200, 201];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let data = {};",
+              "let json = {};",
               "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -1361,7 +1371,7 @@
       "response": []
     },
     {
-      "name": "AUTH18 - Mat khau hien tai sai tra 400/401 Copy",
+      "name": "AUTH18 - Mat khau hien tai sai tra 400/401",
       "event": [
         {
           "listen": "test",
@@ -1372,7 +1382,7 @@
               "const expectedStatusCodes = [400, 401];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let data = {};",
+              "let json = {};",
               "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -1449,7 +1459,7 @@
       "response": []
     },
     {
-      "name": "AUTH19 - Email ton tai gui OTP thanh cong Copy",
+      "name": "AUTH19 - Email ton tai gui OTP thanh cong",
       "event": [
         {
           "listen": "test",
@@ -1459,7 +1469,7 @@
               "// const expectedStatusCodes = [200, 201];",
               "// const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "// const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "// let json = {}; let data = {};",
+              "// let json = {};",
               "// if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "// pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "// pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -1492,8 +1502,12 @@
         {
           "listen": "prerequest",
           "script": {
-            "exec": [],
-            "type": "text/javascript"
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -1535,7 +1549,7 @@
       "response": []
     },
     {
-      "name": "AUTH20 - OTP hop le doi mat khau thanh cong Copy",
+      "name": "AUTH20 - OTP hop le doi mat khau thanh cong",
       "event": [
         {
           "listen": "test",
@@ -1545,7 +1559,7 @@
               "// const expectedStatusCodes = [200, 201];",
               "// const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "// const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "// let json = {}; let data = {};",
+              "// let json = {};",
               "// if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "// pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "// pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -1578,8 +1592,12 @@
         {
           "listen": "prerequest",
           "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
             "packages": {},
-            "type": "text/javascript"
+            "requests": {}
           }
         }
       ],
@@ -1621,7 +1639,7 @@
       "response": []
     },
     {
-      "name": "AUTH21 - OTP sai hoac confirmPassword sai tra loi Copy",
+      "name": "AUTH21 - OTP sai hoac confirmPassword sai tra loi",
       "event": [
         {
           "listen": "test",
@@ -1632,7 +1650,7 @@
               "const expectedStatusCodes = [400, 401, 403, 404, 409];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let data = {};",
+              "let json = {};",
               "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -1698,7 +1716,7 @@
       "response": []
     },
     {
-      "name": "H01 - Status 200, response co trang thai service dang chay Copy",
+      "name": "H01 - Status 200, response co trang thai service dang chay",
       "event": [
         {
           "listen": "test",
@@ -1709,7 +1727,7 @@
               "const expectedStatusCodes = [200];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let data = {};",
+              "let json = {};",
               "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
@@ -1759,7 +1777,7 @@
       "response": []
     },
     {
-      "name": "H02 - Response time duoi nguong, vi du < 1000ms Copy",
+      "name": "H02 - Response time duoi nguong, vi du < 1000ms",
       "event": [
         {
           "listen": "test",
@@ -1770,7 +1788,7 @@
               "const expectedStatusCodes = [200];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let data = {};",
+              "let json = {};",
               "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); data = json.data || json; }",
               "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
               "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
