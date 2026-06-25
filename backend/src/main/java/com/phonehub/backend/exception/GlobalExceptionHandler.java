@@ -147,7 +147,6 @@ public class GlobalExceptionHandler {
                                 .body(ApiResponse.internalServerError(errorMessage));
         }
 
-
         @ExceptionHandler(HttpMessageNotReadableException.class)
         public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
                 Map<String, Object> errorResponse = new HashMap<>();
