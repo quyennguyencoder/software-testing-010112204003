@@ -1,6 +1,8 @@
 package com.phonehub.backend;
 
 import com.phonehub.backend.dto.request.product.CreateProductRequest;
+import com.phonehub.backend.dto.request.product.ManageImagesRequest;
+import com.phonehub.backend.dto.request.product.ProductImageRequest;
 import com.phonehub.backend.dto.request.product.ProductMetadataRequest;
 import com.phonehub.backend.dto.request.product.ProductTemplateRequest;
 import com.phonehub.backend.dto.request.product.UpdateProductRequest;
@@ -1042,6 +1044,34 @@ public class ProductServiceImplTest {
     // ==============================================================================
     // TEST: restoreProduct
     // ==============================================================================
+    // Khôi phục thành công 
+    @Test
+    void restoreProduct_ValidRequest_RestoresProductSuccessfully() {
+        Long productId = 1L;
+        Long userId = 1L;
+
+        Product product = new Product();
+        product.setId(productId);
+        product.setIsDeleted(true);
+        product.setDeletedAt(java.time.LocalDateTime.now());
+        product.setDeletedBy(new User());
+
+        User adminUser = new User();
+        adminUser.setId(userId);
+
+        when(productRepository.findByIdIncludingDeleted(productId)).thenReturn(Optional.of(product));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(adminUser));
+
+        // Thực thi
+        productService.restoreProduct(productId, userId);
+
+        // Trạng thái sản phẩm phải được đảo ngược 
+        assertFalse(product.getIsDeleted());
+        assertNull(product.getDeletedAt());
+        assertNull(product.getDeletedBy());
+        assertEquals(adminUser, product.getUpdatedBy()); 
+        verify(productRepository, times(1)).save(product);
+    }
     // Lỗi không tìm thấy sản phẩm
     @Test
     void restoreProduct_ProductNotFound_ThrowsResourceNotFoundException() {
@@ -1103,35 +1133,106 @@ public class ProductServiceImplTest {
         assertEquals("Không tìm thấy người dùng với ID: " + userId, exception.getMessage());
         verify(productRepository, never()).save(any());
     }
-
-    // Khôi phục thành công 
+    // ==============================================================================
+    // TEST: manageProductImages
+    // ==============================================================================
+    // Cập nhật ảnh thành công 
     @Test
-    void restoreProduct_ValidRequest_RestoresProductSuccessfully() {
+    void manageProductImages_ValidRequest_ReplacesImagesSuccessfully() {
         Long productId = 1L;
-        Long userId = 1L;
+        Product product = new Product(); product.setId(productId);
+        
+        ProductImageRequest img1 = new ProductImageRequest(); 
+        img1.setImageUrl("anh-chinh.jpg"); img1.setIsPrimary(true); img1.setImageOrder(0);
+        
+        ProductImageRequest img2 = new ProductImageRequest(); 
+        img2.setImageUrl("anh-phu.jpg"); img2.setIsPrimary(false); img2.setImageOrder(1);
+        
+        ManageImagesRequest request = new ManageImagesRequest();
+        request.setImages(Arrays.asList(img1, img2));
 
-        Product product = new Product();
-        product.setId(productId);
-        product.setIsDeleted(true);
-        product.setDeletedAt(java.time.LocalDateTime.now());
-        product.setDeletedBy(new User());
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.of(product));
 
-        User adminUser = new User();
-        adminUser.setId(userId);
+        productService.manageProductImages(productId, request);
 
-        when(productRepository.findByIdIncludingDeleted(productId)).thenReturn(Optional.of(product));
-        when(userRepository.findById(userId)).thenReturn(Optional.of(adminUser));
+        // Chắc chắn thao tác Xóa ảnh cũ đã được gọi
+        verify(productImageRepository, times(1)).deleteByProductId(productId);
+        
+        org.mockito.ArgumentCaptor<List<ProductImage>> captor = org.mockito.ArgumentCaptor.forClass(List.class);
+        verify(productImageRepository, times(1)).saveAll(captor.capture());
+        
+        List<ProductImage> savedImages = captor.getValue();
+        assertEquals(2, savedImages.size());
+        
+        // Soi kỹ xem code có gán đúng ProductId cho từng cái ảnh không
+        assertEquals(product, savedImages.get(0).getProduct());
+        assertEquals("anh-chinh.jpg", savedImages.get(0).getImageUrl());
+        assertTrue(savedImages.get(0).getIsPrimary());
+        
+        assertEquals(product, savedImages.get(1).getProduct());
+        assertEquals("anh-phu.jpg", savedImages.get(1).getImageUrl());
+        assertFalse(savedImages.get(1).getIsPrimary());
+    }
+    // Lỗi không tìm thấy sản phẩm hoặc sản phẩm đã bị xóa
+    @Test
+    void manageProductImages_ProductNotFound_ThrowsResourceNotFoundException() {
+        Long productId = 1L;
+        ManageImagesRequest request = new ManageImagesRequest();
 
-        // Thực thi
-        productService.restoreProduct(productId, userId);
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.empty());
 
-        // Trạng thái sản phẩm phải được đảo ngược 
-        assertFalse(product.getIsDeleted());
-        assertNull(product.getDeletedAt());
-        assertNull(product.getDeletedBy());
-        assertEquals(adminUser, product.getUpdatedBy()); 
-        verify(productRepository, times(1)).save(product);
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            productService.manageProductImages(productId, request);
+        });
+
+        assertEquals("Không tìm thấy sản phẩm với ID: " + productId, exception.getMessage());
+        
+        // Đảm bảo không có thao tác xóa/lưu nào được thực thi
+        verify(productImageRepository, never()).deleteByProductId(any());
+        verify(productImageRepository, never()).saveAll(any());
     }
 
+    // Lỗi sai số lượng ảnh chính (Truyền 2 ảnh nhưng 0 ảnh chính)
+    @Test
+    void manageProductImages_InvalidPrimaryCount_ThrowsBadRequestException() {
+        Long productId = 1L;
+        Product product = new Product(); product.setId(productId);
+        
+        ProductImageRequest img1 = new ProductImageRequest(); img1.setIsPrimary(false); img1.setImageOrder(0);
+        ProductImageRequest img2 = new ProductImageRequest(); img2.setIsPrimary(false); img2.setImageOrder(1);
+        
+        ManageImagesRequest request = new ManageImagesRequest();
+        request.setImages(Arrays.asList(img1, img2));
 
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.of(product));
+
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            productService.manageProductImages(productId, request);
+        });
+
+        assertEquals("Phải có đúng 1 ảnh được đặt làm ảnh chính", exception.getMessage());
+        verify(productImageRepository, never()).deleteByProductId(any());
+    }
+
+    // Lỗi thứ tự ảnh bị nhảy cóc
+    @Test
+    void manageProductImages_InvalidImageOrder_ThrowsBadRequestException() {
+        Long productId = 1L;
+        Product product = new Product(); product.setId(productId);
+        
+        ProductImageRequest img1 = new ProductImageRequest(); img1.setIsPrimary(true); img1.setImageOrder(0);
+        ProductImageRequest img2 = new ProductImageRequest(); img2.setIsPrimary(false); img2.setImageOrder(2); 
+        
+        ManageImagesRequest request = new ManageImagesRequest();
+        request.setImages(Arrays.asList(img1, img2));
+
+        when(productRepository.findByIdAndIsDeletedFalse(productId)).thenReturn(Optional.of(product));
+
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            productService.manageProductImages(productId, request);
+        });
+
+        assertEquals("Thứ tự ảnh phải liên tục từ 0 đến 1", exception.getMessage());
+        verify(productImageRepository, never()).deleteByProductId(any());
+    }
 }
