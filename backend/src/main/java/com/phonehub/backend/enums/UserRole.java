@@ -5,5 +5,6 @@ package com.phonehub.backend.enums;
  */
 public enum UserRole {
     ADMIN, 
-    CUSTOMER
+    CUSTOMER,
+    USER 
 }
