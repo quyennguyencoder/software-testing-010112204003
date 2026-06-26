@@ -1817,6 +1817,90 @@
         "description": "TestCaseId: PUBORD04\nModule: Order/Public Tracking\nType: Positive\nAuth: Public\nObjective: Tra guide tracking"
       },
       "response": []
+    },
+    {
+      "name": "PUBORD05 - OrderCode sai, email dung tra 404",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"PUBORD05\";",
+              "const expectedStatusCodes = [404];",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  json = pm.response.json();",
+              "  responseData = json.data || json;",
+              "}",
+              "",
+              "pm.test(`${testCaseId} - orderCode sai, email dung: expected status ${expectedStatusCodes.join(\"/\")}`, () =>",
+              "  pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes)",
+              ");",
+              "pm.test(`${testCaseId} - no server error (status < 500)`, () =>",
+              "  pm.expect(pm.response.code, pm.response.text()).to.be.below(500)",
+              ");",
+              "pm.test(`${testCaseId} - response time under threshold`, () =>",
+              "  pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs)",
+              ");",
+              "pm.test(`${testCaseId} - response is JSON`, () => {",
+              "  if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\");",
+              "});",
+              "pm.test(`${testCaseId} - body contains error message`, () => {",
+              "  if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "    pm.expect(json).to.have.property(\"message\");",
+              "    pm.expect(json.message).to.be.a(\"string\").and.not.empty;",
+              "  }",
+              "});",
+              "pm.test(`${testCaseId} - success is false`, () => {",
+              "  if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "    pm.expect(json.success).to.be.false;",
+              "  }",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orderCode\": \"INVALID-9999\",\n  \"email\": \"{{userEmail}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/public/orders/track",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "public",
+            "orders",
+            "track"
+          ]
+        },
+        "description": "TestCaseId: PUBORD05\nModule: Order/Public Tracking\nType: Negative\nAuth: Public\nObjective: OrderCode không tồn tại nhưng email hợp lệ → server trả 404\nInput: orderCode = \"INVALID-9999\" (không tồn tại), email = {{userEmail}} (hợp lệ)\nExpected: 404 Not Found"
+      },
+      "response": []
     }
   ],
   "event": [
