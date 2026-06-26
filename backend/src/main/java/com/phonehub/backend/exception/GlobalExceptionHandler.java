@@ -160,7 +160,17 @@ public class GlobalExceptionHandler {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                 .body(ApiResponse.badRequest(message));
         }
-        
+
+        @ExceptionHandler(HttpMessageNotReadableException.class)
+        public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("status", 400);
+                errorResponse.put("message", "Định dạng dữ liệu đầu vào không hợp lệ.");
+                errorResponse.put("data", null);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+
         @ExceptionHandler(ConstraintViolationException.class)
         public ResponseEntity<ApiResponse<?>> handleConstraintViolationException(
                         ConstraintViolationException ex, WebRequest request) {
