@@ -1,5 +1,6 @@
 package com.phonehub.backend.service.impl;
 
+import com.phonehub.backend.dto.request.brand.UpdateBrandRequest;
 import com.phonehub.backend.dto.request.brand.CreateBrandRequest;
 import com.phonehub.backend.dto.response.brand.BrandResponse;
 import com.phonehub.backend.entity.Brand;
@@ -20,6 +21,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -177,4 +179,113 @@ class BrandServiceImplTest {
         verify(brandRepository, times(1)).existsByName("Apple");
         verify(brandRepository, never()).save(any(Brand.class));
     }
-}
+    // ====================================================================================
+    // TEST: updateBrand
+    // ====================================================================================
+    @Test
+    void updateBrand_WhenValidRequest_ShouldUpdateAndReturnResponse() {
+        UpdateBrandRequest request = new UpdateBrandRequest();
+        request.setName("Apple V2");
+        request.setDescription("Think Different Better");
+        request.setLogoUrl("apple_v2.png");
+
+        when(brandRepository.findById(1L)).thenReturn(java.util.Optional.of(brand1));
+        when(brandRepository.existsByNameAndIdNot("Apple V2", 1L)).thenReturn(false);
+        when(brandRepository.save(any(Brand.class))).thenReturn(brand1);
+        when(productRepository.countByBrandIdAndIsDeletedFalse(1L)).thenReturn(15L);
+        BrandResponse result = brandService.updateBrand(1L, request);
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        assertEquals("Apple V2", result.getName());
+        assertEquals("Think Different Better", result.getDescription());
+        assertEquals(15L, result.getProductCount());
+
+        verify(brandRepository, times(1)).findById(1L);
+        verify(brandRepository, times(1)).existsByNameAndIdNot("Apple V2", 1L);
+        verify(brandRepository, times(1)).save(any(Brand.class));
+        verify(productRepository, times(1)).countByBrandIdAndIsDeletedFalse(1L);
+    }
+    // Kiểm tra hàm updateBrand() khi brand không tồn tại, hệ thống phải ném ra ResourceNotFoundException
+    @Test
+    void updateBrand_WhenIdDoesNotExist_ShouldThrowResourceNotFoundException() {
+        UpdateBrandRequest request = new UpdateBrandRequest();
+        request.setName("Apple V2");
+
+        when(brandRepository.findById(99L)).thenReturn(java.util.Optional.empty());
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            brandService.updateBrand(99L, request);
+        });
+
+        assertEquals("Thương hiệu không tồn tại với ID: 99", exception.getMessage());
+        
+        // Chặn lại luôn, không chạy xuống các hàm dưới
+        verify(brandRepository, times(1)).findById(99L);
+        verify(brandRepository, never()).existsByNameAndIdNot(anyString(), anyLong());
+        verify(brandRepository, never()).save(any(Brand.class));
+    }
+    // Kiểm tra hàm updateBrand() khi brand tồn tại, hệ thống phải ném ra BadRequestException
+    @Test
+    void updateBrand_WhenNewNameAlreadyExists_ShouldThrowBadRequestException() {
+        // 1. Arrange
+        UpdateBrandRequest request = new UpdateBrandRequest();
+        request.setName("Samsung"); 
+
+        when(brandRepository.findById(1L)).thenReturn(java.util.Optional.of(brand1));
+        when(brandRepository.existsByNameAndIdNot("Samsung", 1L)).thenReturn(true);
+
+        // 2. Act & Assert
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            brandService.updateBrand(1L, request);
+        });
+
+        assertEquals("Tên thương hiệu 'Samsung' đã tồn tại", exception.getMessage());
+
+        verify(brandRepository, times(1)).findById(1L);
+        verify(brandRepository, times(1)).existsByNameAndIdNot("Samsung", 1L);
+        verify(brandRepository, never()).save(any(Brand.class)); 
+    }
+    // ====================================================================================
+    // TEST: deleteBrand
+    // ====================================================================================
+    @Test
+    void deleteBrand_WhenValidAndNoProducts_ShouldDeleteSuccessfully() {
+        when(brandRepository.findById(1L)).thenReturn(java.util.Optional.of(brand1));
+        
+        when(productRepository.countByBrandIdAndIsDeletedFalse(1L)).thenReturn(0L);
+
+        brandService.deleteBrand(1L);
+
+        verify(brandRepository, times(1)).findById(1L);
+        verify(productRepository, times(1)).countByBrandIdAndIsDeletedFalse(1L);
+        verify(brandRepository, times(1)).delete(brand1);
+    }
+    // Kiểm tra hàm deleteBrand() khi brand không tồn tại, hệ thống phải ném ra ResourceNotFoundException
+    @Test
+    void deleteBrand_WhenIdDoesNotExist_ShouldThrowResourceNotFoundException() {
+        when(brandRepository.findById(99L)).thenReturn(java.util.Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            brandService.deleteBrand(99L);
+        });
+
+        assertEquals("Thương hiệu không tồn tại với ID: 99", exception.getMessage());
+        verify(brandRepository, times(1)).findById(99L);
+        verify(productRepository, never()).countByBrandIdAndIsDeletedFalse(anyLong());
+        verify(brandRepository, never()).delete(any(Brand.class));
+    }
+
+    @Test
+    void deleteBrand_WhenBrandHasProducts_ShouldThrowBadRequestException() {
+        when(brandRepository.findById(1L)).thenReturn(java.util.Optional.of(brand1));
+        
+        when(productRepository.countByBrandIdAndIsDeletedFalse(1L)).thenReturn(5L);
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            brandService.deleteBrand(1L);
+        });
+
+        assertEquals("Không thể xóa thương hiệu. Thương hiệu đang có 5 sản phẩm liên kết", exception.getMessage());
+        verify(brandRepository, times(1)).findById(1L);
+        verify(productRepository, times(1)).countByBrandIdAndIsDeletedFalse(1L);
+        verify(brandRepository, never()).delete(any(Brand.class));
+    }
+}   
