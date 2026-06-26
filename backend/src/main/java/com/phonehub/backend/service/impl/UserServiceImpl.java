@@ -139,17 +139,6 @@ public class UserServiceImpl implements IUserService {
 
         // --- ĐOẠN CODE THÊM MỚI ĐỂ FIX BUG ---
         // 1. Lấy tên tài khoản (username) của Admin đang đăng nhập hiện tại
-<<<<<<< HEAD
-        String currentUsername = org.springframework.security.core.context.SecurityContextHolder
-                .getContext().getAuthentication().getName();
-        
-        // 2. Tìm thông tin của Admin đó trong database
-        User currentAdmin = userRepository.findByUsername(currentUsername).orElse(null);
-        
-        // 3. Nếu Admin đang đăng nhập lại tự truyền ID của chính mình vào để khóa -> Chặn luôn!
-        if (currentAdmin != null && currentAdmin.getId().equals(userId)) {
-            throw new BadRequestException("Bạn không thể tự khóa tài khoản của chính mình!");
-=======
         org.springframework.security.core.Authentication authentication = org.springframework.security.core.context.SecurityContextHolder
                 .getContext().getAuthentication();
         if (authentication != null && authentication.getName() != null) {
@@ -162,7 +151,6 @@ public class UserServiceImpl implements IUserService {
             if (currentAdmin != null && currentAdmin.getId().equals(userId)) {
                 throw new BadRequestException("Bạn không thể tự khóa tài khoản của chính mình!");
             }
->>>>>>> 36debd7906168b3bbdfe98cf169ae20c499fddc5
         }
         // -------------------------------------
 
