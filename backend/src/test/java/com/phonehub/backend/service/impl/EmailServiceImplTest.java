@@ -89,20 +89,116 @@ class EmailServiceImplTest {
         verify(mailSender, times(1)).send(mimeMessage);
     }
     // ====================================================================================
-    // TEST: sendRegistrationOtpEmail // hàm này k sài ở frontend
+    // TEST: sendRegistrationOtpEmail 
     // ====================================================================================
     // Kiểm tra hàm sendRegistrationOtpEmail() khi dữ liệu hợp lệ, hệ thống phải gửi email thành công
     @Test
     void sendRegistrationOtpEmail_WhenValidData_ShouldSendEmailSuccessfully() {
         when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
         when(templateEngine.process(eq("registration-otp-email"), any(Context.class)))
-                .thenReturn("<html><body>Chào Cương, mã OTP đăng ký là: 654321</body></html>");
+                .thenReturn("<html><body>Chào A, mã OTP đăng ký là: 654321</body></html>");
         assertDoesNotThrow(() -> {
-            emailService.sendRegistrationOtpEmail("cuongnc@gmail.com", "Nguyễn Chí Cương", "654321");
+            emailService.sendRegistrationOtpEmail("vanA@gmail.com", "Nguyễn Văn A", "654321");
         });
         verify(mailSender, times(1)).createMimeMessage();
         verify(templateEngine, times(1)).process(eq("registration-otp-email"), any(Context.class));
         verify(mailSender, times(1)).send(mimeMessage);
     }
+    // ====================================================================================
+    // TEST: sendPasswordResetEmail
+    // ====================================================================================
+    // Kiểm tra hàm sendPasswordResetEmail() khi dữ liệu hợp lệ, hệ thống phải gửi email thành công
+    @Test
+    void sendPasswordResetEmail_WhenValidData_ShouldSendEmailSuccessfully() {
+        when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
+        when(templateEngine.process(eq("password-reset-success"), any(Context.class)))
+                .thenReturn("<html><body>Đổi mật khẩu thành công lúc 10:00!</body></html>");
+
+        assertDoesNotThrow(() -> {
+            emailService.sendPasswordResetEmail("vanA@gmail.com", "Nguyễn Văn A");
+        });
+        verify(mailSender, times(1)).createMimeMessage();
+        verify(templateEngine, times(1)).process(eq("password-reset-success"), any(Context.class));
+        verify(mailSender, times(1)).send(mimeMessage);
+    }
+    // ====================================================================================
+    // TEST: sendRegistrationEmail
+    // ====================================================================================
+    // Kiểm tra hàm sendRegistrationEmail() khi dữ liệu hợp lệ, hệ thống phải gửi email thành công
+    @Test
+    void sendRegistrationEmail_WhenValidData_ShouldSendEmailSuccessfully() {
+        when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
+        when(templateEngine.process(eq("registration-email"), any(Context.class)))
+                .thenReturn("<html><body>Chào mừng gia nhập hệ thống!</body></html>");
+
+        assertDoesNotThrow(() -> {
+            emailService.sendRegistrationEmail("vanA@gmail.com", "Nguyễn Văn A");
+        });
+        verify(mailSender, times(1)).createMimeMessage();
+        verify(templateEngine, times(1)).process(eq("registration-email"), any(Context.class));
+        verify(mailSender, times(1)).send(mimeMessage);
+    }
+    // Kiểm tra hàm sendRegistrationEmail() khi có ngoại lệ xảy ra, hệ thống phải ném ra EmailServiceException
+    @Test
+    void sendRegistrationEmail_WhenExceptionOccurs_ShouldCatchAndThrowEmailServiceException() {
+        when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
+        when(templateEngine.process(eq("registration-email"), any(Context.class)))
+                .thenThrow(new RuntimeException("Lỗi máy chủ đột xuất!"));
+
+        EmailServiceException exception = assertThrows(EmailServiceException.class, () -> {
+            emailService.sendRegistrationEmail("vanA@gmail.com", "Nguyễn Văn A");
+        });
+
+        assertEquals("Không thể gửi email đăng ký", exception.getMessage());
+        verify(mailSender, never()).send(any(MimeMessage.class));
+    }
+    // ====================================================================================
+    // TEST: sendOrderPaymentSuccessEmail
+    // ====================================================================================
+    // Kiểm tra hàm sendOrderPaymentSuccessEmail() khi dữ liệu hợp lệ, hệ thống phải gửi email thành công
+    @Test
+    void sendOrderPaymentSuccessEmail_WhenValidOrderTotal_ShouldFormatCurrencyAndSendEmail() {
+        when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
+        when(templateEngine.process(eq("order-payment-success"), any(Context.class)))
+                .thenReturn("<html><body>Thanh toán 15,000,000 ₫ thành công qua VNPAY</body></html>");
+
+        // 2. Act & Assert: Gọi hàm truyền BigDecimal có giá trị
+        assertDoesNotThrow(() -> {
+            emailService.sendOrderPaymentSuccessEmail(
+                    "vanA@gmail.com", 
+                    "ORD-9999", 
+                    new java.math.BigDecimal("15000000"), 
+                    "Nguyễn Văn A", 
+                    "VNPAY"
+            );
+        });
+
+        verify(mailSender, times(1)).createMimeMessage();
+        verify(templateEngine, times(1)).process(eq("order-payment-success"), any(Context.class));
+        verify(mailSender, times(1)).send(mimeMessage);
+    }
+    // Kiểm tra hàm sendOrderPaymentSuccessEmail() khi Order Total là null, hệ thống phải định dạng thành 0 và gửi email thành công
+    @Test
+    void sendOrderPaymentSuccessEmail_WhenOrderTotalIsNull_ShouldFormatAsZeroAndSendEmail() {
+        // mail cho một đơn được tặng miễn phí 
+        when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
+        when(templateEngine.process(eq("order-payment-success"), any(Context.class)))
+                .thenReturn("<html><body>Thanh toán 0 ₫ thành công</body></html>");
+
+        // Gọi hàm nhưng truyền tham số tiền bị null
+        assertDoesNotThrow(() -> {
+            emailService.sendOrderPaymentSuccessEmail(
+                    "cuongnc@gmail.com", 
+                    "ORD-0000", 
+                    null, 
+                    "Nguyễn Chí Cương", 
+                    "MoMo"
+            );
+        });
+
+        verify(mailSender, times(1)).createMimeMessage();
+        verify(templateEngine, times(1)).process(eq("order-payment-success"), any(Context.class));
+        verify(mailSender, times(1)).send(mimeMessage);
+    } 
     
 }
