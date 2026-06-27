@@ -734,6 +734,7 @@
         "description": "TestCaseId: PV09\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra danh sach san pham lien quan, khong chua chinh san pham"
       },
       "response": []
+
     },
     {
       "name": "PV12 - Tra list san pham ban chay",
@@ -1441,6 +1442,7 @@
         "description": "TestCaseId: BRAND03\nModule: Product View/Public Catalog\nType: Negative\nAuth: Public\nObjective: Brand khong ton tai tra 404"
       },
       "response": []
+
     }
   ],
   "event": [
