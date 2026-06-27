@@ -1,11 +1,11 @@
 {
   "info": {
-    "_postman_id": "76030f27-781c-491b-a153-b77a4f770008",
+    "_postman_id": "ed5258c6-fd1e-4e2e-a718-ea3c6714c62c",
     "name": "05_Member_Cart_Address",
     "description": "Generated from phonehub_postman_test_cases.xlsx. One request equals one testcase; request name starts with stable testcase ID for CI/Jira deduplication.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "46403908",
-    "_collection_link": "https://go.postman.co/collection/46403908-76030f27-781c-491b-a153-b77a4f770008?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/46403908-ed5258c6-fd1e-4e2e-a718-ea3c6714c62c?source=collection_link"
   },
   "item": [
     {
@@ -1013,7 +1013,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"CART12\";",
               "const expectedStatusCodes = [200, 201];",
@@ -1043,7 +1042,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
