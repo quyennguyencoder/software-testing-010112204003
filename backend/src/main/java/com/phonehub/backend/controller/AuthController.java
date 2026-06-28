@@ -5,7 +5,7 @@ import com.phonehub.backend.dto.request.auth.*;
 
 import com.phonehub.backend.dto.response.auth.AuthResponse;
 import com.phonehub.backend.dto.response.user.UserResponse;
-import com.phonehub.backend.service.IAuthService;
+import com.phonehub.backend.service.intf.IAuthService;
 import com.phonehub.backend.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

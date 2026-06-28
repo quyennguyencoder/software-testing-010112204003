@@ -5,7 +5,7 @@ import com.phonehub.backend.dto.response.PromotionTemplateResponse;
 import com.phonehub.backend.entity.PromotionTemplate;
 import com.phonehub.backend.exception.ResourceNotFoundException;
 import com.phonehub.backend.repository.PromotionTemplateRepository;
-import com.phonehub.backend.service.IPromotionTemplateService;
+import com.phonehub.backend.service.intf.IPromotionTemplateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

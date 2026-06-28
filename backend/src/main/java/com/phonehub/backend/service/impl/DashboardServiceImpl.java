@@ -18,7 +18,7 @@ import com.phonehub.backend.repository.OrderItemRepository;
 import com.phonehub.backend.repository.OrderRepository;
 import com.phonehub.backend.repository.ProductRepository;
 import com.phonehub.backend.repository.UserRepository;
-import com.phonehub.backend.service.IDashboardService;
+import com.phonehub.backend.service.intf.IDashboardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -158,6 +158,7 @@ public class DashboardServiceImpl implements IDashboardService {
                 OrderStatus.PENDING, "Chờ xác nhận",
                 OrderStatus.CONFIRMED, "Đã xác nhận",
                 OrderStatus.SHIPPING, "Đang giao hàng",
+                OrderStatus.SHIPPED, "Đang giao hàng",
                 OrderStatus.DELIVERED, "Đã giao hàng",
                 OrderStatus.CANCELLED, "Đã hủy"
         );
@@ -303,6 +304,7 @@ public class DashboardServiceImpl implements IDashboardService {
                 OrderStatus.PENDING, "Chờ xác nhận",
                 OrderStatus.CONFIRMED, "Đã xác nhận",
                 OrderStatus.SHIPPING, "Đang giao hàng",
+                OrderStatus.SHIPPED, "Đang giao hàng",
                 OrderStatus.DELIVERED, "Đã giao hàng",
                 OrderStatus.CANCELLED, "Đã hủy"
         );
