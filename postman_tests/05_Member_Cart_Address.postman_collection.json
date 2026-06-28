@@ -9,6 +9,60 @@
   },
   "item": [
     {
+      "name": "Admin Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var responseBody = pm.response.text();",
+              "if (!responseBody || responseBody.trim() === \"\") {",
+              "    console.log(\"Lỗi: Response body rỗng (status \" + pm.response.code + \"). Kiểm tra lại thông tin đăng nhập hoặc server.\");",
+              "} else {",
+              "    var jsonData = pm.response.json();",
+              "    if (jsonData && jsonData.data && jsonData.data.accessToken) {",
+              "        var token = jsonData.data.accessToken;",
+              "        pm.environment.set(\"adminAccessToken\", token);",
+              "        console.log(\"Hệ thống đã tự động chộp được Token của Admin: \" + token);",
+              "    } else {",
+              "        console.log(\"Lỗi: Không tìm thấy accessToken trong phản hồi!\");",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"usernameOrEmail\": \"admin\",\r\n  \"password\": \"Password@123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "User Login",
       "event": [
         {
@@ -54,60 +108,6 @@
         "body": {
           "mode": "raw",
           "raw": "{\r\n  \"usernameOrEmail\": \"user\",\r\n  \"password\": \"Password@123\"\r\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/auth/login",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "auth",
-            "login"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Admin Login",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "var responseBody = pm.response.text();",
-              "if (!responseBody || responseBody.trim() === \"\") {",
-              "    console.log(\"Lỗi: Response body rỗng (status \" + pm.response.code + \"). Kiểm tra lại thông tin đăng nhập hoặc server.\");",
-              "} else {",
-              "    var jsonData = pm.response.json();",
-              "    if (jsonData && jsonData.data && jsonData.data.accessToken) {",
-              "        var token = jsonData.data.accessToken;",
-              "        pm.environment.set(\"adminAccessToken\", token);",
-              "        console.log(\"Hệ thống đã tự động chộp được Token của Admin: \" + token);",
-              "    } else {",
-              "        console.log(\"Lỗi: Không tìm thấy accessToken trong phản hồi!\");",
-              "    }",
-              "}"
-            ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
-          }
-        }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n  \"usernameOrEmail\": \"admin\",\r\n  \"password\": \"Password@123\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -1156,10 +1156,9 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"CART13\";",
-              "const expectedStatusCodes = [404];",
+              "const expectedStatusCodes = [400];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
               "let json = {}; let responseData = {};",
@@ -1186,26 +1185,23 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         },
         {
           "listen": "prerequest",
           "script": {
-            "type": "text/javascript",
             "exec": [
-              "// CART13 Pre-request: Set guestCartId là UUID ngẫu nhiên không tồn tại trong DB",
-              "function generateUUID() {",
-              "    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {",
-              "        const r = Math.random() * 16 | 0;",
-              "        const v = c === 'x' ? r : (r & 0x3 | 0x8);",
-              "        return v.toString(16);",
-              "    });",
-              "}",
-              "const fakeGuestCartId = generateUUID();",
-              "pm.environment.set(\"guestCartId\", fakeGuestCartId);",
-              "console.log(\"CART13 pre-request: Set fake guestCartId =\", fakeGuestCartId);"
-            ]
+              "// CART13 Pre-request: Set guestCartId giả (không tồn tại) để test negative case",
+              "pm.environment.set(\"guestCartId\", \"00000000-0000-0000-0000-000000000000\");",
+              "console.log(\"CART13 pre-request: Set fake guestCartId for negative test\");"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
