@@ -815,7 +815,6 @@
               "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
 
               "  if (responseData.guestCartId) { pm.environment.set(\"guestCartId\", responseData.guestCartId); }",
-=======
 
               "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
               "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
@@ -852,7 +851,6 @@
           "mode": "raw",
 
           "raw": "",
-=======
           "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 1\n}",
 
           "options": {
@@ -931,7 +929,6 @@
           "mode": "raw",
 
           "raw": "{\n  \"items\": [\n    {\n      \"productId\": {{productId}},\n      \"quantity\": 1\n    }\n  ]\n}",
-=======
           "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 1\n}",
 
           "options": {
@@ -1264,7 +1261,6 @@
         "description": "TestCaseId: CART13\nModule: Cart/Guest Cart/Address\nType: Negative\nAuth: User token\nObjective: Guest cart id khong ton tai tra loi"
       },
       "response": []
-=======
 
     }
   ],
