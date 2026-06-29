@@ -2,16 +2,11 @@
   "info": {
 
     "_postman_id": "cd61fb0c-f72a-41dd-b3ff-4cc85bf3929c",
-    "_postman_id": "7b900b49-2f08-4bf4-9890-25defc10c8a9",
-
     "name": "05_Member_Cart_Address",
     "description": "Generated from phonehub_postman_test_cases.xlsx. One request equals one testcase; request name starts with stable testcase ID for CI/Jira deduplication.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "46403908",
-
-    "_collection_link": "https://go.postman.co/collection/46403908-cd61fb0c-f72a-41dd-b3ff-4cc85bf3929c?source=collection_link"
     "_collection_link": "https://go.postman.co/collection/46403908-7b900b49-2f08-4bf4-9890-25defc10c8a9?source=collection_link"
-
   },
   "item": [
     {
