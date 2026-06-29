@@ -436,5 +436,158 @@ public class ProductControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+    // ====================================================================================
+    // TEST: getDeletedProducts
+    // ====================================================================================
+    // Test case 1: Lấy danh sách mặc định 
+    @Test
+    public void getDeletedProducts_DefaultParams_Returns200() throws Exception {
+        // Trả về null để né lỗi Serialize PageImpl của Jackson
+        when(productService.getDeletedProducts(any(), any(), any(), any())).thenReturn(null);
+
+        mockMvc.perform(get("/api/v1/admin/products/deleted")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("Lấy danh sách sản phẩm đã xóa thành công"));
+    }
+    // Test case 2: Lấy danh sách có truyền bộ lọc category + keyword
+    @Test
+    public void getDeletedProducts_WithFilters_Returns200() throws Exception {
+        // Giả lập Service nhận được đúng tham số tìm kiếm
+        when(productService.getDeletedProducts(eq("Samsung"), eq(1L), any(), any())).thenReturn(null);
+
+        mockMvc.perform(get("/api/v1/admin/products/deleted")
+                        .param("keyword", "Samsung")
+                        .param("categoryId", "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+    }
     
+    // ====================================================================================
+    // TEST: restoreProduct
+    // ====================================================================================
+    // Test case 1: Khôi phục sản phẩm đã xóa mềm thành công 
+    @Test
+    public void restoreProduct_ValidId_Returns200() throws Exception {
+        Long productId = 1L;
+
+        when(securityUtils.getCurrentUserId(any())).thenReturn(1L);
+        doNothing().when(productService).restoreProduct(eq(productId), eq(1L));
+
+        mockMvc.perform(post("/api/v1/admin/products/{id}/restore", productId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("Khôi phục sản phẩm thành công"));
+    }
+    // Test case 2: ID sai định dạng chữ 
+    @Test
+    public void restoreProduct_TypeMismatchString_Returns400() throws Exception {
+        // Cố tình truyền "abc" thay vì số ID
+        mockMvc.perform(post("/api/v1/admin/products/{id}/restore", "abc")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+    // Test case 3: ID sai định dạng số thập phân
+    @Test
+    public void restoreProduct_TypeMismatchDecimal_Returns400() throws Exception {
+        // Cố tình truyền số thập phân 1.5
+        mockMvc.perform(post("/api/v1/admin/products/{id}/restore", "1.5")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+    // Test case 4: Không truyền ID trên URL 
+    @Test
+    public void restoreProduct_MissingId_Returns405() throws Exception { 
+        mockMvc.perform(post("/api/v1/admin/products//restore")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isMethodNotAllowed()); 
+    }
+    // ====================================================================================
+    // TEST: manageProductImages
+    // ====================================================================================
+    // Test case 1: Cập nhật hình ảnh thành công 
+    @Test
+    public void manageProductImages_ValidRequest_Returns200() throws Exception {
+        Long productId = 1L;
+        String requestJson = """
+            {
+              "images": [
+                {
+                  "imageUrl": "https://example.com/image1.png",
+                  "altText": "Hình mặt trước điện thoại",
+                  "imageOrder": 1,
+                  "isPrimary": true
+                }
+              ]
+            }
+            """;
+
+        doNothing().when(productService).manageProductImages(eq(productId), any());
+
+        mockMvc.perform(post("/api/v1/admin/products/{id}/images", productId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("Cập nhật hình ảnh sản phẩm thành công"));
+    }
+    // Test case 2: ID sai định dạng chữ
+    @Test
+    public void manageProductImages_TypeMismatchString_Returns400() throws Exception {
+        mockMvc.perform(post("/api/v1/admin/products/{id}/images", "abc")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"images\": []}"))
+                .andExpect(status().isBadRequest());
+    }
+    // Test case 3: ID sai định dạng số thập phân
+    @Test
+    public void manageProductImages_TypeMismatchDecimal_Returns400() throws Exception {
+        mockMvc.perform(post("/api/v1/admin/products/{id}/images", "1.5")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"images\": []}"))
+                .andExpect(status().isBadRequest());
+    } 
+    // Không gửi Request Body (HttpMessageNotReadable) -> 400 Bad Request 
+    @Test
+    public void manageProductImages_MissingBody_Returns400() throws Exception {
+        Long productId = 1L;
+        mockMvc.perform(post("/api/v1/admin/products/{id}/images", productId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+    // ====================================================================================
+    // TEST: deleteProductImage
+    // ====================================================================================
+    // Test case 1: xóa hình ảnh thành công
+    @Test
+    public void deleteProductImage_ValidIds_Returns200() throws Exception {
+        Long productId = 1L;
+        Long imageId = 100L;
+        doNothing().when(productService).deleteProductImage(eq(productId), eq(imageId));
+        mockMvc.perform(delete("/api/v1/admin/products/{id}/images/{imageId}", productId, imageId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("Xóa hình ảnh thành công"));
+    }
+    // Test case 2: ID sản phẩm sai định dạng chữ id
+    @Test
+    public void deleteProductImage_ProductIdTypeMismatch_Returns400() throws Exception {
+        mockMvc.perform(delete("/api/v1/admin/products/{id}/images/{imageId}", "abc", 100L)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+    // Test case 3: ID hình ảnh sai định dạng chữ imageId
+    @Test
+    public void deleteProductImage_ImageIdTypeMismatch_Returns400() throws Exception {
+        mockMvc.perform(delete("/api/v1/admin/products/{id}/images/{imageId}", 1L, "xyz")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 }

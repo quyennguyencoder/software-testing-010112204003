@@ -861,7 +861,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"PRO07\";",
               "const expectedStatusCodes = [400];",
@@ -891,13 +890,15 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         },
         {
           "listen": "prerequest",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const now = new Date();",
               "pm.environment.set(\"uniqueSuffix\", now.getTime().toString());",
@@ -912,7 +913,10 @@
               "future.setUTCDate(future.getUTCDate() + 30);",
               "future.setUTCHours(0, 0, 0, 0);",
               "pm.environment.set(\"futureIso\", future.toISOString());"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -941,7 +945,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"code\": \"PROMO-{{uniqueSuffix}}\",\n  \"templateId\": \"{{promotionTemplateId}}\",\n  \"title\": \"Promotion {{uniqueSuffix}}\",\n  \"description\": \"Postman test promotion\",\n  \"effectiveDate\": \"{{todayIso}}\",\n  \"expirationDate\": \"{{futureIso}}\",\n  \"percentDiscount\": 150,\n  \"minValueToBeApplied\": 100000,\n  \"status\": \"ACTIVE\",\n  \"targets\": [{\"applicableObjectId\": \"{{productId}}\", \"type\": \"PRODUCT\"}]\n}",
+          "raw": "{\n  \"code\": \"PROMO-INVALID-{{$timestamp}}\",\n  \"templateId\": \"{{promotionTemplateId}}\",\n  \"title\": \"Promotion invalid percent\",\n  \"description\": \"Percent discount out of range\",\n  \"effectiveDate\": \"{{todayIso}}\",\n  \"expirationDate\": \"{{futureIso}}\",\n  \"percentDiscount\": 150,\n  \"minValueToBeApplied\": 100000,\n  \"status\": \"ACTIVE\",\n  \"targets\": [\n    {\n      \"applicableObjectId\": \"{{productId}}\",\n      \"type\": \"PRODUCT\"\n    }\n  ]\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -1599,6 +1603,48 @@
             "packages": {},
             "requests": {}
           }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const baseUrl = pm.environment.get(\"baseUrl\");\r",
+              "const token = pm.environment.get(\"adminAccessToken\");\r",
+              "const code = \"TPL-DELETE-\" + Date.now();\r",
+              "\r",
+              "pm.sendRequest({\r",
+              "    url: baseUrl + \"/api/v1/admin/promotion-templates\",\r",
+              "    method: \"POST\",\r",
+              "    header: {\r",
+              "        \"Content-Type\": \"application/json\",\r",
+              "        \"Authorization\": \"Bearer \" + token\r",
+              "    },\r",
+              "    body: {\r",
+              "        mode: \"raw\",\r",
+              "        raw: JSON.stringify({\r",
+              "            code: code,\r",
+              "            type: \"DISCOUNT\"\r",
+              "        })\r",
+              "    }\r",
+              "}, function (err, res) {\r",
+              "    if (err) {\r",
+              "        console.log(\"Create delete template error:\", err);\r",
+              "        return;\r",
+              "    }\r",
+              "\r",
+              "    const json = res.json();\r",
+              "    const data = json.data || json;\r",
+              "\r",
+              "    if (data.id) {\r",
+              "        pm.environment.set(\"deletePromotionTemplateId\", data.id);\r",
+              "        console.log(\"deletePromotionTemplateId =\", data.id);\r",
+              "    }\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
         }
       ],
       "request": {
@@ -1621,7 +1667,7 @@
           }
         ],
         "url": {
-          "raw": "{{baseUrl}}/api/v1/admin/promotion-templates/e6005b75-e369-43d4-adcb-9b012fd85472",
+          "raw": "{{baseUrl}}/api/v1/admin/promotion-templates/{{deletePromotionTemplateId}}",
           "host": [
             "{{baseUrl}}"
           ],
@@ -1630,7 +1676,7 @@
             "v1",
             "admin",
             "promotion-templates",
-            "e6005b75-e369-43d4-adcb-9b012fd85472"
+            "{{deletePromotionTemplateId}}"
           ]
         },
         "description": "TestCaseId: PT04\nModule: Promotion/Payment/Chatbot/Location\nType: Positive\nAuth: Admin token\nObjective: Delete template thanh cong"
@@ -1643,7 +1689,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"PAY01\";",
               "const expectedStatusCodes = [200, 201];",
@@ -1673,7 +1718,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -1985,7 +2033,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"PAY05\";",
               "const expectedStatusCodes = [400, 401, 403, 404, 409];",
@@ -2015,10 +2062,16 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
+      "protocolProfileBehavior": {
+        "followRedirects": false
+      },
       "request": {
         "auth": {
           "type": "noauth"
@@ -2026,7 +2079,7 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/v1/payments/vnpay/callback?vnp_ResponseCode=00&vnp_TxnRef={{orderId}}",
+          "raw": "{{baseUrl}}/api/v1/payments/vnpay/callback?vnp_ResponseCode=00&vnp_TxnRef={{orderCode}}&vnp_Amount=10000000&vnp_TransactionNo=123456&vnp_TransactionStatus=00&vnp_PayDate=20260619133000&vnp_BankCode=NCB&vnp_OrderInfo=test&vnp_SecureHash=invalid_hash",
           "host": [
             "{{baseUrl}}"
           ],
@@ -2044,7 +2097,35 @@
             },
             {
               "key": "vnp_TxnRef",
-              "value": "{{orderId}}"
+              "value": "{{orderCode}}"
+            },
+            {
+              "key": "vnp_Amount",
+              "value": "10000000"
+            },
+            {
+              "key": "vnp_TransactionNo",
+              "value": "123456"
+            },
+            {
+              "key": "vnp_TransactionStatus",
+              "value": "00"
+            },
+            {
+              "key": "vnp_PayDate",
+              "value": "20260619133000"
+            },
+            {
+              "key": "vnp_BankCode",
+              "value": "NCB"
+            },
+            {
+              "key": "vnp_OrderInfo",
+              "value": "test"
+            },
+            {
+              "key": "vnp_SecureHash",
+              "value": "invalid_hash"
             }
           ]
         },
@@ -2058,7 +2139,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"PAY06\";",
               "const expectedStatusCodes = [200, 201];",
@@ -2087,11 +2167,18 @@
               "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
+              "} ",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
+      "protocolProfileBehavior": {
+        "followRedirects": false
+      },
       "request": {
         "auth": {
           "type": "noauth"
@@ -2099,7 +2186,7 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/v1/payments/vnpay/return?vnp_ResponseCode=00&vnp_TxnRef={{orderId}}",
+          "raw": "{{baseUrl}}/api/v1/payments/vnpay/return?vnp_ResponseCode=00&vnp_TxnRef={{orderCode}}&vnp_Amount=10000000&vnp_TransactionNo=123456&vnp_TransactionStatus=00&vnp_PayDate=20260619133000&vnp_BankCode=NCB&vnp_OrderInfo=test&vnp_SecureHash=invalid_hash",
           "host": [
             "{{baseUrl}}"
           ],
@@ -2117,7 +2204,35 @@
             },
             {
               "key": "vnp_TxnRef",
-              "value": "{{orderId}}"
+              "value": "{{orderCode}}"
+            },
+            {
+              "key": "vnp_Amount",
+              "value": "10000000"
+            },
+            {
+              "key": "vnp_TransactionNo",
+              "value": "123456"
+            },
+            {
+              "key": "vnp_TransactionStatus",
+              "value": "00"
+            },
+            {
+              "key": "vnp_PayDate",
+              "value": "20260619133000"
+            },
+            {
+              "key": "vnp_BankCode",
+              "value": "NCB"
+            },
+            {
+              "key": "vnp_OrderInfo",
+              "value": "test"
+            },
+            {
+              "key": "vnp_SecureHash",
+              "value": "invalid_hash"
             }
           ]
         },
