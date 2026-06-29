@@ -1261,7 +1261,6 @@
         "description": "TestCaseId: CART13\nModule: Cart/Guest Cart/Address\nType: Negative\nAuth: User token\nObjective: Guest cart id khong ton tai tra loi"
       },
       "response": []
-<<<<<<< HEAD
     },
     {
       "name": "ADDR01 - Lay danh sach dia chi user",
@@ -1337,9 +1336,6 @@
         "description": "TestCaseId: ADDR01\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Lay danh sach dia chi user"
       },
       "response": []
-=======
-
->>>>>>> 322a58200a322c9eec6f23c405f20bef96fa73c5
     }
   ],
   "event": [
