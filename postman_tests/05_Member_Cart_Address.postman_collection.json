@@ -813,7 +813,9 @@
               "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
               "if (pm.response.text() && contentType.includes(\"application/json\")) {",
               "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+
               "  if (responseData.guestCartId) { pm.environment.set(\"guestCartId\", responseData.guestCartId); }",
+
               "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
               "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
               "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
@@ -847,7 +849,10 @@
         ],
         "body": {
           "mode": "raw",
+
           "raw": "",
+          "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 1\n}",
+
           "options": {
             "raw": {
               "language": "json"
@@ -922,7 +927,10 @@
         ],
         "body": {
           "mode": "raw",
+
           "raw": "{\n  \"items\": [\n    {\n      \"productId\": {{productId}},\n      \"quantity\": 1\n    }\n  ]\n}",
+          "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 1\n}",
+
           "options": {
             "raw": {
               "language": "json"
@@ -1006,6 +1014,7 @@
         "description": "TestCaseId: CART11\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: Public\nObjective: Xoa guest cart thanh cong"
       },
       "response": []
+
     },
     {
       "name": "CART12 - Merge guest cart vao user cart thanh cong",
@@ -1252,6 +1261,7 @@
         "description": "TestCaseId: CART13\nModule: Cart/Guest Cart/Address\nType: Negative\nAuth: User token\nObjective: Guest cart id khong ton tai tra loi"
       },
       "response": []
+<<<<<<< HEAD
     },
     {
       "name": "ADDR01 - Lay danh sach dia chi user",
@@ -1327,6 +1337,9 @@
         "description": "TestCaseId: ADDR01\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Lay danh sach dia chi user"
       },
       "response": []
+=======
+
+>>>>>>> 322a58200a322c9eec6f23c405f20bef96fa73c5
     }
   ],
   "event": [

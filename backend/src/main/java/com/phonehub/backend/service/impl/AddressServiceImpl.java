@@ -8,7 +8,7 @@ import com.phonehub.backend.exception.ResourceNotFoundException;
 import com.phonehub.backend.repository.AddressRepository;
 import com.phonehub.backend.repository.UserRepository;
 import com.phonehub.backend.mapper.AddressMapper;
-import com.phonehub.backend.service.IAddressService;
+import com.phonehub.backend.service.intf.IAddressService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

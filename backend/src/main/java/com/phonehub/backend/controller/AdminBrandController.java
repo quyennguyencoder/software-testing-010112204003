@@ -4,7 +4,7 @@ import com.phonehub.backend.dto.ApiResponse;
 import com.phonehub.backend.dto.request.brand.CreateBrandRequest;
 import com.phonehub.backend.dto.request.brand.UpdateBrandRequest;
 import com.phonehub.backend.dto.response.brand.BrandResponse;
-import com.phonehub.backend.service.IBrandService;
+import com.phonehub.backend.service.intf.IBrandService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

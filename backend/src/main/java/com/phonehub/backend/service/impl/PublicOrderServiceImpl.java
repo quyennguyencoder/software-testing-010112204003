@@ -8,7 +8,7 @@ import com.phonehub.backend.enums.OrderStatus;
 import com.phonehub.backend.exception.BadRequestException;
 import com.phonehub.backend.exception.ResourceNotFoundException;
 import com.phonehub.backend.repository.OrderRepository;
-import com.phonehub.backend.service.IPublicOrderService;
+import com.phonehub.backend.service.intf.IPublicOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

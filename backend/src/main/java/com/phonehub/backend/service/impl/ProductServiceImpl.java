@@ -28,8 +28,8 @@ import com.phonehub.backend.repository.ProductMetadataRepository;
 import com.phonehub.backend.repository.ProductRepository;
 import com.phonehub.backend.repository.ProductTemplateRepository;
 import com.phonehub.backend.repository.UserRepository;
-import com.phonehub.backend.service.IProductService;
-import com.phonehub.backend.service.IPromotionService;
+import com.phonehub.backend.service.intf.IProductService;
+import com.phonehub.backend.service.intf.IPromotionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -74,8 +74,10 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public List<ProductTemplateResponse> getProductMetadataGreaterThanPrice(BigDecimal price) {
+        if(price == null || price.compareTo(BigDecimal.ZERO) < 0) {
+            throw new BadRequestException("Giá tiền không hợp lệ (không được để trống hoặc số âm)");
+        }
         log.info("Getting product templates with price greater than: {}", price);
-
         List<ProductTemplate> templates = productTemplateRepository.findByPriceGreaterThan(price);
 
         return productTemplateMapper.toResponseList(templates);
@@ -525,10 +527,10 @@ public class ProductServiceImpl implements IProductService {
         log.info("Deleting image ID: {} for product ID: {}", imageId, productId);
 
         // Validate product exists
-        productRepository.findByIdAndIsDeletedFalse(productId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Không tìm thấy sản phẩm với ID: " + productId));
-
+        if (productRepository.findByIdAndIsDeletedFalse(productId).isEmpty()) {
+            throw new ResourceNotFoundException("Không tìm thấy sản phẩm với ID:"); 
+        }
+                    
         // Find image
         ProductImage image = productImageRepository.findById(imageId)
                 .orElseThrow(() -> new ResourceNotFoundException(
