@@ -163,7 +163,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"username\": \"{{currentUsername}}\",\n  \"fullName\": \"Test User {{uniqueSuffix}}\",\n  \"email\": \"notanemail{{uniqueSuffix}}\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"gender\": \"MALE\",\n  \"dateOfBirth\": \"2000-01-01\",\n  \"password\": \"{{userPassword}}\",\n  \"confirmPassword\": \"{{userPassword}}\"\n}",
+          "raw": "{\"username\": \"testuser{{uniqueSuffix}}\",\"fullName\": \"Test User {{uniqueSuffix}}\",\"email\": \"test@@@\",\"phoneNumber\": \"{{testPhone}}\",\"gender\": \"MALE\",\"dateOfBirth\": \"2000-01-01\",\"password\": \"{{userPassword}}\",\"confirmPassword\": \"{{userPassword}}\"}",
           "options": {
             "raw": {
               "language": "json"
