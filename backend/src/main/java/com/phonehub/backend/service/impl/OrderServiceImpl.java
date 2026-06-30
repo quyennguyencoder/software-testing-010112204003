@@ -41,12 +41,11 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java. util.stream.Collectors;
+import java.util.stream.Collectors;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -133,6 +132,11 @@ public class OrderServiceImpl implements IOrderService {
         
         for (OrderItemRequest item : request.getItems()) {
             Product product = productMap.get(item.getProductId());
+            
+            // Validate quantity > 0
+            if (item.getQuantity() <= 0) {
+                throw new BadRequestException("Số lượng sản phẩm phải lớn hơn 0");
+            }
             
             // Calculate total stock from templates
             int totalStock = product.getTemplates().stream()

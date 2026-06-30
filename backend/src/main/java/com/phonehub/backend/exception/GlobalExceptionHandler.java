@@ -16,163 +16,166 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.util.HashMap;
 import java.util.Map;
 import jakarta.validation.ConstraintViolationException;
+
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiResponse<?>> handleResourceNotFoundException(
-            ResourceNotFoundException ex, WebRequest request) {
-        log.error("Resource not found: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.notFound(ex.getMessage()));
-    }
-
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ApiResponse<?>> handleBadRequestException(
-            BadRequestException ex, WebRequest request) {
-        log.error("Bad request: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.badRequest(ex.getMessage()));
-    }
-
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ApiResponse<?>> handleUnauthorizedException(
-            UnauthorizedException ex, WebRequest request) {
-        log.error("Unauthorized: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.unauthorized(ex.getMessage()));
-    }
-
-    @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<ApiResponse<?>> handleForbiddenException(
-            ForbiddenException ex, WebRequest request) {
-        log.error("Forbidden: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(ApiResponse.forbidden(ex.getMessage()));
-    }
-
-    @ExceptionHandler({AuthorizationDeniedException.class, AccessDeniedException.class})
-    public ResponseEntity<ApiResponse<?>> handleAccessDeniedException(
-            Exception ex, WebRequest request) {
-        log.error("Access Denied: {}", ex.getMessage());
-        String message = ex.getMessage() != null ? ex.getMessage() : "Access Denied";
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(ApiResponse.forbidden(message));
-    }
-
-    @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ApiResponse<?>> handleConflictException(
-            ConflictException ex, WebRequest request) {
-        log.error("Conflict: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ApiResponse.conflict(ex.getMessage()));
-    }
-
-    @ExceptionHandler(EmailServiceException.class)
-    public ResponseEntity<ApiResponse<?>> handleEmailServiceException(
-            EmailServiceException ex, WebRequest request) {
-        log.error("Email service error: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.internalServerError(ex.getMessage()));
-    }
-
-    @ExceptionHandler(OutOfStockException.class)
-    public ResponseEntity<ApiResponse<?>> handleOutOfStockException(
-            OutOfStockException ex, WebRequest request) {
-        log.error("Out of stock: {}", ex.getMessage());
-        Map<String, Object> data = new HashMap<>();
-        data.put("productId", ex.getProductId());
-        data.put("productName", ex.getProductName());
-        data.put("requestedQuantity", ex.getRequestedQuantity());
-        data.put("availableStock", ex.getAvailableStock());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(400, ex.getMessage(), data));
-    }
-
-    @ExceptionHandler(VersionConflictException.class)
-    public ResponseEntity<ApiResponse<?>> handleVersionConflictException(
-            VersionConflictException ex, WebRequest request) {
-        log.error("Version conflict: {}", ex.getMessage());
-        Map<String, Object> data = new HashMap<>();
-        if (ex.getCurrentQuantity() != null) {
-            data.put("currentQuantity", ex.getCurrentQuantity());
-            data.put("requestedQuantity", ex.getRequestedQuantity());
+        @ExceptionHandler(ResourceNotFoundException.class)
+        public ResponseEntity<ApiResponse<?>> handleResourceNotFoundException(
+                        ResourceNotFoundException ex, WebRequest request) {
+                log.error("Resource not found: {}", ex.getMessage());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                .body(ApiResponse.notFound(ex.getMessage()));
         }
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ApiResponse.error(409, ex.getMessage(), data));
-    }
 
-    @ExceptionHandler(MaxQuantityExceededException.class)
-    public ResponseEntity<ApiResponse<?>> handleMaxQuantityExceededException(
-            MaxQuantityExceededException ex, WebRequest request) {
-        log.error("Max quantity exceeded: {}", ex.getMessage());
-        Map<String, Object> data = new HashMap<>();
-        data.put("maxQuantity", ex.getMaxQuantity());
-        data.put("requestedQuantity", ex.getRequestedQuantity());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(400, ex.getMessage(), data));
-    }
+        @ExceptionHandler(BadRequestException.class)
+        public ResponseEntity<ApiResponse<?>> handleBadRequestException(
+                        BadRequestException ex, WebRequest request) {
+                log.error("Bad request: {}", ex.getMessage());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body(ApiResponse.badRequest(ex.getMessage()));
+        }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<?>> handleValidationException(
-            MethodArgumentNotValidException ex, WebRequest request) {
-        log.error("Validation error: {}", ex.getMessage());
-        Map<String, String> errors = new HashMap<>();
-        
-        // Đã sửa: Dùng getFieldErrors() và check containsKey để không ghi đè lỗi
-        ex.getBindingResult().getFieldErrors().forEach((error) -> {
-            String fieldName = error.getField();
-            String errorMessage = error.getDefaultMessage();
-            
-            // Nếu trường này CHƯA CÓ lỗi nào được lưu, thì mới thêm vào.
-            if (!errors.containsKey(fieldName)) {
-                errors.put(fieldName, errorMessage);
-            }
-        });
-        
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(400, "Validation failed", errors));
-    }
+        @ExceptionHandler(UnauthorizedException.class)
+        public ResponseEntity<ApiResponse<?>> handleUnauthorizedException(
+                        UnauthorizedException ex, WebRequest request) {
+                log.error("Unauthorized: {}", ex.getMessage());
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                .body(ApiResponse.unauthorized(ex.getMessage()));
+        }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<?>> handleGlobalException(
-            Exception ex, WebRequest request) {
-        log.error("Internal server error: {}", ex.getMessage(), ex);
-        // Include error message in response for debugging (consider removing in production)
-        String errorMessage = ex.getMessage() != null ? ex.getMessage() : "Internal server error";
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.internalServerError(errorMessage));
-    }
+        @ExceptionHandler(ForbiddenException.class)
+        public ResponseEntity<ApiResponse<?>> handleForbiddenException(
+                        ForbiddenException ex, WebRequest request) {
+                log.error("Forbidden: {}", ex.getMessage());
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                .body(ApiResponse.forbidden(ex.getMessage()));
+        }
 
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ApiResponse<?>> handleTypeMismatchException(
-            MethodArgumentTypeMismatchException ex, WebRequest request) {
-        log.error("Type mismatch error: {}", ex.getMessage());
+        @ExceptionHandler({ AuthorizationDeniedException.class, AccessDeniedException.class })
+        public ResponseEntity<ApiResponse<?>> handleAccessDeniedException(
+                        Exception ex, WebRequest request) {
+                log.error("Access Denied: {}", ex.getMessage());
+                String message = ex.getMessage() != null ? ex.getMessage() : "Access Denied";
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                .body(ApiResponse.forbidden(message));
+        }
 
-        String message = String.format("Định dạng dữ liệu không hợp lệ cho tham số '%s'. Vui lòng kiểm tra lại.", ex.getName());
-        
-        // Tận dụng luôn ApiResponse.badRequest của dự án để trả về mã 400
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.badRequest(message));
-    }
+        @ExceptionHandler(ConflictException.class)
+        public ResponseEntity<ApiResponse<?>> handleConflictException(
+                        ConflictException ex, WebRequest request) {
+                log.error("Conflict: {}", ex.getMessage());
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                                .body(ApiResponse.conflict(ex.getMessage()));
+        }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("success", false);
-        errorResponse.put("status", 400);
-        errorResponse.put("message", "Định dạng dữ liệu đầu vào không hợp lệ.");
-        errorResponse.put("data", null);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-    }
+        @ExceptionHandler(EmailServiceException.class)
+        public ResponseEntity<ApiResponse<?>> handleEmailServiceException(
+                        EmailServiceException ex, WebRequest request) {
+                log.error("Email service error: {}", ex.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body(ApiResponse.internalServerError(ex.getMessage()));
+        }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiResponse<?>> handleConstraintViolationException(
-            ConstraintViolationException ex, WebRequest request) {
-        log.error("Constraint validation error: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.badRequest(ex.getMessage()));
-    }
+        @ExceptionHandler(OutOfStockException.class)
+        public ResponseEntity<ApiResponse<?>> handleOutOfStockException(
+                        OutOfStockException ex, WebRequest request) {
+                log.error("Out of stock: {}", ex.getMessage());
+                Map<String, Object> data = new HashMap<>();
+                data.put("productId", ex.getProductId());
+                data.put("productName", ex.getProductName());
+                data.put("requestedQuantity", ex.getRequestedQuantity());
+                data.put("availableStock", ex.getAvailableStock());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body(ApiResponse.error(400, ex.getMessage(), data));
+        }
+
+        @ExceptionHandler(VersionConflictException.class)
+        public ResponseEntity<ApiResponse<?>> handleVersionConflictException(
+                        VersionConflictException ex, WebRequest request) {
+                log.error("Version conflict: {}", ex.getMessage());
+                Map<String, Object> data = new HashMap<>();
+                if (ex.getCurrentQuantity() != null) {
+                        data.put("currentQuantity", ex.getCurrentQuantity());
+                        data.put("requestedQuantity", ex.getRequestedQuantity());
+                }
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                                .body(ApiResponse.error(409, ex.getMessage(), data));
+        }
+
+        @ExceptionHandler(MaxQuantityExceededException.class)
+        public ResponseEntity<ApiResponse<?>> handleMaxQuantityExceededException(
+                        MaxQuantityExceededException ex, WebRequest request) {
+                log.error("Max quantity exceeded: {}", ex.getMessage());
+                Map<String, Object> data = new HashMap<>();
+                data.put("maxQuantity", ex.getMaxQuantity());
+                data.put("requestedQuantity", ex.getRequestedQuantity());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body(ApiResponse.error(400, ex.getMessage(), data));
+        }
+
+        @ExceptionHandler(MethodArgumentNotValidException.class)
+        public ResponseEntity<ApiResponse<?>> handleValidationException(
+                        MethodArgumentNotValidException ex, WebRequest request) {
+                log.error("Validation error: {}", ex.getMessage());
+                Map<String, String> errors = new HashMap<>();
+
+                // Đã sửa: Dùng getFieldErrors() và check containsKey để không ghi đè lỗi
+                ex.getBindingResult().getFieldErrors().forEach((error) -> {
+                        String fieldName = error.getField();
+                        String errorMessage = error.getDefaultMessage();
+
+                        // Nếu trường này CHƯA CÓ lỗi nào được lưu, thì mới thêm vào.
+                        if (!errors.containsKey(fieldName)) {
+                                errors.put(fieldName, errorMessage);
+                        }
+                });
+
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body(ApiResponse.error(400, "Validation failed", errors));
+        }
+
+        @ExceptionHandler(Exception.class)
+        public ResponseEntity<ApiResponse<?>> handleGlobalException(
+                        Exception ex, WebRequest request) {
+                log.error("Internal server error: {}", ex.getMessage(), ex);
+                // Include error message in response for debugging (consider removing in
+                // production)
+                String errorMessage = ex.getMessage() != null ? ex.getMessage() : "Internal server error";
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body(ApiResponse.internalServerError(errorMessage));
+        }
+
+        @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+        public ResponseEntity<ApiResponse<?>> handleTypeMismatchException(
+                        MethodArgumentTypeMismatchException ex, WebRequest request) {
+                log.error("Type mismatch error: {}", ex.getMessage());
+
+                String message = String.format(
+                                "Định dạng dữ liệu không hợp lệ cho tham số '%s'. Vui lòng kiểm tra lại.",
+                                ex.getName());
+
+                // Tận dụng luôn ApiResponse.badRequest của dự án để trả về mã 400
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body(ApiResponse.badRequest(message));
+        }
+
+        @ExceptionHandler(HttpMessageNotReadableException.class)
+        public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("status", 400);
+                errorResponse.put("message", "Định dạng dữ liệu đầu vào không hợp lệ.");
+                errorResponse.put("data", null);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+
+        @ExceptionHandler(ConstraintViolationException.class)
+        public ResponseEntity<ApiResponse<?>> handleConstraintViolationException(
+                        ConstraintViolationException ex, WebRequest request) {
+                log.error("Constraint validation error: {}", ex.getMessage());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body(ApiResponse.badRequest(ex.getMessage()));
+        }
 }
-

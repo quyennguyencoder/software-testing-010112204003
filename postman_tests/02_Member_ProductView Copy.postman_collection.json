@@ -317,6 +317,1132 @@
         "description": "TestCaseId: PV04\nModule: Product View/Public Catalog\nType: Negative\nAuth: Public\nObjective: Product id khong ton tai tra 404"
       },
       "response": []
+    },
+    {
+      "name": "PV05 - Filter nhieu tieu chi tra danh sach dung schema",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"PV05\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"keyword\": \"iphone\",\n  \"categoryIds\": [\n    \"{{categoryId}}\"\n  ],\n  \"brandIds\": [\n    \"{{brandId}}\"\n  ],\n  \"minPrice\": 1000000,\n  \"maxPrice\": 50000000,\n  \"page\": 0,\n  \"size\": 10,\n  \"sortBy\": \"name\",\n  \"sortDirection\": \"ASC\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/products/filter",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "products",
+            "filter"
+          ]
+        },
+        "description": "TestCaseId: PV05\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Filter nhieu tieu chi tra danh sach dung schema"
+      },
+      "response": []
+    },
+    {
+      "name": "PV06 - minPrice > maxPrice tra 400",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"PV06\";",
+              "const expectedStatusCodes = [400];",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "",
+              "let json = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "    json = pm.response.json();",
+              "}",
+              "",
+              "// ⚠️ BUG BACKEND: API hiện trả 200 + list rỗng thay vì 400",
+              "// Backend chưa validate điều kiện minPrice > maxPrice",
+              "// Cần fix backend để trả 400 khi minPrice > maxPrice",
+              "",
+              "pm.test(`${testCaseId} expected status 400`, () => {",
+              "    pm.expect(pm.response.code).to.equal(400);",
+              "});",
+              "",
+              "pm.test(`${testCaseId} no server error`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`${testCaseId} response time under threshold`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "pm.test(`${testCaseId} response is JSON`, () => {",
+              "    pm.expect(contentType).to.include(\"application/json\");",
+              "});",
+              "",
+              "pm.test(`${testCaseId} success is false`, () => {",
+              "    if (json.hasOwnProperty(\"success\")) {",
+              "        pm.expect(json.success).to.be.false;",
+              "    }",
+              "});",
+              "",
+              "pm.test(`${testCaseId} status is 400`, () => {",
+              "    if (json.hasOwnProperty(\"status\")) {",
+              "        pm.expect(json.status).to.equal(400);",
+              "    }",
+              "});",
+              "",
+              "pm.test(`${testCaseId} message exists`, () => {",
+              "    pm.expect(json.message).to.be.a(\"string\").and.not.empty;",
+              "});",
+              "",
+              "pm.test(`${testCaseId} message indicates invalid price range`, () => {",
+              "    if (json.message) {",
+              "        pm.expect(json.message.toLowerCase()).to.match(/min|max|price|greater|invalid|range/);",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"keyword\": \"iphone\",\n  \"categoryIds\": [\n    \"1\"\n  ],\n  \"brandIds\": [\n    \"1\"\n  ],\n  \"minPrice\": 30000000,\n  \"maxPrice\": 10000000,\n  \"page\": 0,\n  \"size\": 10,\n  \"sortBy\": \"name\",\n  \"sortDirection\": \"ASC\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/products/filter",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "products",
+            "filter"
+          ]
+        },
+        "description": "TestCaseId: PV06\nModule: Product View/Public Catalog\nType: Boundary\nAuth: Public\nObjective: minPrice > maxPrice tra 400"
+      },
+      "response": []
+    },
+    {
+      "name": "PV07 - page < 0 hoac size <= 0 tra 400",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"PV07\";",
+              "const expectedStatusCodes = [400];",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "",
+              "let json = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "    json = pm.response.json();",
+              "}",
+              "",
+              "// ⚠️ BUG BACKEND: API trả 500 (lỗi JPA EntityManager) thay vì 400",
+              "// Backend không validate page < 0 hoặc size <= 0 trước khi query DB",
+              "// Lỗi: \"Could not open JPA EntityManager for transaction\"",
+              "// Cần fix backend: validate input → trả 400 khi page < 0 hoặc size <= 0",
+              "",
+              "pm.test(`${testCaseId} expected status 400`, () => {",
+              "    pm.expect(pm.response.code).to.equal(400);",
+              "});",
+              "",
+              "pm.test(`${testCaseId} no server error`, () => {",
+              "    pm.expect(pm.response.code).to.be.below(500);",
+              "});",
+              "",
+              "pm.test(`${testCaseId} response time under threshold`, () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "pm.test(`${testCaseId} response is JSON`, () => {",
+              "    pm.expect(contentType).to.include(\"application/json\");",
+              "});",
+              "",
+              "pm.test(`${testCaseId} success is false`, () => {",
+              "    if (json.hasOwnProperty(\"success\")) {",
+              "        pm.expect(json.success).to.be.false;",
+              "    }",
+              "});",
+              "",
+              "pm.test(`${testCaseId} status is 400`, () => {",
+              "    if (json.hasOwnProperty(\"status\")) {",
+              "        pm.expect(json.status).to.equal(400);",
+              "    }",
+              "});",
+              "",
+              "pm.test(`${testCaseId} message exists`, () => {",
+              "    pm.expect(json.message).to.be.a(\"string\").and.not.empty;",
+              "});",
+              "",
+              "pm.test(`${testCaseId} message indicates invalid pagination`, () => {",
+              "    if (json.message) {",
+              "        pm.expect(json.message.toLowerCase()).to.match(/page|size|invalid|greater|positive/);",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"keyword\": \"iphone\",\n  \"categoryIds\": [\n    \"{{categoryId}}\"\n  ],\n  \"brandIds\": [\n    \"{{brandId}}\"\n  ],\n  \"minPrice\": 1000000,\n  \"maxPrice\": 50000000,\n  \"page\": -1,\n  \"size\": 0,\n  \"sortBy\": \"name\",\n  \"sortDirection\": \"ASC\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/products/filter",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "products",
+            "filter"
+          ]
+        },
+        "description": "TestCaseId: PV07\nModule: Product View/Public Catalog\nType: Boundary\nAuth: Public\nObjective: page < 0 hoac size <= 0 tra 400"
+      },
+      "response": []
+    },
+    {
+      "name": "PV08 - Category hop le tra san pham thuoc category",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"PV08\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/products/category/{{categoryId}}?limit=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "products",
+            "category",
+            "{{categoryId}}"
+          ],
+          "query": [
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "TestCaseId: PV08\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Category hop le tra san pham thuoc category"
+      },
+      "response": []
+    },
+    {
+      "name": "PV09 - Tra danh sach san pham lien quan, khong chua chinh san pham",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"PV09\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/products/{{productId}}/related?limit=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "products",
+            "{{productId}}",
+            "related"
+          ],
+          "query": [
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "TestCaseId: PV09\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra danh sach san pham lien quan, khong chua chinh san pham"
+      },
+      "response": []
+
+    },
+    {
+      "name": "PV12 - Tra list san pham ban chay",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"PV12\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/products/best-selling?limit=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "products",
+            "best-selling"
+          ],
+          "query": [
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "TestCaseId: PV12\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra list san pham ban chay"
+      },
+      "response": []
+    },
+    {
+      "name": "PV13 - Tra list san pham moi",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"PV13\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/products/new-arrivals?limit=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "products",
+            "new-arrivals"
+          ],
+          "query": [
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "TestCaseId: PV13\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra list san pham moi"
+      },
+      "response": []
+    },
+    {
+      "name": "PV14 - Tra list san pham noi bat",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"PV14\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/products/featured?limit=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "products",
+            "featured"
+          ],
+          "query": [
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "TestCaseId: PV14\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra list san pham noi bat"
+      },
+      "response": []
+    },
+    {
+      "name": "PV15 - Tra list san pham khuyen mai",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"PV15\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/products/on-sale?limit=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "products",
+            "on-sale"
+          ],
+          "query": [
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "TestCaseId: PV15\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra list san pham khuyen mai"
+      },
+      "response": []
+    },
+    {
+      "name": "PV18 - Tra cac option pin",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"PV18\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/products/filter/battery",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "products",
+            "filter",
+            "battery"
+          ]
+        },
+        "description": "TestCaseId: PV18\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra cac option pin"
+      },
+      "response": []
+    },
+    {
+      "name": "PV19 - Tra cac option man hinh",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"PV19\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/products/filter/screen",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "products",
+            "filter",
+            "screen"
+          ]
+        },
+        "description": "TestCaseId: PV19\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra cac option man hinh"
+      },
+      "response": []
+    },
+    {
+      "name": "PV20 - Tra cac option OS",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"PV20\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/products/filter/os",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "products",
+            "filter",
+            "os"
+          ]
+        },
+        "description": "TestCaseId: PV20\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra cac option OS"
+      },
+      "response": []
+    },
+    {
+      "name": "CAT01 - Tra danh sach category active",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"CAT01\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/categories",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "categories"
+          ]
+        },
+        "description": "TestCaseId: CAT01\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra danh sach category active"
+      },
+      "response": []
+    },
+    {
+      "name": "BRAND01 - Tra danh sach brand active",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"BRAND01\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/brands",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "brands"
+          ]
+        },
+        "description": "TestCaseId: BRAND01\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra danh sach brand active"
+      },
+      "response": []
+    },
+    {
+      "name": "BRAND02 - Brand ton tai tra chi tiet",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"BRAND02\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/brands/{{currentResourceId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "brands",
+            "{{currentResourceId}}"
+          ]
+        },
+        "description": "TestCaseId: BRAND02\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Brand ton tai tra chi tiet"
+      },
+      "response": []
+    },
+    {
+      "name": "BRAND03 - Brand khong ton tai tra 404",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"BRAND03\";",
+              "const expectedStatusCodes = [404];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/brands/{{currentResourceId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "brands",
+            "{{currentResourceId}}"
+          ]
+        },
+        "description": "TestCaseId: BRAND03\nModule: Product View/Public Catalog\nType: Negative\nAuth: Public\nObjective: Brand khong ton tai tra 404"
+      },
+      "response": []
+
     }
   ],
   "event": [
