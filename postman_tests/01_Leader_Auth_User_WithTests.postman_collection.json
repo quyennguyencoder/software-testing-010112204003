@@ -268,7 +268,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"AUTH04\";",
               "const expectedStatusCodes = [409];",
@@ -298,7 +297,17 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (data.orderCode) { pm.environment.set(\"createdOrderCode\", data.orderCode); pm.environment.set(\"orderCode\", data.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [],
+            "type": "text/javascript"
           }
         }
       ],
@@ -315,7 +324,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"username\": \"{{currentUsername}}\",\n  \"fullName\": \"Test User {{uniqueSuffix}}\",\n  \"email\": \"{{currentEmail}}\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"gender\": \"MALE\",\n  \"dateOfBirth\": \"2000-01-01\",\n  \"password\": \"{{userPassword}}\",\n  \"confirmPassword\": \"{{userPassword}}\"\n}",
+          "raw": "{\n  \"username\": \"testuser\",\n  \"fullName\": \"Test User {{uniqueSuffix}}\",\n  \"email\": \"testuser@gmail.com\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"gender\": \"MALE\",\n  \"dateOfBirth\": \"2000-01-01\",\n  \"password\": \"{{userPassword}}\",\n  \"confirmPassword\": \"{{userPassword}}\"\n}",
           "options": {
             "raw": {
               "language": "json"
