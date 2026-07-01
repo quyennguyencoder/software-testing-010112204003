@@ -216,6 +216,51 @@ public class AdminOrderServiceImplTest {
     }
 
     @Test
+    @DisplayName("Nên trả về trạng thái tiếp theo cho đơn hàng PENDING")
+    void getAvailableStatusTransitions_Pending() {
+        Order mockOrder = new Order();
+        mockOrder.setId(2L);
+        mockOrder.setStatus(OrderStatus.PENDING);
+
+        when(orderRepository.findById(2L)).thenReturn(Optional.of(mockOrder));
+
+        List<OrderStatus> statuses = adminOrderService.getAvailableStatusTransitions(2L);
+
+        assertNotNull(statuses);
+        assertEquals(List.of(OrderStatus.CONFIRMED, OrderStatus.CANCELLED), statuses);
+    }
+
+    @Test
+    @DisplayName("Nên trả về trạng thái tiếp theo cho đơn hàng CONFIRMED")
+    void getAvailableStatusTransitions_Confirmed() {
+        Order mockOrder = new Order();
+        mockOrder.setId(3L);
+        mockOrder.setStatus(OrderStatus.CONFIRMED);
+
+        when(orderRepository.findById(3L)).thenReturn(Optional.of(mockOrder));
+
+        List<OrderStatus> statuses = adminOrderService.getAvailableStatusTransitions(3L);
+
+        assertNotNull(statuses);
+        assertEquals(List.of(OrderStatus.SHIPPING, OrderStatus.CANCELLED), statuses);
+    }
+
+    @Test
+    @DisplayName("Nên trả về trạng thái tiếp theo cho đơn hàng SHIPPED")
+    void getAvailableStatusTransitions_Shipped() {
+        Order mockOrder = new Order();
+        mockOrder.setId(4L);
+        mockOrder.setStatus(OrderStatus.SHIPPED);
+
+        when(orderRepository.findById(4L)).thenReturn(Optional.of(mockOrder));
+
+        List<OrderStatus> statuses = adminOrderService.getAvailableStatusTransitions(4L);
+
+        assertNotNull(statuses);
+        assertEquals(List.of(OrderStatus.DELIVERED), statuses);
+    }
+
+    @Test
     @DisplayName("Nên ném lỗi khi không tìm thấy đơn hàng khi lấy trạng thái tiếp theo")
     void getAvailableStatusTransitions_ThrowsNotFound() {
         when(orderRepository.findById(1L)).thenReturn(Optional.empty());
@@ -269,6 +314,20 @@ public class AdminOrderServiceImplTest {
         assertEquals(4L, summary.get("totalOrders"));
         assertEquals(new BigDecimal("2000"), summary.get("totalRevenue"));
         assertEquals(new BigDecimal("500.00"), summary.get("averageOrderValue"));
+    }
+
+    @Test
+    @DisplayName("Nên trả về summary stats khi có đơn hàng nhưng tổng doanh thu null")
+    void getOrderSummaryStats_WithOrdersAndNullRevenue_ReturnsZeroAverage() {
+        when(orderRepository.count()).thenReturn(3L);
+        when(orderRepository.getTotalRevenueInDateRange(any(), any())).thenReturn(null);
+
+        Map<String, Object> summary = adminOrderService.getOrderSummaryStats();
+
+        assertNotNull(summary);
+        assertEquals(3L, summary.get("totalOrders"));
+        assertEquals(BigDecimal.ZERO, summary.get("totalRevenue"));
+        assertEquals(BigDecimal.ZERO, summary.get("averageOrderValue"));
     }
 
     @Test
@@ -345,5 +404,47 @@ public class AdminOrderServiceImplTest {
         assertEquals(80L, stats.get("deliveredOrders"));
         assertEquals(20L, stats.get("pendingOrders"));
         assertEquals(new BigDecimal("5000000"), stats.get("monthlyRevenue"));
+    }
+
+    @Test
+    @DisplayName("Nên lấy thống kê đơn hàng với tất cả trạng thái và tính delivery rate")
+    void getOrderStatistics_AllStatuses_ReturnsFullBreakdown() {
+        when(orderRepository.count()).thenReturn(300L);
+        when(orderRepository.countOrdersByStatus()).thenReturn(List.<Object[]>of(
+                new Object[]{OrderStatus.PENDING, 20L},
+                new Object[]{OrderStatus.CONFIRMED, 50L},
+                new Object[]{OrderStatus.SHIPPING, 30L},
+                new Object[]{OrderStatus.DELIVERED, 150L},
+                new Object[]{OrderStatus.CANCELLED, 50L}
+        ));
+        when(orderRepository.getTotalRevenueInDateRange(any(), any())).thenReturn(new BigDecimal("100000"));
+
+        Map<String, Object> stats = adminOrderService.getOrderStatistics();
+
+        assertNotNull(stats);
+        assertEquals(300L, stats.get("totalOrders"));
+        assertEquals(150L, stats.get("deliveredOrders"));
+        assertEquals(20L, stats.get("pendingOrders"));
+        assertEquals(50L, stats.get("confirmedOrders"));
+        assertEquals(30L, stats.get("shippingOrders"));
+        assertEquals(50L, stats.get("cancelledOrders"));
+        assertEquals(50.0, stats.get("deliveryRate"));
+        assertEquals(new BigDecimal("100000"), stats.get("monthlyRevenue"));
+    }
+
+    @Test
+    @DisplayName("Nên trả về thống kê đơn hàng với tổng đơn 0 và deliveryRate 0")
+    void getOrderStatistics_ZeroOrders_ReturnsZeroRate() {
+        when(orderRepository.count()).thenReturn(0L);
+        when(orderRepository.countOrdersByStatus()).thenReturn(List.of());
+        when(orderRepository.getTotalRevenueInDateRange(any(), any())).thenReturn(null);
+
+        Map<String, Object> stats = adminOrderService.getOrderStatistics();
+
+        assertNotNull(stats);
+        assertEquals(0L, stats.get("totalOrders"));
+        assertEquals(0L, stats.get("pendingOrders"));
+        assertEquals(0.0, stats.get("deliveryRate"));
+        assertEquals(BigDecimal.ZERO, stats.get("monthlyRevenue"));
     }
 }
