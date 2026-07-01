@@ -113,11 +113,41 @@ public class PublicOrderServiceImplTest {
     }
 
     @Test
+    @DisplayName("Nên ném BadRequestException khi email thiếu dấu chấm sau @")
+    void trackOrder_ThrowsException_WhenEmailMissingDot() {
+        TrackOrderRequest request = new TrackOrderRequest();
+        request.setOrderCode("ORD123");
+        request.setEmail("test@example");
+
+        assertThrows(BadRequestException.class, () -> publicOrderService.trackOrder(request));
+    }
+
+    @Test
     @DisplayName("Nên ném BadRequestException khi email trống")
     void trackOrder_ThrowsException_WhenEmailEmpty() {
         TrackOrderRequest request = new TrackOrderRequest();
         request.setOrderCode("ORD123");
         request.setEmail("");
+
+        assertThrows(BadRequestException.class, () -> publicOrderService.trackOrder(request));
+    }
+
+    @Test
+    @DisplayName("Nên ném BadRequestException khi orderCode null")
+    void trackOrder_ThrowsException_WhenOrderCodeNull() {
+        TrackOrderRequest request = new TrackOrderRequest();
+        request.setOrderCode(null);
+        request.setEmail("test@example.com");
+
+        assertThrows(BadRequestException.class, () -> publicOrderService.trackOrder(request));
+    }
+
+    @Test
+    @DisplayName("Nên ném BadRequestException khi email null")
+    void trackOrder_ThrowsException_WhenEmailNull() {
+        TrackOrderRequest request = new TrackOrderRequest();
+        request.setOrderCode("ORD123");
+        request.setEmail(null);
 
         assertThrows(BadRequestException.class, () -> publicOrderService.trackOrder(request));
     }
@@ -161,6 +191,12 @@ public class PublicOrderServiceImplTest {
         assertEquals("***", response.getMaskedPhoneNumber());
         assertNull(response.getTotalAmount());
         assertEquals("Để xem đầy đủ thông tin, vui lòng nhập email khi đặt hàng.", response.getCustomerMessage());
+    }
+
+    @Test
+    @DisplayName("Nên ném BadRequestException khi quickTrackByCode với orderCode null")
+    void quickTrackByCode_ThrowsException_WhenOrderCodeNull() {
+        assertThrows(BadRequestException.class, () -> publicOrderService.quickTrackByCode(null));
     }
 
     @Test
@@ -211,6 +247,22 @@ public class PublicOrderServiceImplTest {
         assertEquals(100L, stats.get("totalOrders"));
         assertEquals(80L, stats.get("deliveredOrders"));
         assertEquals(80.0, stats.get("deliveryRate"));
+    }
+
+    @Test
+    @DisplayName("Nên trả về deliveryRate = 0 khi không có đơn hàng")
+    void getTrackingStatistics_WhenNoOrders_ReturnsZeroRate() {
+        when(orderRepository.count()).thenReturn(0L);
+        when(orderRepository.countByStatus(OrderStatus.DELIVERED)).thenReturn(0L);
+        when(orderRepository.countByStatus(OrderStatus.PENDING)).thenReturn(0L);
+        when(orderRepository.countByStatus(OrderStatus.SHIPPING)).thenReturn(0L);
+
+        Object result = publicOrderService.getTrackingStatistics();
+
+        assertTrue(result instanceof Map);
+        Map<String, Object> stats = (Map<String, Object>) result;
+        assertEquals(0L, stats.get("totalOrders"));
+        assertEquals(0.0, stats.get("deliveryRate"));
     }
 
     @Test
