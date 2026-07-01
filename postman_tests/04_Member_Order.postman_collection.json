@@ -926,7 +926,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"ORD08\";",
               "const expectedStatusCodes = [200, 201];",
@@ -956,7 +955,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -980,7 +982,7 @@
           }
         ],
         "url": {
-          "raw": "{{baseUrl}}/api/v1/orders/my-orders/by-status",
+          "raw": "{{baseUrl}}/api/v1/orders/my-orders/by-status?status=PENDING",
           "host": [
             "{{baseUrl}}"
           ],
@@ -990,6 +992,12 @@
             "orders",
             "my-orders",
             "by-status"
+          ],
+          "query": [
+            {
+              "key": "status",
+              "value": "PENDING"
+            }
           ]
         },
         "description": "TestCaseId: ORD08\nModule: Order/Public Tracking\nType: Positive\nAuth: User token\nObjective: Filter theo status hop le"
