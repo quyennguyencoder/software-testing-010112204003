@@ -9,12 +9,132 @@
   },
   "item": [
     {
+      "name": "User Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Kiểm tra chắc chắn API gọi thành công (Status 200)",
+              "pm.test(\"Đăng nhập User thành công với mã 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// Chỉ parse JSON khi response body không rỗng",
+              "var responseBody = pm.response.text();",
+              "if (!responseBody || responseBody.trim() === \"\") {",
+              "    console.log(\"Lỗi: Response body rỗng (status \" + pm.response.code + \"). Kiểm tra lại thông tin đăng nhập hoặc server.\");",
+              "} else {",
+              "    // Chuyển phản hồi của Backend thành đối tượng JSON",
+              "    var jsonData = pm.response.json();",
+              "",
+              "    // Tìm đúng đường dẫn đến chỗ giấu Token và lưu lại",
+              "    if (jsonData && jsonData.data && jsonData.data.accessToken) {",
+              "        var token = jsonData.data.accessToken;",
+              "",
+              "        // Lưu vào biến \"accessToken\"",
+              "        pm.environment.set(\"accessToken\", token);",
+              "",
+              "        // In ra console để dễ debug trên CI",
+              "        console.log(\"Hệ thống đã tự động chộp được Token của User thường: \" + token);",
+              "    } else {",
+              "        console.log(\"Lỗi: Không tìm thấy accessToken trong phản hồi!\");",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"usernameOrEmail\": \"user\",\r\n  \"password\": \"Password@123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Admin Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var responseBody = pm.response.text();",
+              "if (!responseBody || responseBody.trim() === \"\") {",
+              "    console.log(\"Lỗi: Response body rỗng (status \" + pm.response.code + \"). Kiểm tra lại thông tin đăng nhập hoặc server.\");",
+              "} else {",
+              "    var jsonData = pm.response.json();",
+              "    if (jsonData && jsonData.data && jsonData.data.accessToken) {",
+              "        var token = jsonData.data.accessToken;",
+              "        pm.environment.set(\"adminAccessToken\", token);",
+              "        console.log(\"Hệ thống đã tự động chộp được Token của Admin: \" + token);",
+              "    } else {",
+              "        console.log(\"Lỗi: Không tìm thấy accessToken trong phản hồi!\");",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"usernameOrEmail\": \"admin\",\r\n  \"password\": \"Password@123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "ORD01 - Tao don hang hop le, luu orderId, orderCode",
       "event": [
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"ORD01\";",
               "const expectedStatusCodes = [200, 201];",
@@ -44,7 +164,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -73,7 +196,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"recipientName\": \"Test Receiver\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"shippingAddress\": \"1 Test Street, HCM\",\n  \"shippingFee\": 30000,\n  \"shippingUnit\": \"GHN\",\n  \"note\": \"Postman test order\",\n  \"paymentMethod\": \"COD\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 1,\n      \"price\": 12990000\n    }\n  ]\n}",
+          "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"recipientName\": \"Test Receiver\",\n  \"phoneNumber\": \"0909123456\",\n  \"shippingAddress\": \"1 Test Street, HCM\",\n  \"shippingFee\": 30000,\n  \"shippingUnit\": \"GHN\",\n  \"note\": \"Postman test order\",\n  \"paymentMethod\": \"COD\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 1,\n      \"price\": 12990000\n    }\n  ]\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -96,93 +219,6 @@
       "response": []
     },
     {
-      "name": "ORD03 - Product het hang/vuot stock tra loi",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const testCaseId = \"ORD03\";",
-              "const expectedStatusCodes = [400, 401, 403, 404, 409];",
-              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
-              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
-              "let json = {}; let responseData = {};",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
-              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
-              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
-              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
-              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
-              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
-              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
-              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
-              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
-              "  if (id) pm.environment.set(\"currentResourceId\", id);",
-              "  const url = pm.request.url.toString();",
-              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
-              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
-              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
-              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
-              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
-              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
-              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
-              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
-              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
-              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
-              "}"
-            ]
-          }
-        }
-      ],
-      "request": {
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{accessToken}}",
-              "type": "string"
-            }
-          ]
-        },
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          },
-          {
-            "key": "Authorization",
-            "value": "Bearer {{accessToken}}",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"recipientName\": \"Test Receiver\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"shippingAddress\": \"1 Test Street, HCM\",\n  \"shippingFee\": 30000,\n  \"shippingUnit\": \"GHN\",\n  \"note\": \"Postman test order\",\n  \"paymentMethod\": \"COD\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 1,\n      \"price\": 12990000\n    }\n  ]\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/orders",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "orders"
-          ]
-        },
-        "description": "TestCaseId: ORD03\nModule: Order/Public Tracking\nType: Negative\nAuth: User token\nObjective: Product het hang/vuot stock tra loi"
-      },
-      "response": []
-    },
-    {
       "name": "ORD02 - Cart/items rong tra 400",
       "event": [
         {
@@ -192,9 +228,6 @@
             "exec": [
               "const testCaseId = \"ORD02\";",
               "const expectedStatusCodes = [400];",
-
-              "const testCaseId = \"ORD03\";",
-              "const expectedStatusCodes = [400, 401, 403, 404, 409];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
               "let json = {}; let responseData = {};",
@@ -251,7 +284,6 @@
         "body": {
           "mode": "raw",
           "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"recipientName\": \"\",\n  \"phoneNumber\": \"bad-phone\",\n  \"shippingAddress\": \"\",\n  \"shippingFee\": 30000,\n  \"shippingUnit\": \"GHN\",\n  \"note\": \"Postman test order\",\n  \"paymentMethod\": \"COD\",\n  \"items\": []\n}",
-          "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"recipientName\": \"Test Receiver\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"shippingAddress\": \"1 Test Street, HCM\",\n  \"shippingFee\": 30000,\n  \"shippingUnit\": \"GHN\",\n  \"note\": \"Postman test order\",\n  \"paymentMethod\": \"COD\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 1,\n      \"price\": 12990000\n    }\n  ]\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -270,6 +302,177 @@
           ]
         },
         "description": "TestCaseId: ORD02\nModule: Order/Public Tracking\nType: Negative\nAuth: User token\nObjective: Cart/items rong tra 400"
+      },
+      "response": []
+    },
+    {
+      "name": "ORD03 - Product het hang/vuot stock tra loi",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ORD03\";",
+              "const expectedStatusCodes = [400, 401, 403, 404, 409];",
+              "const responseTimeThresholdMs = Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "",
+              "let json = {};",
+              "let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "    json = pm.response.json();",
+              "    responseData = json.data || json;",
+              "}",
+              "",
+              "// BƯỚC 1: Kiểm tra status code",
+              "pm.test(`[${testCaseId}] Bước 1 - Status code phải là ${expectedStatusCodes.join(\" hoặc \")}`, () => {",
+              "    const actual = pm.response.code;",
+              "    const passed = expectedStatusCodes.includes(actual);",
+              "    if (passed) {",
+              "        console.log(`✅ [${testCaseId}] Bước 1 PASS: Status code = ${actual} (nằm trong danh sách hợp lệ)`);",
+              "    } else {",
+              "        console.log(`❌ [${testCaseId}] Bước 1 FAIL: Status code = ${actual} (không nằm trong [${expectedStatusCodes.join(\", \")}])`);",
+              "    }",
+              "    pm.expect(actual).to.be.oneOf(expectedStatusCodes);",
+              "});",
+              "",
+              "// BƯỚC 2: Không có lỗi server (5xx)",
+              "pm.test(`[${testCaseId}] Bước 2 - Không có lỗi server (5xx)`, () => {",
+              "    const actual = pm.response.code;",
+              "    if (actual < 500) {",
+              "        console.log(`✅ [${testCaseId}] Bước 2 PASS: Status code = ${actual} < 500, không có lỗi server`);",
+              "    } else {",
+              "        console.log(`❌ [${testCaseId}] Bước 2 FAIL: Status code = ${actual} >= 500, server đang lỗi`);",
+              "    }",
+              "    pm.expect(actual).to.be.below(500);",
+              "});",
+              "",
+              "// BƯỚC 3: Thời gian phản hồi",
+              "pm.test(`[${testCaseId}] Bước 3 - Thời gian phản hồi dưới ${responseTimeThresholdMs}ms`, () => {",
+              "    const actual = pm.response.responseTime;",
+              "    if (actual < responseTimeThresholdMs) {",
+              "        console.log(`✅ [${testCaseId}] Bước 3 PASS: Response time = ${actual}ms < ${responseTimeThresholdMs}ms`);",
+              "    } else {",
+              "        console.log(`❌ [${testCaseId}] Bước 3 FAIL: Response time = ${actual}ms >= ${responseTimeThresholdMs}ms (quá chậm)`);",
+              "    }",
+              "    pm.expect(actual).to.be.below(responseTimeThresholdMs);",
+              "});",
+              "",
+              "// BƯỚC 4: Body trả về JSON",
+              "pm.test(`[${testCaseId}] Bước 4 - Response body phải là JSON`, () => {",
+              "    if (!pm.response.text()) {",
+              "        console.log(`⚠️ [${testCaseId}] Bước 4 SKIP: Response body rỗng, bỏ qua kiểm tra Content-Type`);",
+              "        return;",
+              "    }",
+              "    const isJson = contentType.includes(\"application/json\");",
+              "    if (isJson) {",
+              "        console.log(`✅ [${testCaseId}] Bước 4 PASS: Content-Type = \"${contentType}\" là JSON`);",
+              "    } else {",
+              "        console.log(`❌ [${testCaseId}] Bước 4 FAIL: Content-Type = \"${contentType}\" không phải JSON`);",
+              "    }",
+              "    pm.expect(contentType).to.include(\"application/json\");",
+              "});",
+              "",
+              "// BƯỚC 5: Kiểm tra message lỗi liên quan đến hết hàng / vượt stock",
+              "pm.test(`[${testCaseId}] Bước 5 - Message lỗi phản ánh sản phẩm hết hàng hoặc vượt stock`, () => {",
+              "    if (!pm.response.text() || !contentType.includes(\"application/json\")) {",
+              "        console.log(`❌ [${testCaseId}] Bước 5 FAIL: Không có JSON body để kiểm tra message`);",
+              "        pm.expect.fail(\"Không có JSON body\");",
+              "        return;",
+              "    }",
+              "    const message = json.message || \"\";",
+              "    const hasStockError = message.length > 0;",
+              "    if (hasStockError) {",
+              "        console.log(`✅ [${testCaseId}] Bước 5 PASS: Message lỗi = \"${message}\"`);",
+              "    } else {",
+              "        console.log(`❌ [${testCaseId}] Bước 5 FAIL: Không có message lỗi trong response`);",
+              "    }",
+              "    pm.expect(message, \"Thiếu message lỗi trong response\").to.not.be.empty;",
+              "});",
+              "",
+              "// BƯỚC 6: success = false",
+              "pm.test(`[${testCaseId}] Bước 6 - Trường \"success\" phải là false`, () => {",
+              "    if (!pm.response.text() || !contentType.includes(\"application/json\")) {",
+              "        console.log(`❌ [${testCaseId}] Bước 6 FAIL: Không có JSON body`);",
+              "        pm.expect.fail(\"Không có JSON body\");",
+              "        return;",
+              "    }",
+              "    const successVal = json.success;",
+              "    if (successVal === false) {",
+              "        console.log(`✅ [${testCaseId}] Bước 6 PASS: success = false (đúng với case lỗi)`);",
+              "    } else {",
+              "        console.log(`❌ [${testCaseId}] Bước 6 FAIL: success = ${successVal} (phải là false)`);",
+              "    }",
+              "    pm.expect(successVal).to.be.false;",
+              "});",
+              "",
+              "// Lưu biến môi trường nếu cần",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "    const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "    if (responseData.accessToken) {",
+              "        pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken);",
+              "    }",
+              "    if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "    if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "    if (id) pm.environment.set(\"currentResourceId\", id);",
+              "    const url = pm.request.url.toString();",
+              "    if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "    if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "    if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "    if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "    if (json.orderCode) { pm.environment.set(\"createdOrderCode\", json.orderCode); pm.environment.set(\"orderCode\", json.orderCode); }",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"recipientName\": \"Test Receiver\",\n  \"phoneNumber\": \"0909123456\",\n  \"shippingAddress\": \"1 Test Street, HCM\",\n  \"shippingFee\": 30000,\n  \"shippingUnit\": \"GHN\",\n  \"note\": \"Postman test order\",\n  \"paymentMethod\": \"COD\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 99999,\n      \"price\": 12990000\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/orders",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "orders"
+          ]
+        },
+        "description": "TestCaseId: ORD03\nModule: Order/Public Tracking\nType: Negative\nAuth: User token\nObjective: Product het hang/vuot stock tra loi"
       },
       "response": []
     },
@@ -1486,7 +1689,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"PUBORD05\";",
               "const expectedStatusCodes = [404];",
@@ -1516,7 +1718,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
