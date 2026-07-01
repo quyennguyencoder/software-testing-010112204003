@@ -49,15 +49,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/auth/login",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "auth",
-            "login"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "auth", "login"]
         }
       },
       "response": []
@@ -116,15 +109,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/auth/login",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "auth",
-            "login"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "auth", "login"]
         }
       },
       "response": []
@@ -211,15 +197,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/me",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "me"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "me"]
         },
         "description": "TestCaseId: CART01\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: User co token lay gio hang thanh cong"
       },
@@ -273,15 +252,8 @@
         "header": [],
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/me",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "me"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "me"]
         },
         "description": "TestCaseId: CART02\nModule: Cart/Guest Cart/Address\nType: Auth negative\nAuth: None\nObjective: Khong token tra 401"
       },
@@ -361,15 +333,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/items",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "items"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "items"]
         },
         "description": "TestCaseId: CART03\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Them san pham hop le, luu cartItemId"
       },
@@ -449,15 +414,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/items",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "items"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "items"]
         },
         "description": "TestCaseId: CART04\nModule: Cart/Guest Cart/Address\nType: Negative\nAuth: User token\nObjective: Product khong ton tai tra 404"
       },
@@ -539,15 +497,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/items",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "items"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "items"]
         },
         "description": "TestCaseId: CART05\nModule: Cart/Guest Cart/Address\nType: Boundary\nAuth: User token\nObjective: Quantity 0, am hoac vuot stock tra 400"
       },
@@ -694,16 +645,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/items/{{cartItemId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "items",
-            "{{cartItemId}}"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "items", "{{cartItemId}}"]
         },
         "description": "TestCaseId: CART06\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Cap nhat quantity thanh cong"
       },
@@ -770,16 +713,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/items/{{cartItemId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "items",
-            "{{cartItemId}}"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "items", "{{cartItemId}}"]
         },
         "description": "TestCaseId: CART07\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Xoa item thanh cong"
       },
@@ -846,15 +781,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/clear",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "clear"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "clear"]
         },
         "description": "TestCaseId: CART08\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Xoa toan bo cart thanh cong"
       },
@@ -923,14 +851,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/guest-cart",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "guest-cart"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "guest-cart"]
         },
         "description": "TestCaseId: CART09\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: Public\nObjective: Tao guest cart thanh cong, luu guestCartId"
       },
@@ -999,15 +921,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/guest-cart/{{guestCartId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "guest-cart",
-            "{{guestCartId}}"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "guest-cart", "{{guestCartId}}"]
         },
         "description": "TestCaseId: CART10\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: Public\nObjective: Cap nhat guest cart item thanh cong"
       },
@@ -1061,15 +976,8 @@
         "header": [],
         "url": {
           "raw": "{{baseUrl}}/api/v1/guest-cart/{{guestCartId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "guest-cart",
-            "{{guestCartId}}"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "guest-cart", "{{guestCartId}}"]
         },
         "description": "TestCaseId: CART11\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: Public\nObjective: Xoa guest cart thanh cong"
       },
@@ -1204,15 +1112,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/merge",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "merge"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "merge"]
         },
         "description": "TestCaseId: CART12\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Merge guest cart vao user cart thanh cong"
       },
@@ -1307,15 +1208,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/merge",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "merge"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "merge"]
         },
         "description": "TestCaseId: CART13\nModule: Cart/Guest Cart/Address\nType: Negative\nAuth: User token\nObjective: Guest cart id khong ton tai tra loi"
       },
@@ -1382,15 +1276,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/api/v1/user/addresses",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "user",
-            "addresses"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "user", "addresses"]
         },
         "description": "TestCaseId: ADDR01\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Lay danh sach dia chi user"
       },
@@ -1472,15 +1359,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/user/addresses",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "user",
-            "addresses"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "user", "addresses"]
         },
         "description": "TestCaseId: ADDR02\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Tao dia chi hop le, luu addressId"
       },
@@ -1560,15 +1440,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/user/addresses",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "user",
-            "addresses"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "user", "addresses"]
         },
         "description": "TestCaseId: ADDR03\nModule: Cart/Guest Cart/Address\nType: Negative\nAuth: User token\nObjective: Thieu recipient/phone/province/ward tra 400"
       },
@@ -1650,15 +1523,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/user/addresses",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "user",
-            "addresses"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "user", "addresses"]
         },
         "description": "TestCaseId: ADDR04\nModule: Cart/Guest Cart/Address\nType: Negative\nAuth: User token\nObjective: Province/ward khong hop le tra loi"
       },
@@ -1791,16 +1657,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/user/addresses/{{addressId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "user",
-            "addresses",
-            "{{addressId}}"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "user", "addresses", "{{addressId}}"]
         },
         "description": "TestCaseId: ADDR05\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Cap nhat dia chi thanh cong"
       },
@@ -1880,9 +1738,7 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/user/addresses/{{currentResourceId}}/set-default",
-          "host": [
-            "{{baseUrl}}"
-          ],
+          "host": ["{{baseUrl}}"],
           "path": [
             "api",
             "v1",
@@ -1899,6 +1755,56 @@
     {
       "name": "ADDR07 - Xoa dia chi thanh cong",
       "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const baseUrl = pm.environment.get(\"baseUrl\");",
+              "const accessToken = pm.environment.get(\"accessToken\");",
+              "const uniqueSuffix = pm.environment.get(\"uniqueSuffix\") || Date.now().toString();",
+              "const createPayload = {",
+              "  recipientName: `ADDR07 Receiver ${uniqueSuffix}`,",
+              "  phoneNumber: pm.environment.get(\"testPhone\"),",
+              "  streetAddress: \"1 Test Street\",",
+              "  ward: \"Phường Bến Thành\",",
+              "  wardCode: \"26743\",",
+              "  province: \"Thành phố Hồ Chí Minh\",",
+              "  provinceCode: \"79\",",
+              "  isDefault: true",
+              "};",
+              "pm.sendRequest({",
+              "  url: baseUrl + \"/api/v1/user/addresses\",",
+              "  method: \"POST\",",
+              "  header: {",
+              "    \"Content-Type\": \"application/json\",",
+              "    \"Authorization\": \"Bearer \" + accessToken",
+              "  },",
+              "  body: {",
+              "    mode: \"raw\",",
+              "    raw: JSON.stringify(createPayload)",
+              "  }",
+              "}, function(err, res) {",
+              "  if (err || !res || res.code < 200 || res.code >= 300) {",
+              "    console.error(\"ADDR07 pre-request: tạo địa chỉ mới thất bại:\", err || (res && res.text ? res.text() : \"unknown error\"));",
+              "    return;",
+              "  }",
+              "  const body = res.json();",
+              "  const data = body.data || body;",
+              "  const newAddressId = data.id || data.addressId;",
+              "  if (newAddressId) {",
+              "    pm.environment.set(\"currentResourceId\", newAddressId);",
+              "    console.log(\"ADDR07 pre-request: created fresh addressId =\", newAddressId);",
+              "  } else {",
+              "    console.error(\"ADDR07 pre-request: không trích xuất được addressId từ phản hồi tạo mới\");",
+              "  }",
+              "});",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
         {
           "listen": "test",
           "script": {
@@ -1957,16 +1863,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/api/v1/user/addresses/{{currentResourceId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "user",
-            "addresses",
-            "{{currentResourceId}}"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "user", "addresses", "{{currentResourceId}}"]
         },
         "description": "TestCaseId: ADDR07\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Xoa dia chi thanh cong"
       },
