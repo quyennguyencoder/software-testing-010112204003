@@ -1817,8 +1817,6 @@
             "type": "text/javascript",
             "exec": [
               "const testCaseId = \"ADDR06\";",
-            "exec": [
-              "const testCaseId = \"ADDR05\";",
               "const expectedStatusCodes = [200, 201];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
