@@ -547,7 +547,7 @@
             "{{orderId}}"
           ]
         },
-        "description": "TestCaseId: ORD04\nModule: Order/Public Tracking\nType: Positive\nAuth: User token\nObjective: User chu don xem chi tiet thanh cong"
+        "description": "TestCaseId: ORD04\nModule: Order/Public Tracking\nType: Positive\nAuth: User token\nObjective: User chu don xem chi tiet thanh cong\nfix: add accessToken user giống ORD06 và ORD07"
       },
       "response": []
     },
