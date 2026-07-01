@@ -1,6 +1,7 @@
 {
   "info": {
     "_postman_id": "cd61fb0c-f72a-41dd-b3ff-4cc85bf3929c",
+
     "name": "05_Member_Cart_Address",
     "description": "Generated from phonehub_postman_test_cases.xlsx. One request equals one testcase; request name starts with stable testcase ID for CI/Jira deduplication.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -49,15 +50,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/auth/login",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "auth",
-            "login"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "auth", "login"]
         }
       },
       "response": []
@@ -116,15 +110,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/auth/login",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "auth",
-            "login"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "auth", "login"]
         }
       },
       "response": []
@@ -211,15 +198,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/me",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "me"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "me"]
         },
         "description": "TestCaseId: CART01\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: User co token lay gio hang thanh cong"
       },
@@ -273,15 +253,8 @@
         "header": [],
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/me",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "me"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "me"]
         },
         "description": "TestCaseId: CART02\nModule: Cart/Guest Cart/Address\nType: Auth negative\nAuth: None\nObjective: Khong token tra 401"
       },
@@ -361,15 +334,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/items",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "items"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "items"]
         },
         "description": "TestCaseId: CART03\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Them san pham hop le, luu cartItemId"
       },
@@ -449,15 +415,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/items",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "items"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "items"]
         },
         "description": "TestCaseId: CART04\nModule: Cart/Guest Cart/Address\nType: Negative\nAuth: User token\nObjective: Product khong ton tai tra 404"
       },
@@ -539,15 +498,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/items",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "items"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "items"]
         },
         "description": "TestCaseId: CART05\nModule: Cart/Guest Cart/Address\nType: Boundary\nAuth: User token\nObjective: Quantity 0, am hoac vuot stock tra 400"
       },
@@ -694,16 +646,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/items/{{cartItemId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "items",
-            "{{cartItemId}}"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "items", "{{cartItemId}}"]
         },
         "description": "TestCaseId: CART06\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Cap nhat quantity thanh cong"
       },
@@ -770,16 +714,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/items/{{cartItemId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "items",
-            "{{cartItemId}}"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "items", "{{cartItemId}}"]
         },
         "description": "TestCaseId: CART07\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Xoa item thanh cong"
       },
@@ -846,15 +782,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/clear",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "clear"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "clear"]
         },
         "description": "TestCaseId: CART08\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Xoa toan bo cart thanh cong"
       },
@@ -923,14 +852,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/guest-cart",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "guest-cart"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "guest-cart"]
         },
         "description": "TestCaseId: CART09\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: Public\nObjective: Tao guest cart thanh cong, luu guestCartId"
       },
@@ -999,15 +922,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/guest-cart/{{guestCartId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "guest-cart",
-            "{{guestCartId}}"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "guest-cart", "{{guestCartId}}"]
         },
         "description": "TestCaseId: CART10\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: Public\nObjective: Cap nhat guest cart item thanh cong"
       },
@@ -1061,15 +977,8 @@
         "header": [],
         "url": {
           "raw": "{{baseUrl}}/api/v1/guest-cart/{{guestCartId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "guest-cart",
-            "{{guestCartId}}"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "guest-cart", "{{guestCartId}}"]
         },
         "description": "TestCaseId: CART11\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: Public\nObjective: Xoa guest cart thanh cong"
       },
@@ -1204,15 +1113,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/merge",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "merge"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "merge"]
         },
         "description": "TestCaseId: CART12\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Merge guest cart vao user cart thanh cong"
       },
@@ -1307,15 +1209,8 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/cart/merge",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "cart",
-            "merge"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "cart", "merge"]
         },
         "description": "TestCaseId: CART13\nModule: Cart/Guest Cart/Address\nType: Negative\nAuth: User token\nObjective: Guest cart id khong ton tai tra loi"
       },
@@ -1382,15 +1277,8 @@
         ],
         "url": {
           "raw": "{{baseUrl}}/api/v1/user/addresses",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "user",
-            "addresses"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "user", "addresses"]
         },
         "description": "TestCaseId: ADDR01\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Lay danh sach dia chi user"
       },
@@ -1402,10 +1290,93 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"ADDR02\";",
               "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"recipientName\": \"Test Receiver\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"streetAddress\": \"1 Test Street\",\n  \"ward\": \"Phường Bến Thành\",\n  \"wardCode\": \"26743\",\n  \"province\": \"Thành phố Hồ Chí Minh\",\n  \"provinceCode\": \"79\",\n  \"isDefault\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/user/addresses",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "user", "addresses"]
+        },
+        "description": "TestCaseId: ADDR02\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Tao dia chi hop le, luu addressId"
+      },
+      "response": []
+    },
+    {
+      "name": "ADDR03 - Thieu recipient/phone/province/ward tra 400",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"ADDR03\";",
+              "const expectedStatusCodes = [400];",
               "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
               "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
               "let json = {}; let responseData = {};",
@@ -1461,7 +1432,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"recipientName\": \"Test Receiver\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"streetAddress\": \"1 Test Street\",\n  \"ward\": \"Ben Nghe\",\n  \"wardCode\": \"{{wardCode}}\",\n  \"province\": \"Ho Chi Minh\",\n  \"provinceCode\": \"{{provinceCode}}\",\n  \"isDefault\": true\n}",
+          "raw": "{\n  \"recipientName\": \"\",\n  \"phoneNumber\": \"bad-phone\",\n  \"streetAddress\": \"\",\n  \"ward\": \"Ben Nghe\",\n  \"wardCode\": \"{{wardCode}}\",\n  \"province\": \"Ho Chi Minh\",\n  \"provinceCode\": \"{{provinceCode}}\",\n  \"isDefault\": true\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -1470,17 +1441,93 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/user/addresses",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "user",
-            "addresses"
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "user", "addresses"]
+        },
+        "description": "TestCaseId: ADDR03\nModule: Cart/Guest Cart/Address\nType: Negative\nAuth: User token\nObjective: Thieu recipient/phone/province/ward tra 400"
+      },
+      "response": []
+    },
+    {
+      "name": "ADDR04 - Province/ward khong hop le tra loi",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADDR04\";",
+              "const expectedStatusCodes = [400, 401, 403, 404, 409];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
           ]
         },
-        "description": "TestCaseId: ADDR02\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Tao dia chi hop le, luu addressId"
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"recipientName\":\"Test Receiver\",\"phoneNumber\":\"{{testPhone}}\",\"streetAddress\":\"1 Test Street\",\"ward\":\"InvalidWard\",\"wardCode\":\"INVALID_WARD_999\",\"province\":\"InvalidProvince\",\"provinceCode\":\"INVALID_PROV_999\",\"isDefault\":true}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/user/addresses",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "user", "addresses"]
+        },
+        "description": "TestCaseId: ADDR04\nModule: Cart/Guest Cart/Address\nType: Negative\nAuth: User token\nObjective: Province/ward khong hop le tra loi"
       },
       "response": []
     },
