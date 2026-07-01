@@ -1,11 +1,11 @@
 {
   "info": {
-    "_postman_id": "7b900b49-2f08-4bf4-9890-25defc10c8a9",
+    "_postman_id": "cd61fb0c-f72a-41dd-b3ff-4cc85bf3929c",
     "name": "05_Member_Cart_Address",
     "description": "Generated from phonehub_postman_test_cases.xlsx. One request equals one testcase; request name starts with stable testcase ID for CI/Jira deduplication.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "46403908",
-    "_collection_link": "https://go.postman.co/collection/46403908-7b900b49-2f08-4bf4-9890-25defc10c8a9?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/46403908-cd61fb0c-f72a-41dd-b3ff-4cc85bf3929c?source=collection_link"
   },
   "item": [
     {
@@ -591,6 +591,73 @@
               "}"
             ]
           }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// CART06 Pre-request: Đảm bảo cartItemId luôn hợp lệ khi chạy đơn lẻ",
+              "const baseUrl = pm.environment.get(\"baseUrl\");",
+              "const accessToken = pm.environment.get(\"accessToken\");",
+              "const productId = pm.environment.get(\"productId\");",
+              "",
+              "// Bước 1: Thử thêm sản phẩm vào cart",
+              "pm.sendRequest({",
+              "    url: baseUrl + \"/api/v1/cart/items\",",
+              "    method: \"POST\",",
+              "    header: {",
+              "        \"Content-Type\": \"application/json\",",
+              "        \"Authorization\": \"Bearer \" + accessToken",
+              "    },",
+              "    body: {",
+              "        mode: \"raw\",",
+              "        raw: JSON.stringify({ productId: productId, quantity: 1 })",
+              "    }",
+              "}, function(err, res) {",
+              "    const body = res.json();",
+              "    const data = body.data || body;",
+              "",
+              "    if (!err && res.code >= 200 && res.code < 300) {",
+              "        // Thêm mới thành công - lấy cartItemId",
+              "        let cartItemId = null;",
+              "        if (data.items && data.items.length > 0) {",
+              "            const match = data.items.find(i => String(i.productId) === String(productId));",
+              "            cartItemId = match ? match.id : data.items[0].id;",
+              "        } else {",
+              "            cartItemId = data.cartItemId || data.id;",
+              "        }",
+              "        if (cartItemId) {",
+              "            pm.environment.set(\"cartItemId\", cartItemId);",
+              "            console.log(\"CART06 pre-req: Thêm item thành công, cartItemId =\", cartItemId);",
+              "        }",
+              "    } else {",
+              "        // Sản phẩm đã tồn tại trong cart - lấy cartItemId từ GET /cart/me",
+              "        console.log(\"CART06 pre-req: Item đã tồn tại, đang lấy cartItemId từ GET /cart/me...\");",
+              "        pm.sendRequest({",
+              "            url: baseUrl + \"/api/v1/cart/me\",",
+              "            method: \"GET\",",
+              "            header: { \"Authorization\": \"Bearer \" + accessToken }",
+              "        }, function(err2, res2) {",
+              "            if (!err2 && res2.code === 200) {",
+              "                const body2 = res2.json();",
+              "                const data2 = body2.data || body2;",
+              "                const items = data2.items || [];",
+              "                const match = items.find(i => String(i.productId) === String(productId));",
+              "                if (match) {",
+              "                    pm.environment.set(\"cartItemId\", match.id);",
+              "                    console.log(\"CART06 pre-req: Lấy cartItemId từ cart/me thành công =\", match.id);",
+              "                } else {",
+              "                    console.error(\"CART06 pre-req: Không tìm thấy item trong cart!\");",
+              "                }",
+              "            } else {",
+              "                console.error(\"CART06 pre-req: GET /cart/me thất bại:\", err2 || res2.text());",
+              "            }",
+              "        });",
+              "    }",
+              "});"
+            ]
+          }
         }
       ],
       "request": {
@@ -813,9 +880,7 @@
               "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
               "if (pm.response.text() && contentType.includes(\"application/json\")) {",
               "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
-
               "  if (responseData.guestCartId) { pm.environment.set(\"guestCartId\", responseData.guestCartId); }",
-
               "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
               "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
               "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
@@ -849,10 +914,7 @@
         ],
         "body": {
           "mode": "raw",
-
           "raw": "",
-          "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 1\n}",
-
           "options": {
             "raw": {
               "language": "json"
@@ -908,6 +970,7 @@
               "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
               "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.cartItemId && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartItemId\", responseData.cartItemId);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
             ]
@@ -927,10 +990,7 @@
         ],
         "body": {
           "mode": "raw",
-
           "raw": "{\n  \"items\": [\n    {\n      \"productId\": {{productId}},\n      \"quantity\": 1\n    }\n  ]\n}",
-          "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 1\n}",
-
           "options": {
             "raw": {
               "language": "json"
@@ -1014,7 +1074,6 @@
         "description": "TestCaseId: CART11\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: Public\nObjective: Xoa guest cart thanh cong"
       },
       "response": []
-
     },
     {
       "name": "CART12 - Merge guest cart vao user cart thanh cong",
@@ -1261,7 +1320,257 @@
         "description": "TestCaseId: CART13\nModule: Cart/Guest Cart/Address\nType: Negative\nAuth: User token\nObjective: Guest cart id khong ton tai tra loi"
       },
       "response": []
-
+    },
+    {
+      "name": "ADDR01 - Lay danh sach dia chi user",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"ADDR01\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/user/addresses",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "user",
+            "addresses"
+          ]
+        },
+        "description": "TestCaseId: ADDR01\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Lay danh sach dia chi user"
+      },
+      "response": []
+    },
+    {
+      "name": "ADDR02 - Tao dia chi hop le, luu addressId",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"ADDR02\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"recipientName\": \"Test Receiver\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"streetAddress\": \"1 Test Street\",\n  \"ward\": \"Ben Nghe\",\n  \"wardCode\": \"{{wardCode}}\",\n  \"province\": \"Ho Chi Minh\",\n  \"provinceCode\": \"{{provinceCode}}\",\n  \"isDefault\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/user/addresses",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "user",
+            "addresses"
+          ]
+        },
+        "description": "TestCaseId: ADDR02\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Tao dia chi hop le, luu addressId"
+      },
+      "response": []
+    },
+    {
+      "name": "ADDR03 - Thieu recipient/phone/province/ward tra 400",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"ADDR03\";",
+              "const expectedStatusCodes = [400];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"recipientName\": \"\",\n  \"phoneNumber\": \"bad-phone\",\n  \"streetAddress\": \"\",\n  \"ward\": \"Ben Nghe\",\n  \"wardCode\": \"{{wardCode}}\",\n  \"province\": \"Ho Chi Minh\",\n  \"provinceCode\": \"{{provinceCode}}\",\n  \"isDefault\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/user/addresses",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "user",
+            "addresses"
+          ]
+        },
+        "description": "TestCaseId: ADDR03\nModule: Cart/Guest Cart/Address\nType: Negative\nAuth: User token\nObjective: Thieu recipient/phone/province/ward tra 400"
+      },
+      "response": []
     }
   ],
   "event": [

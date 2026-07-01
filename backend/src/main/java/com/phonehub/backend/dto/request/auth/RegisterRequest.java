@@ -1,6 +1,7 @@
 package com.phonehub.backend.dto.request.auth;
 
 import com.phonehub.backend.enums.EGender;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class RegisterRequest {
 
     private String fullName;
 
+    @Email
     private String email;
 
     private String phoneNumber;

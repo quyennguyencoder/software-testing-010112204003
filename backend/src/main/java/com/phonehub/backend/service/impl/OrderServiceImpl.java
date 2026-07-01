@@ -133,6 +133,11 @@ public class OrderServiceImpl implements IOrderService {
         for (OrderItemRequest item : request.getItems()) {
             Product product = productMap.get(item.getProductId());
             
+            // Validate quantity > 0
+            if (item.getQuantity() <= 0) {
+                throw new BadRequestException("Số lượng sản phẩm phải lớn hơn 0");
+            }
+            
             // Calculate total stock from templates
             int totalStock = product.getTemplates().stream()
                     .filter(ProductTemplate::getStatus)
