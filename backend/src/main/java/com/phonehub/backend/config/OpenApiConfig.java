@@ -22,7 +22,8 @@ public class OpenApiConfig {
                         .description("Tài liệu API cho dự án UTE Phone Hub"))
                 .servers(List.of(
                         new Server().url("http://localhost:8081").description("Local Server"),
-                        new Server().url("http://localhost:8081").description("Docker Server")
+                        new Server().url("http://localhost:8081").description("Docker Server"),
+                        new Server().url("http://13.250.27.234:8081").description("AWS EC2 Server")
                 ))
                 .components(new Components()
                         .addSecuritySchemes("bearerAuth",

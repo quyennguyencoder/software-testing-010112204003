@@ -3,9 +3,14 @@ package com.phonehub.backend.service.impl;
 import com.phonehub.backend.dto.request.address.AddressRequest;
 import com.phonehub.backend.dto.response.address.AddressResponse;
 import com.phonehub.backend.entity.Address;
+import com.phonehub.backend.entity.Province;
+import com.phonehub.backend.entity.Ward;
 import com.phonehub.backend.entity.User;
+import com.phonehub.backend.exception.BadRequestException;
 import com.phonehub.backend.exception.ResourceNotFoundException;
 import com.phonehub.backend.repository.AddressRepository;
+import com.phonehub.backend.repository.ProvinceRepository;
+import com.phonehub.backend.repository.WardRepository;
 import com.phonehub.backend.repository.UserRepository;
 import com.phonehub.backend.mapper.AddressMapper;
 import com.phonehub.backend.service.intf.IAddressService;
@@ -24,6 +29,8 @@ public class AddressServiceImpl implements IAddressService {
 
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
+    private final ProvinceRepository provinceRepository;
+    private final WardRepository wardRepository;
     private final AddressMapper addressMapper;
 
     @Override
@@ -42,6 +49,8 @@ public class AddressServiceImpl implements IAddressService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại"));
+
+        validateLocationCodes(request.getProvinceCode(), request.getWardCode());
 
         Address address = Address.builder()
                 .user(user)
@@ -75,8 +84,14 @@ public class AddressServiceImpl implements IAddressService {
     public AddressResponse updateAddress(Long userId, Long addressId, AddressRequest request) {
         log.info("Updating address id: {} for user id: {}", addressId, userId);
 
-        Address address = addressRepository.findByIdAndUserId(addressId, userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Địa chỉ không tồn tại"));
+        Address address = addressRepository.findById(addressId)
+            .orElseThrow(() -> new ResourceNotFoundException("Địa chỉ không tồn tại"));
+
+        if (address.getUser() == null || !address.getUser().getId().equals(userId)) {
+            throw new ResourceNotFoundException("Địa chỉ không tồn tại");
+        }
+
+        validateLocationCodes(request.getProvinceCode(), request.getWardCode());
 
         address.setRecipientName(request.getRecipientName());
         address.setPhoneNumber(request.getPhoneNumber());
@@ -136,5 +151,26 @@ public class AddressServiceImpl implements IAddressService {
 
         log.info("Default address set successfully with id: {}", addressId);
         return addressMapper.toResponse(address);
+    }
+
+    private void validateLocationCodes(String provinceCode, String wardCode) {
+        Province province = null;
+        Ward ward = null;
+
+        if (provinceCode != null && !provinceCode.isBlank()) {
+            province = provinceRepository.findByProvinceCode(provinceCode)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Không tìm thấy tỉnh/thành phố với mã: " + provinceCode));
+        }
+
+        if (wardCode != null && !wardCode.isBlank()) {
+            ward = wardRepository.findByWardCode(wardCode)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Không tìm thấy phường/xã với mã: " + wardCode));
+        }
+
+        if (province != null && ward != null && !province.getProvinceCode().equals(ward.getProvinceCode())) {
+            throw new BadRequestException("Phường/xã không thuộc tỉnh/thành phố đã chọn");
+        }
     }
 }
