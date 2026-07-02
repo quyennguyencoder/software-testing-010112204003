@@ -1162,7 +1162,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"ORD11\";",
               "const expectedStatusCodes = [200, 201];",
@@ -1192,7 +1191,72 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// ORD11 Pre-request: Create a fresh PENDING order so orderId is valid for cancellation",
+              "const baseUrl = pm.environment.get(\"baseUrl\");",
+              "const accessToken = pm.environment.get(\"accessToken\");",
+              "const userEmail = pm.environment.get(\"userEmail\");",
+              "const productId = pm.environment.get(\"productId\");",
+              "",
+              "const orderRequest = {",
+              "    url: `${baseUrl}/api/v1/orders`,",
+              "    method: \"POST\",",
+              "    header: {",
+              "        \"Content-Type\": \"application/json\",",
+              "        \"Authorization\": `Bearer ${accessToken}`",
+              "    },",
+              "    body: {",
+              "        mode: \"raw\",",
+              "        raw: JSON.stringify({",
+              "            email: userEmail,",
+              "            recipientName: \"Test Receiver\",",
+              "            phoneNumber: \"0909123456\",",
+              "            shippingAddress: \"1 Test Street, HCM\",",
+              "            shippingFee: 30000,",
+              "            shippingUnit: \"GHN\",",
+              "            note: \"Postman test order\",",
+              "            paymentMethod: \"VNPAY\",",
+              "            items: [",
+              "                {",
+              "                    productId: productId,",
+              "                    quantity: 1,",
+              "                    price: 12990000",
+              "                }",
+              "            ]",
+              "        })",
+              "    }",
+              "};",
+              "",
+              "pm.sendRequest(orderRequest, function (err, res) {",
+              "    if (err) {",
+              "        throw new Error(\"[ORD11 Pre-request] Failed to create order: \" + err);",
+              "    }",
+              "    const status = res.code;",
+              "    if (status !== 200 && status !== 201) {",
+              "        throw new Error(\"[ORD11 Pre-request] Order creation returned \" + status + \": \" + res.text());",
+              "    }",
+              "    const json = res.json();",
+              "    const newOrderId = (json.data && (json.data.orderId || json.data.id)) || json.orderId || json.id;",
+              "    if (!newOrderId) {",
+              "        throw new Error(\"[ORD11 Pre-request] Could not extract orderId from response: \" + res.text());",
+              "    }",
+              "    pm.environment.set(\"orderId\", newOrderId);",
+              "    pm.environment.set(\"createdOrderId\", newOrderId);",
+              "    console.log(\"[ORD11 Pre-request] ✅ Created new order, orderId set to: \" + newOrderId);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -1221,7 +1285,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"recipientName\": \"Test Receiver\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"shippingAddress\": \"1 Test Street, HCM\",\n  \"shippingFee\": 30000,\n  \"shippingUnit\": \"GHN\",\n  \"note\": \"Postman test order\",\n  \"paymentMethod\": \"COD\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 1,\n      \"price\": 12990000\n    }\n  ]\n}",
+          "raw": "{\n  \"reason\": \"Customer requested cancellation\"\n}",
           "options": {
             "raw": {
               "language": "json"
