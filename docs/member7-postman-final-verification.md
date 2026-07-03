@@ -28,4 +28,16 @@ Completed test cases:
 Result: Passed and finalized.
 
 Excluded from this close-out:
-- PRO07: pending backend/EC2 validation verification.
+- PRO07: pending backend/EC2 validation verification. 
+
+## Payment Verification
+
+Completed test cases:
+- PAY04: User lấy lịch sử thanh toán.
+- PAY05: VNPay callback thiếu hoặc sai chữ ký/parameter.
+- PAY06: VNPay return redirect flow.
+
+Result: Passed and finalized.
+
+Excluded from this close-out:
+- PAY01: pending VNPAY PENDING-order verification.
