@@ -2073,8 +2073,10 @@
       "listen": "prerequest",
       "script": {
         "type": "text/javascript",
+        "requests": {},
         "exec": [
           "const suffix = pm.environment.get(\"uniqueSuffix\") || Date.now().toString();",
+          "pm.environment.set(\"baseUrl\", \"http://13.250.27.234:8081\");",
           "pm.environment.set(\"uniqueSuffix\", suffix);",
           "pm.environment.set(\"todayIso\", new Date().toISOString().slice(0, 19));",
           "pm.environment.set(\"futureIso\", new Date(Date.now() + 86400000 * 30).toISOString().slice(0, 19));",
@@ -2085,6 +2087,17 @@
           "if (!pm.environment.get(\"userPassword\")) pm.environment.set(\"userPassword\", \"Password@123\");",
           "if (!pm.environment.get(\"adminPassword\")) pm.environment.set(\"adminPassword\", \"Password@123\");",
           "if (!pm.environment.get(\"resetPassword\")) pm.environment.set(\"resetPassword\", \"Password@1234\");"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
         ]
       }
     }
