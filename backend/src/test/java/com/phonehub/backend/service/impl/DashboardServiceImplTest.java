@@ -171,7 +171,7 @@ void getRevenueChart_Empty() {
 }
 @Test
 @DisplayName("Should get revenue chart successfully")
-void getRevenueChart_Success() {
+void getRevenueChart_Success2() {
 
     Order order1 = new Order();
     order1.setCreatedAt(LocalDateTime.now().minusDays(1));
@@ -208,7 +208,7 @@ void getRevenueChart_Success() {
 
 @Test
 @DisplayName("Should return empty revenue chart")
-void getRevenueChart_Empty() {
+void getRevenueChart_Empty2() {
 
     when(orderRepository.findByCreatedAtBetweenAndStatus(
             any(LocalDateTime.class),
