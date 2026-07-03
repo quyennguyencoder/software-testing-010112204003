@@ -40,4 +40,18 @@ Completed test cases:
 Result: Passed and finalized.
 
 Excluded from this close-out:
-- PAY01: pending VNPAY PENDING-order verification.
+- PAY01: pending VNPAY PENDING-order verification. 
+
+## Chatbot Admin Verification
+
+Completed test cases:
+- BOTADM01: Xem trạng thái chatbot.
+- BOTADM02: Bật chatbot.
+- BOTADM03: Tắt chatbot.
+- BOTADM04: Toggle trạng thái chatbot.
+- BOTADM05: Cập nhật chatbot configuration.
+
+Result: Passed and finalized.
+
+Excluded from this close-out:
+- BOT01 and BOT03: pending chatbot response-time verification.
