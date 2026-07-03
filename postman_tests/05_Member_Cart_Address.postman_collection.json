@@ -1,11 +1,12 @@
 {
   "info": {
-    "_postman_id": "cd61fb0c-f72a-41dd-b3ff-4cc85bf3929c",
+    "_postman_id": "189b199f-48d5-4d12-8aea-d1514f697492",
+
     "name": "05_Member_Cart_Address",
     "description": "Generated from phonehub_postman_test_cases.xlsx. One request equals one testcase; request name starts with stable testcase ID for CI/Jira deduplication.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "46403908",
-    "_collection_link": "https://go.postman.co/collection/46403908-cd61fb0c-f72a-41dd-b3ff-4cc85bf3929c?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/46403908-189b199f-48d5-4d12-8aea-d1514f697492?source=collection_link"
   },
   "item": [
     {
@@ -1402,7 +1403,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"ADDR02\";",
               "const expectedStatusCodes = [200, 201];",
@@ -1432,7 +1432,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -1461,7 +1464,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"recipientName\": \"Test Receiver\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"streetAddress\": \"1 Test Street\",\n  \"ward\": \"Ben Nghe\",\n  \"wardCode\": \"{{wardCode}}\",\n  \"province\": \"Ho Chi Minh\",\n  \"provinceCode\": \"{{provinceCode}}\",\n  \"isDefault\": true\n}",
+          "raw": "{\n  \"recipientName\": \"Test Receiver\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"streetAddress\": \"1 Test Street\",\n  \"ward\": \"Phường Bến Thành\",\n  \"wardCode\": \"26743\",\n  \"province\": \"Thành phố Hồ Chí Minh\",\n  \"provinceCode\": \"79\",\n  \"isDefault\": true\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -1569,6 +1572,594 @@
           ]
         },
         "description": "TestCaseId: ADDR03\nModule: Cart/Guest Cart/Address\nType: Negative\nAuth: User token\nObjective: Thieu recipient/phone/province/ward tra 400"
+      },
+      "response": []
+    },
+    {
+      "name": "ADDR04 - Province/ward khong hop le tra loi",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADDR04\";",
+              "const expectedStatusCodes = [400, 401, 403, 404, 409];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"recipientName\":\"Test Receiver\",\"phoneNumber\":\"{{testPhone}}\",\"streetAddress\":\"1 Test Street\",\"ward\":\"InvalidWard\",\"wardCode\":\"INVALID_WARD_999\",\"province\":\"InvalidProvince\",\"provinceCode\":\"INVALID_PROV_999\",\"isDefault\":true}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/user/addresses",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "user",
+            "addresses"
+          ]
+        },
+        "description": "TestCaseId: ADDR04\nModule: Cart/Guest Cart/Address\nType: Negative\nAuth: User token\nObjective: Province/ward khong hop le tra loi"
+      },
+      "response": []
+    },
+    {
+      "name": "ADDR05 - Cap nhat dia chi thanh cong",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const testCaseId = \"ADDR05\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const baseUrl = pm.environment.get(\"baseUrl\");",
+              "const accessToken = pm.environment.get(\"accessToken\");",
+              "const uniqueSuffix = pm.environment.get(\"uniqueSuffix\") || Date.now().toString();",
+              "const createPayload = {",
+              "  recipientName: `ADDR05 Receiver ${uniqueSuffix}`,",
+              "  phoneNumber: pm.environment.get(\"testPhone\"),",
+              "  streetAddress: \"1 Test Street\",",
+              "  ward: \"Phường Bến Thành\",",
+              "  wardCode: \"26743\",",
+              "  province: \"Thành phố Hồ Chí Minh\",",
+              "  provinceCode: \"79\",",
+              "  isDefault: true",
+              "};",
+              "pm.sendRequest({",
+              "  url: baseUrl + \"/api/v1/user/addresses\",",
+              "  method: \"POST\",",
+              "  header: {",
+              "    \"Content-Type\": \"application/json\",",
+              "    \"Authorization\": \"Bearer \" + accessToken",
+              "  },",
+              "  body: {",
+              "    mode: \"raw\",",
+              "    raw: JSON.stringify(createPayload)",
+              "  }",
+              "}, function(err, res) {",
+              "  if (err || !res || res.code < 200 || res.code >= 300) {",
+              "    console.error(\"ADDR05 pre-request: tạo địa chỉ mới thất bại:\", err || (res && res.text ? res.text() : \"unknown error\"));",
+              "    return;",
+              "  }",
+              "  const body = res.json();",
+              "  const data = body.data || body;",
+              "  const newAddressId = data.id || data.addressId;",
+              "  if (newAddressId) {",
+              "    pm.environment.set(\"addressId\", newAddressId);",
+              "    pm.environment.set(\"currentResourceId\", newAddressId);",
+              "    pm.environment.set(\"createdAddressId\", newAddressId);",
+              "    console.log(\"ADDR05 pre-request: created fresh addressId =\", newAddressId);",
+              "  } else {",
+              "    console.error(\"ADDR05 pre-request: không trích xuất được addressId từ phản hồi tạo mới\");",
+              "  }",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"recipientName\": \"Test Receiver\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"streetAddress\": \"1 Test Street\",\n  \"ward\": \"Phường Bến Thành\",\n  \"wardCode\": \"26743\",\n  \"province\": \"Thành phố Hồ Chí Minh\",\n  \"provinceCode\": \"79\",\n  \"isDefault\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/user/addresses/{{addressId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "user",
+            "addresses",
+            "{{addressId}}"
+          ]
+        },
+        "description": "TestCaseId: ADDR05\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Cap nhat dia chi thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADDR06 - Set default thanh cong",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"ADDR06\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const baseUrl = pm.environment.get(\"baseUrl\");",
+              "const accessToken = pm.environment.get(\"accessToken\");",
+              "const uniqueSuffix = pm.environment.get(\"uniqueSuffix\") || Date.now().toString();",
+              "const createPayload = {",
+              "  recipientName: `ADDR05 Receiver ${uniqueSuffix}`,",
+              "  phoneNumber: pm.environment.get(\"testPhone\"),",
+              "  streetAddress: \"1 Test Street\",",
+              "  ward: \"Phường Bến Thành\",",
+              "  wardCode: \"26743\",",
+              "  province: \"Thành phố Hồ Chí Minh\",",
+              "  provinceCode: \"79\",",
+              "  isDefault: true",
+              "};",
+              "pm.sendRequest({",
+              "  url: baseUrl + \"/api/v1/user/addresses\",",
+              "  method: \"POST\",",
+              "  header: {",
+              "    \"Content-Type\": \"application/json\",",
+              "    \"Authorization\": \"Bearer \" + accessToken",
+              "  },",
+              "  body: {",
+              "    mode: \"raw\",",
+              "    raw: JSON.stringify(createPayload)",
+              "  }",
+              "}, function(err, res) {",
+              "  if (err || !res || res.code < 200 || res.code >= 300) {",
+              "    console.error(\"ADDR05 pre-request: tạo địa chỉ mới thất bại:\", err || (res && res.text ? res.text() : \"unknown error\"));",
+              "    return;",
+              "  }",
+              "  const body = res.json();",
+              "  const data = body.data || body;",
+              "  const newAddressId = data.id || data.addressId;",
+              "  if (newAddressId) {",
+              "    pm.environment.set(\"addressId\", newAddressId);",
+              "    pm.environment.set(\"currentResourceId\", newAddressId);",
+              "    pm.environment.set(\"createdAddressId\", newAddressId);",
+              "    console.log(\"ADDR05 pre-request: created fresh addressId =\", newAddressId);",
+              "  } else {",
+              "    console.error(\"ADDR05 pre-request: không trích xuất được addressId từ phản hồi tạo mới\");",
+              "  }",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"recipientName\": \"Test Receiver\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"streetAddress\": \"1 Test Street\",\n  \"ward\": \"Ben Nghe\",\n  \"wardCode\": \"{{wardCode}}\",\n  \"province\": \"Ho Chi Minh\",\n  \"provinceCode\": \"{{provinceCode}}\",\n  \"isDefault\": true\n}",
+          "raw": "{\n  \"recipientName\": \"Test Receiver\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"streetAddress\": \"1 Test Street\",\n  \"ward\": \"Phường Bến Thành\",\n  \"wardCode\": \"26743\",\n  \"province\": \"Thành phố Hồ Chí Minh\",\n  \"provinceCode\": \"79\",\n  \"isDefault\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/user/addresses/{{currentResourceId}}/set-default",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "user",
+            "addresses",
+            "{{currentResourceId}}",
+            "set-default"
+          ]
+        },
+        "description": "TestCaseId: ADDR06\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Set default thanh cong"
+          "raw": "{{baseUrl}}/api/v1/user/addresses/{{addressId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "user", "addresses", "{{addressId}}"]
+        },
+        "description": "TestCaseId: ADDR05\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Cap nhat dia chi thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADDR06 - Set default thanh cong",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"ADDR06\";",
+              "const expectedStatusCodes = [200, 201];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"recipientName\": \"Test Receiver\",\n  \"phoneNumber\": \"{{testPhone}}\",\n  \"streetAddress\": \"1 Test Street\",\n  \"ward\": \"Ben Nghe\",\n  \"wardCode\": \"{{wardCode}}\",\n  \"province\": \"Ho Chi Minh\",\n  \"provinceCode\": \"{{provinceCode}}\",\n  \"isDefault\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/user/addresses/{{currentResourceId}}/set-default",
+          "host": ["{{baseUrl}}"],
+          "path": [
+            "api",
+            "v1",
+            "user",
+            "addresses",
+            "{{currentResourceId}}",
+            "set-default"
+          ]
+        },
+        "description": "TestCaseId: ADDR06\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Set default thanh cong"
+      },
+      "response": []
+    },
+    {
+      "name": "ADDR07 - Xoa dia chi thanh cong",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const baseUrl = pm.environment.get(\"baseUrl\");",
+              "const accessToken = pm.environment.get(\"accessToken\");",
+              "const uniqueSuffix = pm.environment.get(\"uniqueSuffix\") || Date.now().toString();",
+              "const createPayload = {",
+              "  recipientName: `ADDR07 Receiver ${uniqueSuffix}`,",
+              "  phoneNumber: pm.environment.get(\"testPhone\"),",
+              "  streetAddress: \"1 Test Street\",",
+              "  ward: \"Phường Bến Thành\",",
+              "  wardCode: \"26743\",",
+              "  province: \"Thành phố Hồ Chí Minh\",",
+              "  provinceCode: \"79\",",
+              "  isDefault: true",
+              "};",
+              "pm.sendRequest({",
+              "  url: baseUrl + \"/api/v1/user/addresses\",",
+              "  method: \"POST\",",
+              "  header: {",
+              "    \"Content-Type\": \"application/json\",",
+              "    \"Authorization\": \"Bearer \" + accessToken",
+              "  },",
+              "  body: {",
+              "    mode: \"raw\",",
+              "    raw: JSON.stringify(createPayload)",
+              "  }",
+              "}, function(err, res) {",
+              "  if (err || !res || res.code < 200 || res.code >= 300) {",
+              "    console.error(\"ADDR07 pre-request: tạo địa chỉ mới thất bại:\", err || (res && res.text ? res.text() : \"unknown error\"));",
+              "    return;",
+              "  }",
+              "  const body = res.json();",
+              "  const data = body.data || body;",
+              "  const newAddressId = data.id || data.addressId;",
+              "  if (newAddressId) {",
+              "    pm.environment.set(\"currentResourceId\", newAddressId);",
+              "    console.log(\"ADDR07 pre-request: created fresh addressId =\", newAddressId);",
+              "  } else {",
+              "    console.error(\"ADDR07 pre-request: không trích xuất được addressId từ phản hồi tạo mới\");",
+              "  }",
+              "});",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const testCaseId = \"ADDR07\";",
+              "const expectedStatusCodes = [200, 204];",
+              "const responseTimeThresholdMs = testCaseId === \"H02\" ? 1000 : Number(pm.environment.get(\"responseTimeThresholdMs\") || 3000);",
+              "const contentType = pm.response.headers.get(\"Content-Type\") || \"\";",
+              "let json = {}; let responseData = {};",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) { json = pm.response.json(); responseData = json.data || json; }",
+              "pm.test(`${testCaseId} expected status ${expectedStatusCodes.join(\"/\")}`, () => pm.expect(pm.response.code).to.be.oneOf(expectedStatusCodes));",
+              "pm.test(`${testCaseId} no server error`, () => pm.expect(pm.response.code, pm.response.text()).to.be.below(500));",
+              "pm.test(`${testCaseId} response time under threshold`, () => pm.expect(pm.response.responseTime).to.be.below(responseTimeThresholdMs));",
+              "pm.test(`${testCaseId} JSON body when present`, () => { if (pm.response.text()) pm.expect(contentType).to.include(\"application/json\"); });",
+              "if (pm.response.text() && contentType.includes(\"application/json\")) {",
+              "  const id = responseData.id || responseData.productId || responseData.orderId || responseData.addressId || responseData.cartItemId || responseData.guestCartId;",
+              "  if (responseData.accessToken) { pm.environment.set(pm.info.requestName.toLowerCase().includes(\"admin\") ? \"adminAccessToken\" : \"accessToken\", responseData.accessToken); }",
+              "  if (responseData.refreshToken) pm.environment.set(\"refreshToken\", responseData.refreshToken);",
+              "  if (responseData.user && responseData.user.id) pm.environment.set(\"userId\", responseData.user.id);",
+              "  if (id) pm.environment.set(\"currentResourceId\", id);",
+              "  const url = pm.request.url.toString();",
+              "  if (id && url.includes(\"/admin/products\")) { pm.environment.set(\"createdProductId\", id); pm.environment.set(\"productId\", id); }",
+              "  if (id && url.includes(\"/admin/categories\")) { pm.environment.set(\"createdCategoryId\", id); pm.environment.set(\"categoryId\", id); }",
+              "  if (id && url.includes(\"/admin/brands\")) { pm.environment.set(\"createdBrandId\", id); pm.environment.set(\"brandId\", id); }",
+              "  if (id && url.includes(\"/user/addresses\")) { pm.environment.set(\"createdAddressId\", id); pm.environment.set(\"addressId\", id); }",
+              "  if (id && url.includes(\"/orders\")) { pm.environment.set(\"createdOrderId\", id); pm.environment.set(\"orderId\", id); }",
+              "  if (id && url.includes(\"/admin/promotions\")) { pm.environment.set(\"createdPromotionId\", id); pm.environment.set(\"promotionId\", id); }",
+              "  if (id && url.includes(\"/admin/promotion-templates\")) { pm.environment.set(\"createdPromotionTemplateId\", id); pm.environment.set(\"promotionTemplateId\", id); }",
+              "  if (id && url.includes(\"/cart/items\")) pm.environment.set(\"cartItemId\", id);",
+              "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
+              "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/user/addresses/{{currentResourceId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "user", "addresses", "{{currentResourceId}}"]
+        },
+        "description": "TestCaseId: ADDR07\nModule: Cart/Guest Cart/Address\nType: Positive\nAuth: User token\nObjective: Xoa dia chi thanh cong"
       },
       "response": []
     }
