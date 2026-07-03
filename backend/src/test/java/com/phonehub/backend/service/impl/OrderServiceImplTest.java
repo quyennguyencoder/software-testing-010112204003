@@ -43,6 +43,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -653,6 +654,24 @@ public class OrderServiceImplTest {
     }
 
     @Test
+    void canCancelOrder_RepositoryThrows_ReturnsFalse() {
+        when(orderRepository.findById(1L)).thenThrow(new RuntimeException("DB error"));
+
+        boolean result = orderService.canCancelOrder(1L, 1L);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void canCancelOrder_OrderNotFound_ReturnsFalse() {
+        when(orderRepository.findById(1L)).thenReturn(Optional.empty());
+
+        boolean result = orderService.canCancelOrder(1L, 1L);
+
+        assertFalse(result);
+    }
+
+    @Test
     void getMyOrders_Success() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(orderRepository.findByUserOrderByCreatedAtDesc(testUser)).thenReturn(Collections.singletonList(testOrder));
@@ -664,6 +683,13 @@ public class OrderServiceImplTest {
 
         assertNotNull(result);
         assertEquals(1, result.size());
+    }
+
+    @Test
+    void getMyOrders_UserNotFound_ThrowsResourceNotFoundException() {
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> orderService.getMyOrders(1L));
     }
 
     @Test
@@ -683,6 +709,15 @@ public class OrderServiceImplTest {
     }
 
     @Test
+    void getMyOrdersWithPagination_UserNotFound_ThrowsResourceNotFoundException() {
+        Pageable pageable = PageRequest.of(0, 10);
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> orderService.getMyOrdersWithPagination(1L, pageable));
+    }
+
+    @Test
     void getMyOrdersByStatus_Success() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(orderRepository.findByUserAndStatusOrderByCreatedAtDesc(testUser, OrderStatus.PENDING)).thenReturn(Collections.singletonList(testOrder));
@@ -697,6 +732,14 @@ public class OrderServiceImplTest {
     }
 
     @Test
+    void getMyOrdersByStatus_UserNotFound_ThrowsResourceNotFoundException() {
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> orderService.getMyOrdersByStatus(1L, OrderStatus.PENDING));
+    }
+
+    @Test
     void getMyOrdersCount_Success() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(orderRepository.countByUser(testUser)).thenReturn(5L);
@@ -704,6 +747,111 @@ public class OrderServiceImplTest {
         long count = orderService.getMyOrdersCount(1L);
 
         assertEquals(5L, count);
+    }
+
+    @Test
+    void getMyOrdersCount_UserNotFound_ThrowsResourceNotFoundException() {
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> orderService.getMyOrdersCount(1L));
+    }
+
+    @Test
+    void getStatusDisplayName_Reflection_CoversAllStatuses() throws Exception {
+        Method method = OrderServiceImpl.class.getDeclaredMethod("getStatusDisplayName", OrderStatus.class);
+        method.setAccessible(true);
+
+        assertEquals("Chờ xác nhận", method.invoke(orderService, OrderStatus.PENDING));
+        assertEquals("Đã xác nhận", method.invoke(orderService, OrderStatus.CONFIRMED));
+        assertEquals("Đang giao hàng", method.invoke(orderService, OrderStatus.SHIPPING));
+        assertEquals("Đang giao hàng", method.invoke(orderService, OrderStatus.SHIPPED));
+        assertEquals("Đã giao hàng", method.invoke(orderService, OrderStatus.DELIVERED));
+        assertEquals("Đã hủy", method.invoke(orderService, OrderStatus.CANCELLED));
+    }
+
+    @Test
+    void createOrder_MultipleTemplates_ExercisesContinueBranch() {
+        CreateOrderRequest request = buildOrderRequest(PaymentMethod.COD);
+        request.getItems().get(0).setQuantity(1);
+
+        ProductTemplate inactiveTemplate = new ProductTemplate();
+        inactiveTemplate.setId(11L);
+        inactiveTemplate.setStatus(false);
+        inactiveTemplate.setStockQuantity(50);
+        inactiveTemplate.setPrice(BigDecimal.valueOf(90000));
+
+        ProductTemplate zeroStockTemplate = new ProductTemplate();
+        zeroStockTemplate.setId(12L);
+        zeroStockTemplate.setStatus(true);
+        zeroStockTemplate.setStockQuantity(0);
+        zeroStockTemplate.setPrice(BigDecimal.valueOf(80000));
+
+        ProductTemplate activeTemplate = new ProductTemplate();
+        activeTemplate.setId(13L);
+        activeTemplate.setStatus(true);
+        activeTemplate.setStockQuantity(2);
+        activeTemplate.setPrice(BigDecimal.valueOf(70000));
+
+        ProductTemplate exhaustedAfterDeductionTemplate = new ProductTemplate();
+        exhaustedAfterDeductionTemplate.setId(14L);
+        exhaustedAfterDeductionTemplate.setStatus(true);
+        exhaustedAfterDeductionTemplate.setStockQuantity(4);
+        exhaustedAfterDeductionTemplate.setPrice(BigDecimal.valueOf(60000));
+
+        Product multiTemplateProduct = new Product();
+        multiTemplateProduct.setId(1L);
+        multiTemplateProduct.setName("Multi Template Product");
+        multiTemplateProduct.setTemplates(List.of(inactiveTemplate, zeroStockTemplate, activeTemplate, exhaustedAfterDeductionTemplate));
+
+        Cart cart = createCartWithItem(multiTemplateProduct);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+        when(productRepository.findAllByIdIn(Collections.singletonList(1L))).thenReturn(Collections.singletonList(multiTemplateProduct));
+        when(orderRepository.existsByOrderCode(anyString())).thenReturn(false);
+        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> {
+            Order savedOrder = invocation.getArgument(0);
+            savedOrder.setId(70L);
+            return savedOrder;
+        });
+        when(productRepository.save(any(Product.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(cartRepository.findByUserIdWithItems(1L)).thenReturn(Optional.of(cart));
+        when(cartRepository.save(any(Cart.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        doNothing().when(emailService).sendOrderPaymentSuccessEmail(anyString(), anyString(), any(BigDecimal.class), anyString(), anyString());
+
+        CreateOrderResponse response = orderService.createOrder(request, 1L);
+
+        assertNotNull(response);
+        assertEquals(PaymentMethod.COD, response.getPaymentMethod());
+        assertEquals("Đơn hàng đã được tạo thành công!", response.getMessage());
+        verify(productRepository, times(1)).save(multiTemplateProduct);
+        verify(cartItemRepository, times(1)).deleteAll(anyList());
+    }
+
+    @Test
+    void cancelMyOrder_StatusHistoryThrows_ShouldStillCancelOrder() {
+        Order mockOrder = mock(Order.class);
+        User mockUser = mock(User.class);
+        AtomicInteger orderCodeCalls = new AtomicInteger();
+        when(mockOrder.getUser()).thenReturn(mockUser);
+        when(mockUser.getId()).thenReturn(1L);
+        when(mockOrder.getStatus()).thenReturn(OrderStatus.PENDING);
+        when(mockOrder.getPaymentMethod()).thenReturn(PaymentMethod.COD);
+        when(mockOrder.getItems()).thenReturn(Collections.emptyList());
+        doAnswer(invocation -> {
+            if (orderCodeCalls.getAndIncrement() == 0) {
+                throw new RuntimeException("history failure");
+            }
+            return "ORD-HISTORY-1";
+        }).when(mockOrder).getOrderCode();
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(mockOrder));
+        when(orderRepository.save(any(Order.class))).thenReturn(mockOrder);
+
+        assertDoesNotThrow(() -> orderService.cancelMyOrder(1L, 1L));
+
+        verify(orderRepository, times(1)).save(mockOrder);
+        verify(mockOrder, atLeast(1)).getOrderCode();
     }
 
     private CreateOrderRequest buildOrderRequest(PaymentMethod paymentMethod) {
@@ -1170,6 +1318,34 @@ public class OrderServiceImplTest {
         when(orderRepository.save(any(Order.class))).thenReturn(testOrder);
 
         orderService.cancelMyOrder(1L, 1L);
+
+        assertEquals(OrderStatus.CANCELLED, testOrder.getStatus());
+        verify(orderRepository, times(1)).save(testOrder);
+    }
+
+    @Test
+    void cancelMyOrder_RestoreStockThrows_ShouldStillCancelOrder() {
+        OrderItem orderItem = new OrderItem();
+        orderItem.setId(1L);
+        orderItem.setProduct(testProduct);
+        orderItem.setQuantity(1);
+
+        List<OrderItem> failingItems = new ArrayList<>() {
+            @Override
+            public java.util.Iterator<OrderItem> iterator() {
+                throw new RuntimeException("Iterator failed");
+            }
+        };
+        failingItems.add(orderItem);
+
+        testOrder.setItems(failingItems);
+        testOrder.setStatus(OrderStatus.PENDING);
+        testOrder.setPaymentMethod(PaymentMethod.COD);
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(testOrder));
+        when(orderRepository.save(any(Order.class))).thenReturn(testOrder);
+
+        assertDoesNotThrow(() -> orderService.cancelMyOrder(1L, 1L));
 
         assertEquals(OrderStatus.CANCELLED, testOrder.getStatus());
         verify(orderRepository, times(1)).save(testOrder);
