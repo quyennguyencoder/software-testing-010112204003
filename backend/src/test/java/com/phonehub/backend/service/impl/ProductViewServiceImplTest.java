@@ -1,9 +1,11 @@
 package com.phonehub.backend.service.impl;
 
+import com.phonehub.backend.dto.request.productview.ProductFilterRequest;
 import com.phonehub.backend.dto.response.productview.ProductCardResponse;
 import com.phonehub.backend.dto.response.productview.ProductDetailViewResponse;
 import com.phonehub.backend.entity.Category;
 import com.phonehub.backend.entity.Product;
+import com.phonehub.backend.exception.BadRequestException;
 import com.phonehub.backend.exception.ResourceNotFoundException;
 import com.phonehub.backend.repository.CategoryRepository;
 import com.phonehub.backend.repository.ProductRepository;
@@ -16,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -95,6 +98,17 @@ public class ProductViewServiceImplTest {
         assertNotNull(response);
         assertEquals(1L, response.getId());
         assertEquals("iPhone 15 Pro Max", response.getName());
+    }
+
+    @Test
+    @DisplayName("Nên ném BadRequestException khi minPrice lớn hơn maxPrice")
+    void filterProducts_ThrowsException_WhenMinPriceGreaterThanMaxPrice() {
+        ProductFilterRequest request = ProductFilterRequest.builder()
+                .minPrice(BigDecimal.valueOf(30000000))
+                .maxPrice(BigDecimal.valueOf(10000000))
+                .build();
+
+        assertThrows(BadRequestException.class, () -> productViewService.filterProducts(request));
     }
 
     @Test
