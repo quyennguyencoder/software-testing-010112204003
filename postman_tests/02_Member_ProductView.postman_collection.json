@@ -751,7 +751,7 @@
               "let responseData = [];",
               "if (pm.response.text() && contentType.includes(\"application/json\")) {",
               "    json = pm.response.json();",
-              "    responseData = json.data || [];",
+              "    responseData = (json.data && Array.isArray(json.data.products)) ? json.data.products : (Array.isArray(json.data) ? json.data : []);",
               "}",
               "",
               "pm.test(`${testCaseId} expected status 200`, () => {",
@@ -1211,7 +1211,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"PV16\";",
               "const expectedStatusCodes = [200, 201];",
@@ -1241,7 +1240,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -1252,7 +1254,7 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/v1/products/filter/ram",
+          "raw": "{{baseUrl}}/api/v1/products/filter/ram?ramOptions=8GB",
           "host": [
             "{{baseUrl}}"
           ],
@@ -1262,6 +1264,12 @@
             "products",
             "filter",
             "ram"
+          ],
+          "query": [
+            {
+              "key": "ramOptions",
+              "value": "8GB"
+            }
           ]
         },
         "description": "TestCaseId: PV16\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra cac option RAM"
@@ -1274,7 +1282,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"PV17\";",
               "const expectedStatusCodes = [200, 201];",
@@ -1304,7 +1311,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -1315,7 +1325,7 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/v1/products/filter/storage",
+          "raw": "{{baseUrl}}/api/v1/products/filter/storage?storageOptions=128GB",
           "host": [
             "{{baseUrl}}"
           ],
@@ -1325,6 +1335,12 @@
             "products",
             "filter",
             "storage"
+          ],
+          "query": [
+            {
+              "key": "storageOptions",
+              "value": "128GB"
+            }
           ]
         },
         "description": "TestCaseId: PV17\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra cac option bo nho"
@@ -1400,7 +1416,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"PV19\";",
               "const expectedStatusCodes = [200, 201];",
@@ -1430,7 +1445,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -1441,7 +1459,7 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/v1/products/filter/screen",
+          "raw": "{{baseUrl}}/api/v1/products/filter/screen?screenSizeOptions=6.1%20inch",
           "host": [
             "{{baseUrl}}"
           ],
@@ -1451,6 +1469,12 @@
             "products",
             "filter",
             "screen"
+          ],
+          "query": [
+            {
+              "key": "screenSizeOptions",
+              "value": "6.1 inch"
+            }
           ]
         },
         "description": "TestCaseId: PV19\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra cac option man hinh"
@@ -1463,7 +1487,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"PV20\";",
               "const expectedStatusCodes = [200, 201];",
@@ -1493,7 +1516,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -1504,7 +1530,7 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/v1/products/filter/os",
+          "raw": "{{baseUrl}}/api/v1/products/filter/os?osOptions=iOS",
           "host": [
             "{{baseUrl}}"
           ],
@@ -1514,6 +1540,12 @@
             "products",
             "filter",
             "os"
+          ],
+          "query": [
+            {
+              "key": "osOptions",
+              "value": "iOS"
+            }
           ]
         },
         "description": "TestCaseId: PV20\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra cac option OS"
@@ -1710,7 +1742,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"BRAND03\";",
               "const expectedStatusCodes = [404];",
@@ -1740,7 +1771,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -1751,7 +1785,7 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/v1/brands/{{currentResourceId}}",
+          "raw": "{{baseUrl}}/api/v1/brands/{{negativeProductId}}",
           "host": [
             "{{baseUrl}}"
           ],
@@ -1759,7 +1793,7 @@
             "api",
             "v1",
             "brands",
-            "{{currentResourceId}}"
+            "{{negativeProductId}}"
           ]
         },
         "description": "TestCaseId: BRAND03\nModule: Product View/Public Catalog\nType: Negative\nAuth: Public\nObjective: Brand khong ton tai tra 404"
