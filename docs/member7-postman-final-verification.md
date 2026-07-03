@@ -54,4 +54,14 @@ Completed test cases:
 Result: Passed and finalized.
 
 Excluded from this close-out:
-- BOT01 and BOT03: pending chatbot response-time verification.
+- BOT01 and BOT03: pending chatbot response-time verification. 
+
+## Location Verification
+
+Completed test cases:
+- LOC04: Mã tỉnh không hợp lệ trả kết quả validate false.
+
+Result: Passed and finalized.
+
+Excluded from this close-out:
+- LOC06: pending ward-detail verification.
