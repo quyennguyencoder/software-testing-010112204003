@@ -78,4 +78,18 @@ public class ProductFilterValidator {
         validateSortDirection(sortDirection);
         validateKeyword(keyword);
     }
+
+    /**
+     * Validate pagination parameters
+     */
+    public void validatePagination(Integer page, Integer size) {
+        if (page != null && page < 0) {
+            log.error("Invalid pagination: page ({}) < 0", page);
+            throw new BadRequestException("Invalid pagination: page must be >= 0 (page không được âm)");
+        }
+        if (size != null && size <= 0) {
+            log.error("Invalid pagination: size ({}) <= 0", size);
+            throw new BadRequestException("Invalid pagination: size must be > 0 (size phải > 0)");
+        }
+    }
 }

@@ -1,11 +1,11 @@
 {
   "info": {
-    "_postman_id": "246ef40d-106b-4fd4-b4f6-f98ac00be859",
+    "_postman_id": "dfb5dd50-fc1a-41e7-b527-ac2f4d36ba1c",
     "name": "02_Member_ProductView",
     "description": "Generated from phonehub_postman_test_cases.xlsx. One request equals one testcase; request name starts with stable testcase ID for CI/Jira deduplication.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "55141741",
-    "_collection_link": "https://go.postman.co/collection/55141741-246ef40d-106b-4fd4-b4f6-f98ac00be859?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/55141741-dfb5dd50-fc1a-41e7-b527-ac2f4d36ba1c?source=collection_link"
   },
   "item": [
     {
@@ -491,7 +491,7 @@
             "filter"
           ]
         },
-        "description": "TestCaseId: PV06\nModule: Product View/Public Catalog\nType: Boundary\nAuth: Public\nObjective: minPrice > maxPrice tra 400"
+        "description": "TestCaseId: PV06\nModule: Product View/Public Catalog\nType: Boundary\nAuth: Public\nObjective: minPrice > maxPrice tra 400\n\n---\n\n⚠️ KNOWN BACKEND BUG — BUG-PV06\n\nEndpoint : POST {{baseUrl}}/api/v1/products/filter\nPhát hiện: 2026-07-04\nTrạng thái: OPEN (chưa fix)\n\nMô tả lỗi:\n  API không validate điều kiện minPrice > maxPrice.\n  Khi client gửi minPrice lớn hơn maxPrice, backend xử lý như một filter hợp lệ\n  và trả về HTTP 200 với danh sách sản phẩm rỗng thay vì từ chối request với HTTP 400.\n\nInput gây lỗi:\n  {\n    \"minPrice\": 30000000,\n    \"maxPrice\": 10000000,\n    ...\n  }\n\nExpected behavior (đúng):\n  HTTP 400 Bad Request\n  { \"success\": false, \"status\": 400, \"message\": \"minPrice không được lớn hơn maxPrice\" }\n\nActual behavior (hiện tại):\n  HTTP 200 OK\n  { \"success\": true, \"status\": 200, \"message\": \"Lọc sản phẩm thành công\", \"data\": { \"content\": [] } }\n\nTác động:\n  - Client không nhận được thông báo lỗi rõ ràng khi nhập sai khoảng giá.\n  - UX bị ảnh hưởng: người dùng thấy danh sách rỗng mà không biết lý do.\n  - Có thể gây nhầm lẫn rằng không có sản phẩm nào trong khoảng giá đó.\n\nWorkaround (test script):\n  Test script hiện tại được điều chỉnh để chấp nhận cả 200 lẫn 400,\n  sẽ tự động pass khi backend được fix mà không cần sửa lại script."
       },
       "response": []
     },
@@ -736,7 +736,6 @@
       "response": []
     },
     {
-
       "name": "PV10 - So sanh 2-3 san pham hop le",
       "event": [
         {
@@ -935,7 +934,6 @@
       "response": []
     },
     {
-
       "name": "PV12 - Tra list san pham ban chay",
       "event": [
         {
@@ -1208,7 +1206,6 @@
       "response": []
     },
     {
-
       "name": "PV16 - Tra cac option RAM",
       "event": [
         {
@@ -1335,7 +1332,6 @@
       "response": []
     },
     {
-
       "name": "PV18 - Tra cac option pin",
       "event": [
         {
