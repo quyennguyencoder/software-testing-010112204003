@@ -14,3 +14,18 @@ Completed test cases:
 - PT06: Xem chi tiết promotion template.
 
 Result: Passed and finalized.
+
+## Promotion Verification
+
+Completed test cases:
+- PRO03: Tính discount với tổng đơn hàng hợp lệ.
+- PRO04: Kiểm tra không đạt min value.
+- PRO05: Admin tạo promotion và lưu promotionId.
+- PRO08: Cập nhật promotion.
+- PRO09: Disable promotion.
+- PRO10: Xem chi tiết promotion.
+
+Result: Passed and finalized.
+
+Excluded from this close-out:
+- PRO07: pending backend/EC2 validation verification.
