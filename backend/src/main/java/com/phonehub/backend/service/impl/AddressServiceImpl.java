@@ -84,12 +84,8 @@ public class AddressServiceImpl implements IAddressService {
     public AddressResponse updateAddress(Long userId, Long addressId, AddressRequest request) {
         log.info("Updating address id: {} for user id: {}", addressId, userId);
 
-        Address address = addressRepository.findById(addressId)
+        Address address = addressRepository.findByIdAndUserId(addressId, userId)
             .orElseThrow(() -> new ResourceNotFoundException("Địa chỉ không tồn tại"));
-
-        if (address.getUser() == null || !address.getUser().getId().equals(userId)) {
-            throw new ResourceNotFoundException("Địa chỉ không tồn tại");
-        }
 
         validateLocationCodes(request.getProvinceCode(), request.getWardCode());
 

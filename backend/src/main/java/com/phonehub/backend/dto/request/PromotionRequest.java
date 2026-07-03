@@ -2,11 +2,15 @@ package com.phonehub.backend.dto.request;
 
 import com.phonehub.backend.enums.EPromotionStatus;
 import com.phonehub.backend.enums.EPromotionTargetType;
+
+import jakarta.persistence.MapKeyJoinColumn;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import org.mapstruct.Mappings;
 
 @Data
 public class PromotionRequest {
@@ -27,8 +31,17 @@ public class PromotionRequest {
     @Future(message = "Expiration date must be in the future")
     private LocalDateTime expirationDate;
 
-    @PositiveOrZero(message = "Percent discount must be positive")
-    private Double percentDiscount;
+    @DecimalMin(
+    value = "0.0",
+    inclusive = true,
+    message = "Percent discount must be at least 0%"
+)
+@DecimalMax(
+    value = "100.0",
+    inclusive = true,
+    message = "Percent discount cannot exceed 100%"
+)
+private Double percentDiscount;
 
     @PositiveOrZero(message = "Min value must be positive")
     private Double minValueToBeApplied;

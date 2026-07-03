@@ -85,6 +85,8 @@ public class ProductViewServiceImpl implements IProductViewService {
 
     @Override
     public Page<ProductCardResponse> filterProducts(ProductFilterRequest request) {
+        validatePriceRange(request);
+
         String sortBy = request.getSortBy() != null ? request.getSortBy().toLowerCase() : "createdAt";
         String sortDirection = request.getSortDirection() != null ? request.getSortDirection() : "desc";
         int page = request.getPage() != null && request.getPage() >= 0 ? request.getPage() : 0;
@@ -169,6 +171,23 @@ public class ProductViewServiceImpl implements IProductViewService {
         return new PageImpl<>(cards, resultPageable, totalElements);
     }
     
+    private void validatePriceRange(ProductFilterRequest request) {
+        BigDecimal minPrice = request.getMinPrice();
+        BigDecimal maxPrice = request.getMaxPrice();
+
+        if (minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0) {
+            throw new BadRequestException("Giá tối thiểu không thể lớn hơn giá tối đa");
+        }
+
+        if (minPrice != null && minPrice.compareTo(BigDecimal.ZERO) < 0) {
+            throw new BadRequestException("Giá tối thiểu phải lớn hơn hoặc bằng 0");
+        }
+
+        if (maxPrice != null && maxPrice.compareTo(BigDecimal.ZERO) < 0) {
+            throw new BadRequestException("Giá tối đa phải lớn hơn hoặc bằng 0");
+        }
+    }
+
     /**
      * Kiểm tra xem sortBy có phải là computed field cần sort trong service layer không
      */
