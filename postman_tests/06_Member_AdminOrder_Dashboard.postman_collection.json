@@ -9,6 +9,131 @@
   },
   "item": [
     {
+      "name": "User Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Kiểm tra chắc chắn API gọi thành công (Status 200)\r",
+              "pm.test(\"Đăng nhập User thành công với mã 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// Chỉ parse JSON khi response body không rỗng\r",
+              "var responseBody = pm.response.text();\r",
+              "\r",
+              "if (!responseBody || responseBody.trim() === \"\") {\r",
+              "    console.log(\"Lỗi: Response body rỗng (status \" + pm.response.code + \"). Kiểm tra lại thông tin đăng nhập hoặc server.\");\r",
+              "} else {\r",
+              "    // Chuyển phản hồi của Backend thành đối tượng JSON\r",
+              "    var jsonData = pm.response.json();\r",
+              "\r",
+              "    // Tìm đúng đường dẫn đến chỗ giấu Token và lưu lại\r",
+              "    if (jsonData && jsonData.data && jsonData.data.accessToken) {\r",
+              "        var token = jsonData.data.accessToken;\r",
+              "\r",
+              "        // Lưu vào biến accessToken\r",
+              "        pm.environment.set(\"accessToken\", token);\r",
+              "\r",
+              "        console.log(\"Hệ thống đã tự động chộp được Token của User thường: \" + token);\r",
+              "    } else {\r",
+              "        console.log(\"Lỗi: Không tìm thấy accessToken trong phản hồi!\");\r",
+              "    }\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"usernameOrEmail\": \"user\",\r\n  \"password\": \"Password@123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Admin Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var responseBody = pm.response.text();\r",
+              "\r",
+              "if (!responseBody || responseBody.trim() === \"\") {\r",
+              "    console.log(\"Lỗi: Response body rỗng (status \" + pm.response.code + \"). Kiểm tra lại thông tin đăng nhập hoặc server.\");\r",
+              "} else {\r",
+              "    var jsonData = pm.response.json();\r",
+              "\r",
+              "    if (jsonData && jsonData.data && jsonData.data.accessToken) {\r",
+              "        var token = jsonData.data.accessToken;\r",
+              "\r",
+              "        pm.environment.set(\"adminAccessToken\", token);\r",
+              "\r",
+              "        console.log(\"Hệ thống đã tự động chộp được Token của Admin: \" + token);\r",
+              "    } else {\r",
+              "        console.log(\"Lỗi: Không tìm thấy accessToken trong phản hồi!\");\r",
+              "    }\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"usernameOrEmail\": \"admin\",\r\n  \"password\": \"Password@123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "AORD01 - Admin lay danh sach don, co filter/pagination",
       "event": [
         {
@@ -244,7 +369,7 @@
           }
         },
         "url": {
-          "raw": "{{baseUrl}}/api/v1/admin/orders/{{orderId}}/status?newStatus=CONFIRMED",
+          "raw": "{{baseUrl}}/api/v1/admin/orders/{{orderId}}/status?newStatus=DELIVERED",
           "host": [
             "{{baseUrl}}"
           ],
@@ -259,8 +384,7 @@
           "query": [
             {
               "key": "newStatus",
-              "value": "CONFIRMED",
-              "type": "text"
+              "value": "DELIVERED"
             }
           ]
         },
