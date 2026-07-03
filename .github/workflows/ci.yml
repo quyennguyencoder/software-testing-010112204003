@@ -206,7 +206,7 @@ jobs:
           "$NEWMAN_BIN" run \
             "postman_tests/${{ matrix.collection }}.postman_collection.json" \
             --environment postman_tests/phonehub_local.postman_environment.json \
-            --env-var "baseUrl=$BASE_URL" \
+            --env-var "baseUrl=http://13.250.27.234:8081" \
             --reporters cli,json,junit,htmlextra \
             --reporter-json-export "postman_tests/reports/${{ matrix.collection }}.json" \
             --reporter-junit-export "postman_tests/reports/${{ matrix.collection }}.xml" \
