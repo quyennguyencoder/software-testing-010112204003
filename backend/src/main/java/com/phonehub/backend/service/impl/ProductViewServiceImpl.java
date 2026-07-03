@@ -176,6 +176,7 @@ public class ProductViewServiceImpl implements IProductViewService {
         BigDecimal maxPrice = request.getMaxPrice();
 
         if (minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0) {
+
             throw new BadRequestException("Invalid price range: minPrice cannot be greater than maxPrice (Giá tối thiểu không thể lớn hơn giá tối đa)");
         }
 
@@ -185,6 +186,17 @@ public class ProductViewServiceImpl implements IProductViewService {
 
         if (maxPrice != null && maxPrice.compareTo(BigDecimal.ZERO) < 0) {
             throw new BadRequestException("Invalid price: maxPrice must be >= 0 (Giá tối đa phải lớn hơn hoặc bằng 0)");
+
+            throw new BadRequestException("Giá tối thiểu không thể lớn hơn giá tối đa");
+        }
+
+        if (minPrice != null && minPrice.compareTo(BigDecimal.ZERO) < 0) {
+            throw new BadRequestException("Giá tối thiểu phải lớn hơn hoặc bằng 0");
+        }
+
+        if (maxPrice != null && maxPrice.compareTo(BigDecimal.ZERO) < 0) {
+            throw new BadRequestException("Giá tối đa phải lớn hơn hoặc bằng 0");
+
         }
     }
 
