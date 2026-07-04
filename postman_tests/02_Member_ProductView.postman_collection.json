@@ -1,11 +1,11 @@
 {
   "info": {
-    "_postman_id": "246ef40d-106b-4fd4-b4f6-f98ac00be859",
+    "_postman_id": "1727ed77-54ed-48bb-bb65-9ebb9522e81e",
     "name": "02_Member_ProductView",
     "description": "Generated from phonehub_postman_test_cases.xlsx. One request equals one testcase; request name starts with stable testcase ID for CI/Jira deduplication.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "55141741",
-    "_collection_link": "https://go.postman.co/collection/55141741-dfb5dd50-fc1a-41e7-b527-ac2f4d36ba1c?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/55141741-1727ed77-54ed-48bb-bb65-9ebb9522e81e?source=collection_link"
   },
   "item": [
     {
@@ -751,10 +751,7 @@
               "let responseData = [];",
               "if (pm.response.text() && contentType.includes(\"application/json\")) {",
               "    json = pm.response.json();",
-
               "    responseData = (json.data && Array.isArray(json.data.products)) ? json.data.products : (Array.isArray(json.data) ? json.data : []);",
-
-              "    responseData = json.data || [];",
               "}",
               "",
               "pm.test(`${testCaseId} expected status 200`, () => {",
@@ -1244,8 +1241,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
-
             "exec": [
               "const testCaseId = \"PV16\";",
               "const expectedStatusCodes = [200, 201];",
@@ -1275,9 +1270,8 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-
-
             ],
+            "type": "text/javascript",
             "packages": {},
             "requests": {}
           }
@@ -1290,7 +1284,6 @@
         "method": "GET",
         "header": [],
         "url": {
-
           "raw": "{{baseUrl}}/api/v1/products/filter/ram?ramOptions=8GB",
           "host": [
             "{{baseUrl}}"
@@ -1319,9 +1312,6 @@
         {
           "listen": "test",
           "script": {
-
-            "type": "text/javascript",
-
             "exec": [
               "const testCaseId = \"PV17\";",
               "const expectedStatusCodes = [200, 201];",
@@ -1352,6 +1342,7 @@
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
             ],
+            "type": "text/javascript",
             "packages": {},
             "requests": {}
           }
@@ -1364,7 +1355,6 @@
         "method": "GET",
         "header": [],
         "url": {
-
           "raw": "{{baseUrl}}/api/v1/products/filter/storage?storageOptions=128GB",
           "host": [
             "{{baseUrl}}"
@@ -1499,7 +1489,7 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/v1/products/filter/screen?screenSizeOptions=6.1%20inch",
+          "raw": "{{baseUrl}}/api/v1/products/filter/screen?screenSizeOptions=6.1 inch",
           "host": [
             "{{baseUrl}}"
           ],
