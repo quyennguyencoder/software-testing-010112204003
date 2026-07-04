@@ -1,12 +1,11 @@
 {
   "info": {
-
-    "_postman_id": "246ef40d-106b-4fd4-b4f6-f98ac00be859",
+    "_postman_id": "1727ed77-54ed-48bb-bb65-9ebb9522e81e",
     "name": "02_Member_ProductView",
     "description": "Generated from phonehub_postman_test_cases.xlsx. One request equals one testcase; request name starts with stable testcase ID for CI/Jira deduplication.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "55141741",
-    "_collection_link": "https://go.postman.co/collection/55141741-dfb5dd50-fc1a-41e7-b527-ac2f4d36ba1c?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/55141741-1727ed77-54ed-48bb-bb65-9ebb9522e81e?source=collection_link"
   },
   "item": [
     {
@@ -737,7 +736,6 @@
       "response": []
     },
     {
-
       "name": "PV10 - So sanh 2-3 san pham hop le",
       "event": [
         {
@@ -753,11 +751,7 @@
               "let responseData = [];",
               "if (pm.response.text() && contentType.includes(\"application/json\")) {",
               "    json = pm.response.json();",
-
               "    responseData = (json.data && Array.isArray(json.data.products)) ? json.data.products : (Array.isArray(json.data) ? json.data : []);",
-
-              "    responseData = json.data || [];",
-
               "}",
               "",
               "pm.test(`${testCaseId} expected status 200`, () => {",
@@ -808,7 +802,37 @@
           "listen": "prerequest",
           "script": {
             "exec": [
-              ""
+              "// Ensure productId is set before comparing products",
+              "const existingProductId = pm.environment.get(\"productId\");",
+              "",
+              "if (!existingProductId || existingProductId === \"\" || existingProductId === \"null\" || existingProductId === \"undefined\") {",
+              "    const baseUrl = pm.environment.get(\"baseUrl\");",
+              "",
+              "    pm.sendRequest({",
+              "        url: `${baseUrl}/api/v1/products/search?keyword=iphone&page=0&size=5`,",
+              "        method: \"GET\"",
+              "    }, function (err, res) {",
+              "        if (!err && res.code === 200) {",
+              "            const body = res.json();",
+              "            // API trả về data.content[] hoặc data[] hoặc data.products[]",
+              "            let products = [];",
+              "            if (body.data && Array.isArray(body.data.content)) {",
+              "                products = body.data.content;",
+              "            } else if (body.data && Array.isArray(body.data.products)) {",
+              "                products = body.data.products;",
+              "            } else if (Array.isArray(body.data)) {",
+              "                products = body.data;",
+              "            }",
+              "",
+              "            if (products.length > 0 && products[0].id) {",
+              "                pm.environment.set(\"productId\", products[0].id);",
+              "                console.log(\"PV10 Pre-request: productId set to\", products[0].id);",
+              "            }",
+              "        } else {",
+              "            console.warn(\"PV10 Pre-request: Could not fetch productId, error:\", err);",
+              "        }",
+              "    });",
+              "}"
             ],
             "type": "text/javascript",
             "packages": {},
@@ -940,7 +964,6 @@
       "response": []
     },
     {
-
       "name": "PV12 - Tra list san pham ban chay",
       "event": [
         {
@@ -1213,14 +1236,11 @@
       "response": []
     },
     {
-
       "name": "PV16 - Tra cac option RAM",
       "event": [
         {
           "listen": "test",
           "script": {
-
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"PV16\";",
               "const expectedStatusCodes = [200, 201];",
@@ -1250,11 +1270,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-
             ],
+            "type": "text/javascript",
             "packages": {},
             "requests": {}
-
           }
         }
       ],
@@ -1265,9 +1284,7 @@
         "method": "GET",
         "header": [],
         "url": {
-
           "raw": "{{baseUrl}}/api/v1/products/filter/ram?ramOptions=8GB",
-
           "host": [
             "{{baseUrl}}"
           ],
@@ -1277,7 +1294,6 @@
             "products",
             "filter",
             "ram"
-
           ],
           "query": [
             {
@@ -1296,8 +1312,6 @@
         {
           "listen": "test",
           "script": {
-
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"PV17\";",
               "const expectedStatusCodes = [200, 201];",
@@ -1327,11 +1341,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-
             ],
+            "type": "text/javascript",
             "packages": {},
             "requests": {}
-
           }
         }
       ],
@@ -1342,9 +1355,7 @@
         "method": "GET",
         "header": [],
         "url": {
-
           "raw": "{{baseUrl}}/api/v1/products/filter/storage?storageOptions=128GB",
-
           "host": [
             "{{baseUrl}}"
           ],
@@ -1354,14 +1365,12 @@
             "products",
             "filter",
             "storage"
-
           ],
           "query": [
             {
               "key": "storageOptions",
               "value": "128GB"
             }
-
           ]
         },
         "description": "TestCaseId: PV17\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra cac option bo nho"
@@ -1369,7 +1378,6 @@
       "response": []
     },
     {
-
       "name": "PV18 - Tra cac option pin",
       "event": [
         {
@@ -1481,7 +1489,7 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/v1/products/filter/screen?screenSizeOptions=6.1%20inch",
+          "raw": "{{baseUrl}}/api/v1/products/filter/screen?screenSizeOptions=6.1 inch",
           "host": [
             "{{baseUrl}}"
           ],
