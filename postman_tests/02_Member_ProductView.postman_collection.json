@@ -1,8 +1,6 @@
 {
   "info": {
 
-    "_postman_id": "dfb5dd50-fc1a-41e7-b527-ac2f4d36ba1c",
-
     "_postman_id": "246ef40d-106b-4fd4-b4f6-f98ac00be859",
     "name": "02_Member_ProductView",
     "description": "Generated from phonehub_postman_test_cases.xlsx. One request equals one testcase; request name starts with stable testcase ID for CI/Jira deduplication.",
@@ -1254,11 +1252,8 @@
               "}"
 
             ],
-            "type": "text/javascript",
             "packages": {},
             "requests": {}
-
-            ]
 
           }
         }
@@ -1272,8 +1267,6 @@
         "url": {
 
           "raw": "{{baseUrl}}/api/v1/products/filter/ram?ramOptions=8GB",
-
-          "raw": "{{baseUrl}}/api/v1/products/filter/ram",
 
           "host": [
             "{{baseUrl}}"
@@ -1336,10 +1329,8 @@
               "}"
 
             ],
-            "type": "text/javascript",
             "packages": {},
             "requests": {}
-            ]
 
           }
         }
@@ -1354,7 +1345,6 @@
 
           "raw": "{{baseUrl}}/api/v1/products/filter/storage?storageOptions=128GB",
 
-          "raw": "{{baseUrl}}/api/v1/products/filter/storage",
           "host": [
             "{{baseUrl}}"
           ],
