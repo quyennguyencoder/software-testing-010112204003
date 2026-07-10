@@ -85,6 +85,8 @@ public class ProductViewServiceImpl implements IProductViewService {
 
     @Override
     public Page<ProductCardResponse> filterProducts(ProductFilterRequest request) {
+        validatePriceRange(request);
+
         String sortBy = request.getSortBy() != null ? request.getSortBy().toLowerCase() : "createdAt";
         String sortDirection = request.getSortDirection() != null ? request.getSortDirection() : "desc";
         int page = request.getPage() != null && request.getPage() >= 0 ? request.getPage() : 0;
@@ -169,6 +171,25 @@ public class ProductViewServiceImpl implements IProductViewService {
         return new PageImpl<>(cards, resultPageable, totalElements);
     }
     
+    private void validatePriceRange(ProductFilterRequest request) {
+        BigDecimal minPrice = request.getMinPrice();
+        BigDecimal maxPrice = request.getMaxPrice();
+
+        if (minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0) {
+
+            throw new BadRequestException("Invalid price range: minPrice cannot be greater than maxPrice (Giá tối thiểu không thể lớn hơn giá tối đa)");
+        }
+
+        if (minPrice != null && minPrice.compareTo(BigDecimal.ZERO) < 0) {
+            throw new BadRequestException("Invalid price: minPrice must be >= 0 (Giá tối thiểu phải lớn hơn hoặc bằng 0)");
+        }
+
+        if (maxPrice != null && maxPrice.compareTo(BigDecimal.ZERO) < 0) {
+            throw new BadRequestException("Invalid price: maxPrice must be >= 0 (Giá tối đa phải lớn hơn hoặc bằng 0)");
+
+        }
+    }
+
     /**
      * Kiểm tra xem sortBy có phải là computed field cần sort trong service layer không
      */
@@ -319,11 +340,24 @@ public class ProductViewServiceImpl implements IProductViewService {
         if (productIds == null || productIds.size() < 2 || productIds.size() > 4) {
             throw new BadRequestException("Số lượng sản phẩm so sánh phải từ 2-4");
         }
-        List<Product> products = productRepository.findAllByIdIn(productIds);
-        if (products.size() != productIds.size()) {
-            throw new ResourceNotFoundException("Một số sản phẩm không tồn tại");
+        // Load all products that exist among the requested IDs
+        List<Product> foundProducts = productRepository.findAllByIdIn(productIds);
+
+        // Build a map for quick lookup and preserve handling of duplicates in the request
+        Map<Long, Product> productById = foundProducts.stream()
+                .collect(Collectors.toMap(Product::getId, p -> p));
+
+        // Reconstruct ordered list according to original productIds, allowing duplicates
+        List<Product> products = new java.util.ArrayList<>();
+        for (Long id : productIds) {
+            Product p = productById.get(id);
+            if (p == null) {
+                throw new ResourceNotFoundException("Một số sản phẩm không tồn tại");
+            }
+            products.add(p);
         }
-        Map<Long, ReviewSummary> stats = reviewStats(products);
+
+        Map<Long, ReviewSummary> stats = reviewStats(foundProducts);
         List<ProductComparisonResponse.ComparisonProduct> items = products.stream()
                 .map(p -> toComparisonProduct(p, stats.get(p.getId())))
                 .collect(Collectors.toList());
