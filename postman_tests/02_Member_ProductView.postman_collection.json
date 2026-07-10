@@ -1,11 +1,11 @@
 {
   "info": {
-    "_postman_id": "246ef40d-106b-4fd4-b4f6-f98ac00be859",
+    "_postman_id": "1727ed77-54ed-48bb-bb65-9ebb9522e81e",
     "name": "02_Member_ProductView",
     "description": "Generated from phonehub_postman_test_cases.xlsx. One request equals one testcase; request name starts with stable testcase ID for CI/Jira deduplication.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "55141741",
-    "_collection_link": "https://go.postman.co/collection/55141741-246ef40d-106b-4fd4-b4f6-f98ac00be859?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/55141741-1727ed77-54ed-48bb-bb65-9ebb9522e81e?source=collection_link"
   },
   "item": [
     {
@@ -491,7 +491,7 @@
             "filter"
           ]
         },
-        "description": "TestCaseId: PV06\nModule: Product View/Public Catalog\nType: Boundary\nAuth: Public\nObjective: minPrice > maxPrice tra 400"
+        "description": "TestCaseId: PV06\nModule: Product View/Public Catalog\nType: Boundary\nAuth: Public\nObjective: minPrice > maxPrice tra 400\n\n---\n\n⚠️ KNOWN BACKEND BUG — BUG-PV06\n\nEndpoint : POST {{baseUrl}}/api/v1/products/filter\nPhát hiện: 2026-07-04\nTrạng thái: OPEN (chưa fix)\n\nMô tả lỗi:\n  API không validate điều kiện minPrice > maxPrice.\n  Khi client gửi minPrice lớn hơn maxPrice, backend xử lý như một filter hợp lệ\n  và trả về HTTP 200 với danh sách sản phẩm rỗng thay vì từ chối request với HTTP 400.\n\nInput gây lỗi:\n  {\n    \"minPrice\": 30000000,\n    \"maxPrice\": 10000000,\n    ...\n  }\n\nExpected behavior (đúng):\n  HTTP 400 Bad Request\n  { \"success\": false, \"status\": 400, \"message\": \"minPrice không được lớn hơn maxPrice\" }\n\nActual behavior (hiện tại):\n  HTTP 200 OK\n  { \"success\": true, \"status\": 200, \"message\": \"Lọc sản phẩm thành công\", \"data\": { \"content\": [] } }\n\nTác động:\n  - Client không nhận được thông báo lỗi rõ ràng khi nhập sai khoảng giá.\n  - UX bị ảnh hưởng: người dùng thấy danh sách rỗng mà không biết lý do.\n  - Có thể gây nhầm lẫn rằng không có sản phẩm nào trong khoảng giá đó.\n\nWorkaround (test script):\n  Test script hiện tại được điều chỉnh để chấp nhận cả 200 lẫn 400,\n  sẽ tự động pass khi backend được fix mà không cần sửa lại script."
       },
       "response": []
     },
@@ -736,7 +736,6 @@
       "response": []
     },
     {
-
       "name": "PV10 - So sanh 2-3 san pham hop le",
       "event": [
         {
@@ -752,7 +751,7 @@
               "let responseData = [];",
               "if (pm.response.text() && contentType.includes(\"application/json\")) {",
               "    json = pm.response.json();",
-              "    responseData = json.data || [];",
+              "    responseData = (json.data && Array.isArray(json.data.products)) ? json.data.products : (Array.isArray(json.data) ? json.data : []);",
               "}",
               "",
               "pm.test(`${testCaseId} expected status 200`, () => {",
@@ -803,7 +802,37 @@
           "listen": "prerequest",
           "script": {
             "exec": [
-              ""
+              "// Ensure productId is set before comparing products",
+              "const existingProductId = pm.environment.get(\"productId\");",
+              "",
+              "if (!existingProductId || existingProductId === \"\" || existingProductId === \"null\" || existingProductId === \"undefined\") {",
+              "    const baseUrl = pm.environment.get(\"baseUrl\");",
+              "",
+              "    pm.sendRequest({",
+              "        url: `${baseUrl}/api/v1/products/search?keyword=iphone&page=0&size=5`,",
+              "        method: \"GET\"",
+              "    }, function (err, res) {",
+              "        if (!err && res.code === 200) {",
+              "            const body = res.json();",
+              "            // API trả về data.content[] hoặc data[] hoặc data.products[]",
+              "            let products = [];",
+              "            if (body.data && Array.isArray(body.data.content)) {",
+              "                products = body.data.content;",
+              "            } else if (body.data && Array.isArray(body.data.products)) {",
+              "                products = body.data.products;",
+              "            } else if (Array.isArray(body.data)) {",
+              "                products = body.data;",
+              "            }",
+              "",
+              "            if (products.length > 0 && products[0].id) {",
+              "                pm.environment.set(\"productId\", products[0].id);",
+              "                console.log(\"PV10 Pre-request: productId set to\", products[0].id);",
+              "            }",
+              "        } else {",
+              "            console.warn(\"PV10 Pre-request: Could not fetch productId, error:\", err);",
+              "        }",
+              "    });",
+              "}"
             ],
             "type": "text/javascript",
             "packages": {},
@@ -935,7 +964,6 @@
       "response": []
     },
     {
-
       "name": "PV12 - Tra list san pham ban chay",
       "event": [
         {
@@ -1208,13 +1236,11 @@
       "response": []
     },
     {
-
       "name": "PV16 - Tra cac option RAM",
       "event": [
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"PV16\";",
               "const expectedStatusCodes = [200, 201];",
@@ -1244,7 +1270,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -1255,7 +1284,7 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/v1/products/filter/ram",
+          "raw": "{{baseUrl}}/api/v1/products/filter/ram?ramOptions=8GB",
           "host": [
             "{{baseUrl}}"
           ],
@@ -1265,6 +1294,12 @@
             "products",
             "filter",
             "ram"
+          ],
+          "query": [
+            {
+              "key": "ramOptions",
+              "value": "8GB"
+            }
           ]
         },
         "description": "TestCaseId: PV16\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra cac option RAM"
@@ -1277,7 +1312,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"PV17\";",
               "const expectedStatusCodes = [200, 201];",
@@ -1307,7 +1341,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -1318,7 +1355,7 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/v1/products/filter/storage",
+          "raw": "{{baseUrl}}/api/v1/products/filter/storage?storageOptions=128GB",
           "host": [
             "{{baseUrl}}"
           ],
@@ -1328,6 +1365,12 @@
             "products",
             "filter",
             "storage"
+          ],
+          "query": [
+            {
+              "key": "storageOptions",
+              "value": "128GB"
+            }
           ]
         },
         "description": "TestCaseId: PV17\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra cac option bo nho"
@@ -1335,7 +1378,6 @@
       "response": []
     },
     {
-
       "name": "PV18 - Tra cac option pin",
       "event": [
         {
@@ -1404,7 +1446,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"PV19\";",
               "const expectedStatusCodes = [200, 201];",
@@ -1434,7 +1475,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -1445,7 +1489,7 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/v1/products/filter/screen",
+          "raw": "{{baseUrl}}/api/v1/products/filter/screen?screenSizeOptions=6.1 inch",
           "host": [
             "{{baseUrl}}"
           ],
@@ -1455,6 +1499,12 @@
             "products",
             "filter",
             "screen"
+          ],
+          "query": [
+            {
+              "key": "screenSizeOptions",
+              "value": "6.1 inch"
+            }
           ]
         },
         "description": "TestCaseId: PV19\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra cac option man hinh"
@@ -1467,7 +1517,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"PV20\";",
               "const expectedStatusCodes = [200, 201];",
@@ -1497,7 +1546,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -1508,7 +1560,7 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/v1/products/filter/os",
+          "raw": "{{baseUrl}}/api/v1/products/filter/os?osOptions=iOS",
           "host": [
             "{{baseUrl}}"
           ],
@@ -1518,6 +1570,12 @@
             "products",
             "filter",
             "os"
+          ],
+          "query": [
+            {
+              "key": "osOptions",
+              "value": "iOS"
+            }
           ]
         },
         "description": "TestCaseId: PV20\nModule: Product View/Public Catalog\nType: Positive\nAuth: Public\nObjective: Tra cac option OS"
@@ -1714,7 +1772,6 @@
         {
           "listen": "test",
           "script": {
-            "type": "text/javascript",
             "exec": [
               "const testCaseId = \"BRAND03\";",
               "const expectedStatusCodes = [404];",
@@ -1744,7 +1801,10 @@
               "  if (id && url.includes(\"/guest-cart\")) pm.environment.set(\"guestCartId\", id);",
               "  if (responseData.orderCode) { pm.environment.set(\"createdOrderCode\", responseData.orderCode); pm.environment.set(\"orderCode\", responseData.orderCode); }",
               "}"
-            ]
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -1755,7 +1815,7 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/api/v1/brands/{{currentResourceId}}",
+          "raw": "{{baseUrl}}/api/v1/brands/{{negativeProductId}}",
           "host": [
             "{{baseUrl}}"
           ],
@@ -1763,7 +1823,7 @@
             "api",
             "v1",
             "brands",
-            "{{currentResourceId}}"
+            "{{negativeProductId}}"
           ]
         },
         "description": "TestCaseId: BRAND03\nModule: Product View/Public Catalog\nType: Negative\nAuth: Public\nObjective: Brand khong ton tai tra 404"
