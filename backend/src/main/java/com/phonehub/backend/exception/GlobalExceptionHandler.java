@@ -15,7 +15,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import java.util.HashMap;
 import java.util.Map;
-import jakarta.validation.ConstraintViolationException;
+
+import jakarta.validation.ConstraintViolationException; //
 
 @RestControllerAdvice
 @Slf4j
@@ -171,11 +172,11 @@ public class GlobalExceptionHandler {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
-        @ExceptionHandler(ConstraintViolationException.class)
-        public ResponseEntity<ApiResponse<?>> handleConstraintViolationException(
-                        ConstraintViolationException ex, WebRequest request) {
-                log.error("Constraint validation error: {}", ex.getMessage());
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                .body(ApiResponse.badRequest(ex.getMessage()));
+        @ExceptionHandler(ConstraintViolationException.class) //
+        public ResponseEntity<ApiResponse<?>> handleConstraintViolationException( //
+                        ConstraintViolationException ex, WebRequest request) { //
+                log.error("Constraint validation error: {}", ex.getMessage()); //
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST) // 
+                                .body(ApiResponse.badRequest(ex.getMessage())); //
         }
 }
