@@ -4664,8 +4664,8 @@ SELECT setval('wards_id_seq', (SELECT MAX(id) FROM wards));
 -- ============================================================================
 
 INSERT INTO orders (id, order_code, user_id, email, recipient_name, phone_number, shipping_address, shipping_fee, shipping_unit, note, status, payment_method, total_amount, created_at, updated_at) VALUES
-(1, 'ORD-20240101-001', 2, 'huong.tran@gmail.com', 'Trần Thị Hương', '0912345678', '123 Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh', 30000.00, 'GHTK', 'Giao giờ hành chính', 'COMPLETED', 'COD', 35020000.00, NOW() - INTERVAL '5 days', NOW() - INTERVAL '3 days'),
-(2, 'ORD-20240102-002', 3, 'nam.le@gmail.com', 'Lê Văn Nam', '0923456789', '789 Trần Hưng Đạo, Phường 1, Quận 5, TP. Hồ Chí Minh', 0.00, 'GHN', '', 'PROCESSING', 'VNPAY', 22990000.00, NOW() - INTERVAL '2 days', NOW() - INTERVAL '2 days'),
+(1, 'ORD-20240101-001', 2, 'huong.tran@gmail.com', 'Trần Thị Hương', '0912345678', '123 Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh', 30000.00, 'GHTK', 'Giao giờ hành chính', 'CONFIRMED', 'COD', 35020000.00, NOW() - INTERVAL '5 days', NOW() - INTERVAL '3 days'),
+(2, 'ORD-20240102-002', 3, 'nam.le@gmail.com', 'Lê Văn Nam', '0923456789', '789 Trần Hưng Đạo, Phường 1, Quận 5, TP. Hồ Chí Minh', 0.00, 'GHN', '', 'PENDING', 'VNPAY', 22990000.00, NOW() - INTERVAL '2 days', NOW() - INTERVAL '2 days'),
 (3, 'ORD-20240103-003', 4, 'mai.pham@gmail.com', 'Phạm Thị Mai', '0934567890', '321 Võ Văn Tần, Phường 5, Quận 3, TP. Hồ Chí Minh', 25000.00, 'VIETTEL_POST', 'Gọi trước khi giao', 'PENDING', 'MOMO', 19015000.00, NOW() - INTERVAL '1 day', NOW() - INTERVAL '1 day'),
 (4, 'ORD-20240104-004', 14, 'user@gmail.com', 'User', '0987654321', 'Khu Công Nghệ Cao, TP. Thủ Đức, TP. Hồ Chí Minh', 15000.00, 'GHTK', '', 'SHIPPED', 'COD', 13005000.00, NOW() - INTERVAL '12 hours', NOW() - INTERVAL '6 hours');
 

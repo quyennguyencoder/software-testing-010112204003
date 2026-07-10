@@ -3,8 +3,6 @@ spring:
     name: phonehub-backend
   config:
     import: optional:file:env.properties
-  profiles:
-    active: dev
   datasource:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT:5434}/${POSTGRES_DB}
     username: ${DB_USERNAME}
@@ -107,4 +105,4 @@ api:
     base-url: ${API_PRODUCT_BASE_URL:http://localhost:8081/api/v1/products}
 app:
   auth:
-    master-otp: ${MASTER_OTP:000000}
+    master-otp:000000:

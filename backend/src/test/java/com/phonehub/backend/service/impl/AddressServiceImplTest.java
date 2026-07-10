@@ -96,7 +96,7 @@ public class AddressServiceImplTest {
 
     @Test
     void updateAddress_Success() {
-        when(addressRepository.findById(1L)).thenReturn(Optional.of(testAddress));
+        when(addressRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(testAddress));
         when(addressRepository.findByUserIdAndIsDefaultTrue(1L)).thenReturn(Optional.of(new Address()));
         when(addressRepository.save(any(Address.class))).thenReturn(testAddress);
         

@@ -1,4 +1,4 @@
-﻿name: CI - Postman API Tests
+name: CI - Postman API Tests
 
 on:
   push:
