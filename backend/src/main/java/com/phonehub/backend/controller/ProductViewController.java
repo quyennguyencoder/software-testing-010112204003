@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import com.phonehub.backend.validator.ProductFilterValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.ArrayList;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.phonehub.backend.exception.BadRequestException;
 
 /**
  * REST Controller cho ProductView API
@@ -48,6 +52,7 @@ import java.util.List;
 @Tag(name = "ProductView API", description = "API dùng để hiển thị sản phẩm client và tương tác - Tham quan, tìm kiếm, lọc, sắp xếp, so sánh sản phẩm")
 public class ProductViewController {
         private final IProductViewService productViewService;
+        private final ProductFilterValidator productFilterValidator;
 
 /**
  * GET /api/v1/products/search
@@ -149,6 +154,8 @@ public ResponseEntity<ApiResponse<Page<ProductCardResponse>>> filterProducts(
                 request.getRamOptions(), request.getStorageOptions(), request.getMinBattery(), request.getMaxBattery(),
                 request.getScreenSizeOptions(), request.getOsOptions(), request.getMinRating(), 
                 request.getInStockOnly(), request.getHasDiscountOnly());
+        // Validate pagination and basic filter params early
+        productFilterValidator.validatePagination(request.getPage(), request.getSize());
         
         Page<ProductCardResponse> result = productViewService.filterProducts(request);
         
@@ -281,14 +288,39 @@ public ResponseEntity<ApiResponse<CategoryProductsResponse>> getProductsByCatego
         )
 })
 public ResponseEntity<ApiResponse<ProductComparisonResponse>> compareProducts(
-        @Parameter(description = "Danh sách ID sản phẩm cần so sánh (tối đa 4)", required = true)
-        @RequestBody List<Long> productIds
+                @Parameter(description = "Danh sách ID sản phẩm cần so sánh (tối đa 4)", required = true)
+                @RequestBody JsonNode payload
 ) {
-        log.info("Comparing products: {}", productIds);
-        
-        ProductComparisonResponse result = productViewService.compareProducts(productIds);
-        
-        return ResponseEntity.ok(ApiResponse.success("So sánh sản phẩm thành công", result));
+                List<Long> productIds = new ArrayList<>();
+
+                try {
+                        if (payload == null) {
+                                throw new BadRequestException("Định dạng dữ liệu đầu vào không hợp lệ.");
+                        }
+
+                        if (payload.isArray()) {
+                                for (JsonNode n : payload) {
+                                        if (!n.canConvertToLong()) throw new BadRequestException("Định dạng dữ liệu đầu vào không hợp lệ.");
+                                        productIds.add(n.asLong());
+                                }
+                        } else if (payload.has("productIds") && payload.get("productIds").isArray()) {
+                                for (JsonNode n : payload.get("productIds")) {
+                                        if (!n.canConvertToLong()) throw new BadRequestException("Định dạng dữ liệu đầu vào không hợp lệ.");
+                                        productIds.add(n.asLong());
+                                }
+                        } else {
+                                throw new BadRequestException("Định dạng dữ liệu đầu vào không hợp lệ.");
+                        }
+                } catch (BadRequestException ex) {
+                        throw ex;
+                } catch (Exception ex) {
+                        throw new BadRequestException("Định dạng dữ liệu đầu vào không hợp lệ.");
+                }
+
+                log.info("Comparing products: {}", productIds);
+                ProductComparisonResponse result = productViewService.compareProducts(productIds);
+                // Return the list directly in `data` to match Postman expected format
+                return ResponseEntity.ok(ApiResponse.success("So sánh sản phẩm thành công", result));
 }
 
 /**

@@ -27,21 +27,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import jakarta.validation.constraints.Min; 
+import org.springframework.validation.annotation.Validated; 
 import java.math.BigDecimal;
 import java.util.List;
 
-import jakarta.validation.constraints.Min; 
-import org.springframework.validation.annotation.Validated; 
+
 /**
  * REST Controller for Product Management
  * Handles CRUD operations, search, filtering, and stock management for products
  */
+@Validated
 @RestController
 @RequestMapping("/api/v1/admin/products")
 @RequiredArgsConstructor
 @Slf4j
-@Validated
 @Tag(name = "Product Management", description = "API quản lý sản phẩm - CRUD, tìm kiếm, lọc và quản lý tồn kho")
 @SecurityRequirement(name = "bearerAuth")
 public class ProductController {
@@ -165,7 +165,9 @@ public class ProductController {
 
                         @Parameter(description = "Hướng sắp xếp (asc, desc)") @RequestParam(required = false, defaultValue = "desc") String sortDirection,
 
-                        @Parameter(description = "Số trang") @RequestParam(defaultValue = "0") @Min(value = 0, message = "Số trang không được là số âm") int page,
+
+                        @Parameter(description = "Số trang") @RequestParam(defaultValue = "0") @Min(value = 0, message = "Số trang không được là số âm.") int page,
+
 
                         @Parameter(description = "Số items/trang") @RequestParam(defaultValue = "20") int size) {
                 log.info("GET /api/v1/admin/products - keyword: {}, categoryId: {}, brandId: {}, priceRange: [{}-{}], sort: {}({})",
@@ -206,7 +208,7 @@ public class ProductController {
 
                         @Parameter(description = "Số trang") @RequestParam(defaultValue = "0") int page,
 
-                        @Parameter(description = "Số items/trang") @RequestParam(defaultValue = "20") @Min(value = 1, message = "Kích thước trang phải từ 1 trở lên") int size) {
+                        @Parameter(description = "Số items/trang") @RequestParam(defaultValue = "20") @Min(value = 1, message = "Kích thước trang phải từ 1 trở lên.") int size) {
                 log.info("GET /api/v1/admin/products/deleted - keyword: {}, categoryId: {}, brandId: {}, sort: {}({})",
                                 keyword, categoryId, brandId, sortBy, sortDirection);
 

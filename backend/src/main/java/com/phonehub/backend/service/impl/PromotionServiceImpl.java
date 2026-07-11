@@ -228,7 +228,7 @@ public class PromotionServiceImpl implements IPromotionService {
      * Follows Single Responsibility - focused on status management
      */
     @Transactional
-    private void updateExpiredPromotionsStatus() {
+    protected void updateExpiredPromotionsStatus() {
         LocalDateTime now = LocalDateTime.now();
         
         // Find all ACTIVE promotions that have expired
